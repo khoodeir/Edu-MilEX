@@ -227,7 +227,6 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
     </div>
     <h1 data-i18n="title">Student Registration</h1>
     <p class="teacher-name" data-i18n="teacherName">Mr. Abdullah Elshafay — English Teacher</p>
-    <p class="teacher-tagline" data-i18n="teacherTagline">Not just a language… it's the key to your future</p>
     <hr class="divider">
   </div>
   <p class="subtitle" data-i18n="subtitle">Fill out the form to register. A QR code will appear after submission — keep it, you'll need it to attend.</p>
@@ -311,7 +310,6 @@ const I18N = {
   en: {
     title: "Student Registration",
     teacherName: "Mr. Abdullah Elshafay — English Teacher",
-    teacherTagline: "Not just a language… it's the key to your future",
     subtitle: "Fill out the form to register. A QR code will appear after submission — keep it, you'll need it to attend.",
     labelFullName: "Full Name",
     phFullName: "Enter student's full name",
@@ -335,6 +333,8 @@ const I18N = {
     gradeSecond: "Second Grade",
     gradeThird: "Third Grade",
     gradeThirdPrep: "Third Grade",
+    gradeFirstPrep: "First Grade",
+    gradeSecondPrep: "Second Grade",
     btnSubmit: "Submit",
     submitting: "Submitting...",
     successTitle: "Registration Submitted!",
@@ -354,7 +354,6 @@ const I18N = {
   ar: {
     title: "تسجيل الطلاب",
     teacherName: "مستر عبدالله الشافعي — مدرس اللغة الإنجليزية",
-    teacherTagline: "مش بس لغة… ده مفتاح لمستقبلك",
     subtitle: "املأ النموذج للتسجيل. هيظهرلك كود QR بعد التسجيل، لازم تحتفظ بيه عشان تحضر.",
     labelFullName: "الاسم بالكامل",
     phFullName: "اكتب اسم الطالب بالكامل",
@@ -378,6 +377,8 @@ const I18N = {
     gradeSecond: "الصف الثاني الثانوي",
     gradeThird: "الصف الثالث الثانوي",
     gradeThirdPrep: "الصف الثالث الإعدادي",
+    gradeFirstPrep: "الصف الأول الإعدادي",
+    gradeSecondPrep: "الصف الثاني الإعدادي",
     btnSubmit: "تسجيل",
     submitting: "جاري الإرسال...",
     successTitle: "تم التسجيل بنجاح!",
@@ -409,6 +410,8 @@ function t(key){
    ============================================================ */
 const GRADE_OPTIONS = {
   Preparatory: [
+    { value: "First Prep", i18n: "gradeFirstPrep" },
+    { value: "Second Prep", i18n: "gradeSecondPrep" },
     { value: "Third Prep", i18n: "gradeThirdPrep" }
   ],
   Secondary: [
