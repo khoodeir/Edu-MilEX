@@ -142,6 +142,8 @@ select{
 select:invalid{ color:#a89a94; }
 select option{ color:var(--text); background:#f7f5f1; }
 select option:checked, select option:hover{ background:var(--gold-deep); color:#f5f0e4; }
+.group-time{ font-size:10.5px; color:rgba(139,30,30,0.38); font-weight:400; letter-spacing:0; text-transform:none; margin-left:8px; }
+[dir="rtl"] .group-time{ margin-left:0; margin-right:8px; }
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus{
@@ -314,6 +316,16 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
       </select>
     </div>
 
+    <div class="field">
+      <label for="group" data-i18n="labelGroup">Group</label>
+      <select id="group" name="group" required>
+        <option value="" disabled selected data-i18n="selectPlaceholder">Select an option ...</option>
+        <option value="A" data-i18n="groupA">A <span class="group-time" data-i18n="groupATime">5:00 PM</span></option>
+        <option value="B" data-i18n="groupB">B <span class="group-time" data-i18n="groupBTime">7:00 PM</span></option>
+        <option value="C" data-i18n="groupC">C <span class="group-time" data-i18n="groupCTime">9:00 PM</span></option>
+      </select>
+    </div>
+
     <button type="submit" class="submit" id="submitBtn" data-i18n="btnSubmit">Submit</button>
     <div class="status" id="status"></div>
   </form>
@@ -364,6 +376,13 @@ const I18N = {
     errCity: "City must contain letters only",
     labelStage: "Educational Stage",
     labelGrade: "Grade",
+    labelGroup: "Group",
+    groupA: "A",
+    groupB: "B",
+    groupC: "C",
+    groupATime: "5:00 PM",
+    groupBTime: "7:00 PM",
+    groupCTime: "9:00 PM",
     selectPlaceholder: "Select an option ...",
     stagePreparatory: "Preparatory",
     stageSecondary: "Secondary",
@@ -408,6 +427,13 @@ const I18N = {
     errCity: "المدينة لازم تكون حروف فقط",
     labelStage: "المرحلة الدراسية",
     labelGrade: "الصف",
+    labelGroup: "المجموعة",
+    groupA: "A",
+    groupB: "B",
+    groupC: "C",
+    groupATime: "5:00 PM",
+    groupBTime: "7:00 PM",
+    groupCTime: "9:00 PM",
     selectPlaceholder: "اختر ...",
     stagePreparatory: "المرحلة الإعدادية",
     stageSecondary: "المرحلة الثانوية",
@@ -667,7 +693,8 @@ form.addEventListener('submit', async (e) => {
     parentPhone: document.getElementById('parentPhone').value.trim(),
     city: document.getElementById('city').value.trim(),
     educationalStage: document.getElementById('stage').value,
-    grade: document.getElementById('grade').value
+    grade: document.getElementById('grade').value,
+    group: document.getElementById('group').value
   };
 
   submitBtn.disabled = true;
