@@ -179,29 +179,32 @@
   /* ===== Ledger tab grade switcher (signature element) ===== */
   .tab-row{
     display:flex; flex-direction:column; gap:2px; margin-bottom:0; 
-    padding: 0 24px 40px 32px;
+    padding: 4px 14px 24px 32px;
     width:240px; position:fixed; left:0; top:140px; bottom:0; z-index:10;
     border-right: 1px solid var(--line);
     overflow-y: auto;
-    scrollbar-width: none; /* Hide scrollbar for Chrome/Safari */
+    scrollbar-width: thin; /* Show a slim scrollbar so a longer list is never hidden without a cue */
+    scrollbar-color: var(--gold) transparent;
   }
-  .tab-row::-webkit-scrollbar { display: none; }
-  
+  .tab-row::-webkit-scrollbar { width: 5px; }
+  .tab-row::-webkit-scrollbar-track { background: transparent; }
+  .tab-row::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; opacity:.5; }
+
   [dir="rtl"] .tab-row {
     left: auto; right: 0;
-    padding: 0 32px 40px 24px;
+    padding: 4px 32px 24px 14px;
     border-right: none;
     border-left: 1px solid var(--line);
   }
   .tab{
     position:relative; cursor:pointer; user-select:none;
-    padding:10px 16px; margin:0;
-    background:var(--card); color:var(--muted); font-weight:500; font-size:13px;
-    border-radius:10px; border:1px solid var(--line);
+    padding:8px 12px; margin:0;
+    background:var(--card); color:var(--muted); font-weight:500; font-size:12.5px;
+    border-radius:9px; border:1px solid var(--line);
     transition:all .18s ease; z-index:1;
     text-align:left; white-space:nowrap; 
-    min-height:44px; display:flex; align-items:center; justify-content:flex-start;
-    width: 100%; gap: 10px;
+    min-height:38px; display:flex; align-items:center; justify-content:space-between;
+    width: 100%; gap: 8px;
   }
   [dir="rtl"] .tab { text-align: right; }
   .tab:hover{ color:var(--ink); background:var(--paper); border-color:var(--gold); }
@@ -212,28 +215,40 @@
     border-color:var(--gold);
   }
   .tab.active::after{
-    content:""; position:absolute; right: -25px; top:50%; transform:translateY(-50%);
-    width: 4px; height: 24px; background: var(--gold);
+    content:""; position:absolute; right: -15px; top:50%; transform:translateY(-50%);
+    width: 4px; height: 20px; background: var(--gold);
     border-radius: 4px 0 0 4px;
   }
   [dir="rtl"] .tab.active::after {
-    right: auto; left: -25px;
+    right: auto; left: -15px;
     border-radius: 0 4px 4px 0;
   }
+  .tab-count{
+    flex-shrink:0; font-family:'Space Grotesk',sans-serif; font-size:10.5px; font-weight:700;
+    color:var(--gold); background:var(--gold-soft); border-radius:999px;
+    min-width:20px; height:18px; padding:0 6px; display:inline-flex; align-items:center; justify-content:center;
+    line-height:1; transition:all .18s ease;
+  }
+  .tab.active .tab-count{ background:rgba(255,255,255,0.22); color:#fff; }
+  .tab-count:empty{ display:none; }
   .tab-group-label{
-    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em;
-    color:var(--gold); margin-top:20px; margin-bottom:4px; padding:0 16px;
-    opacity:0.6; min-height:30px; display:flex; align-items:center; cursor:pointer;
+    font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em;
+    color:var(--gold); margin-top:14px; margin-bottom:3px; padding:0 12px;
+    opacity:0.6; min-height:22px; display:flex; align-items:center; cursor:pointer;
     transition:all .18s ease; user-select:none;
   }
   .tab-group-label:first-child{ margin-top:0; }
   .tab-group-label:hover{ opacity:1; }
   .tab-group{
-    display:flex; flex-direction:column; gap:8px; margin-bottom:8px;
+    display:flex; flex-direction:column; gap:5px; margin-bottom:5px;
     max-height:1000px; overflow:hidden; transition:max-height .3s ease, margin-bottom .3s ease;
   }
   .tab-group.collapsed{
     max-height:0; margin-bottom:0; overflow:hidden;
+  }
+  @media (max-height:760px){
+    .tab-row{ top:118px; }
+    .tab{ min-height:34px; padding:6px 12px; font-size:12px; }
   }
   .wrap{
     max-width:1200px; margin:0 auto; margin-left:260px;
@@ -676,13 +691,13 @@
     <!-- GRADES GROUP -->
     <div class="tab-group-label" data-group="grades" onclick="toggleGroup(this)">▼ Grades</div>
     <div class="tab-group" data-group="grades">
-      <div class="tab active" data-grade="all" data-i18n="tabAll">🎓 All Grades</div>
-      <div class="tab" data-grade="first_prep" data-i18n="tabFirstPrep">📘 First Preparatory</div>
-      <div class="tab" data-grade="second_prep" data-i18n="tabSecondPrep">📗 Second Preparatory</div>
-      <div class="tab" data-grade="third_prep" data-i18n="tabThirdPrep">📙 Third Preparatory</div>
-      <div class="tab" data-grade="first_secondary" data-i18n="tabFirstSecondary">📕 First Secondary</div>
-      <div class="tab" data-grade="second_secondary" data-i18n="tabSecondSecondary">📔 Second Secondary</div>
-      <div class="tab" data-grade="third_secondary" data-i18n="tabThirdSecondary">📓 Third Secondary</div>
+      <div class="tab active" data-grade="all"><span data-i18n="tabAll">🎓 All Grades</span><span class="tab-count" id="count-all"></span></div>
+      <div class="tab" data-grade="first_prep"><span data-i18n="tabFirstPrep">📘 First Preparatory</span><span class="tab-count" id="count-first_prep"></span></div>
+      <div class="tab" data-grade="second_prep"><span data-i18n="tabSecondPrep">📗 Second Preparatory</span><span class="tab-count" id="count-second_prep"></span></div>
+      <div class="tab" data-grade="third_prep"><span data-i18n="tabThirdPrep">📙 Third Preparatory</span><span class="tab-count" id="count-third_prep"></span></div>
+      <div class="tab" data-grade="first_secondary"><span data-i18n="tabFirstSecondary">📕 First Secondary</span><span class="tab-count" id="count-first_secondary"></span></div>
+      <div class="tab" data-grade="second_secondary"><span data-i18n="tabSecondSecondary">📔 Second Secondary</span><span class="tab-count" id="count-second_secondary"></span></div>
+      <div class="tab" data-grade="third_secondary"><span data-i18n="tabThirdSecondary">📓 Third Secondary</span><span class="tab-count" id="count-third_secondary"></span></div>
     </div>
     
     <!-- OTHER GROUP -->
@@ -1420,6 +1435,7 @@ function goBack(){
       // nothing to refresh on the settings view
     } else {
       loadDashboard();
+      loadSidebarCounts();
     }
   }
 
@@ -1584,6 +1600,27 @@ function goBack(){
         lastPaymentDate: p[col.lastPaymentDate] ?? ""
       };
     });
+  }
+
+  /* ---------- Sidebar totals ----------
+     Lightweight COUNT-only query (head:true → no rows returned) per grade,
+     so every tab always shows its total student count regardless of which
+     grade is currently selected. ---------- */
+  async function loadSidebarCounts(){
+    const results = await Promise.all(GRADES.map(async (g) => {
+      try{
+        const { count, error } = await supa.from(SCHEMA.attendanceTable(g)).select("*", { count: "exact", head: true });
+        return error ? null : count;
+      }catch(e){ return null; }
+    }));
+    let total = 0, anyKnown = false;
+    GRADES.forEach((g, i) => {
+      const el = document.getElementById(`count-${g}`);
+      if(el) el.textContent = results[i] != null ? results[i] : "";
+      if(results[i] != null){ total += results[i]; anyKnown = true; }
+    });
+    const allEl = document.getElementById("count-all");
+    if(allEl) allEl.textContent = anyKnown ? total : "";
   }
 
   async function fetchStats(){
@@ -1868,10 +1905,6 @@ function goBack(){
     canvas.style.display = "block"; emptyEl.classList.remove("show");
 
     if(currentGrade === "all"){
-      // One line per grade, plotted by exam order (1st exam, 2nd exam, ...) since
-      // each grade can have a different set/number of exams. Labels use the real
-      // exam name (taken from whichever grade has an exam at that position) instead
-      // of a generic "Exam N" placeholder.
       const maxLen = Math.max(0, ...gradesShown.map(g => (data[g] || []).length));
       const labels = Array.from({ length: maxLen }, (_, i) => {
         for(const g of gradesShown){
@@ -2033,7 +2066,6 @@ function goBack(){
     if(!rows.length){ canvas.style.display = "none"; emptyEl.classList.add("show"); return; }
     canvas.style.display = "block"; emptyEl.classList.remove("show");
 
-    // Performance bands based on each student's own average across all their recorded exams.
     const bands = [
       { label: "Excellent (90-100%)", min: 90, max: 101, color: "rgba(46, 125, 50, 0.8)" },
       { label: "Good (75-89%)",       min: 75, max: 90,  color: "rgba(102, 187, 106, 0.8)" },
@@ -2092,10 +2124,6 @@ function goBack(){
     `).join("") + (unpaidStudents.length > 8 ? `<div class="empty-note">+${unpaidStudents.length - 8} more — see the table below</div>` : "");
   }
 
-  /* ---------- Top / Lowest exam performers ----------
-     Ranked by each student's own average % across all their recorded
-     exam scores — scores are normalized against each exam's max_score
-     first, so an 18/20 and a 85/100 are compared fairly on the same scale. ---------- */
   function renderExamPerformerLists(){
     const gradesShown = currentGrade === "all" ? GRADES : [currentGrade];
     const rows = (combined.examStudentAverages || []).filter(r => gradesShown.includes(r.grade));
@@ -2130,14 +2158,13 @@ function goBack(){
       </div>
     `;
 
-    // Sort once, then split into a top half and a bottom half that never overlap.
     const sortedDesc = [...enriched].sort((a,b) => b.avg - a.avg || b.count - a.count);
     const n = sortedDesc.length;
     const topCount = Math.min(6, Math.ceil(n / 2));
     const lowCount = Math.min(6, Math.floor(n / 2));
 
     const top = sortedDesc.slice(0, topCount);
-    const low = sortedDesc.slice(n - lowCount, n).reverse(); // lowest score first
+    const low = sortedDesc.slice(n - lowCount, n).reverse();
 
     topEl.innerHTML = top.map((s,i) => rowHtml(s, i, "high")).join("");
     lowEl.innerHTML = lowCount
@@ -2193,14 +2220,6 @@ function goBack(){
 
   /* ============================================================
      MONTHLY HISTORY / ARCHIVE
-     Needs a "التقارير_الشهرية" table in Supabase with an INSERT +
-     SELECT (+ DELETE, for re-saving the same month) policy for the
-     anon role. Suggested columns:
-       year int, month int, grade text,
-       students_count int, attendance_rate numeric,
-       total_revenue numeric, paid_count int, unpaid_count int,
-       collection_rate numeric, unpaid_students jsonb default '[]',
-       created_at timestamptz default now()
      ============================================================ */
   const HIST_SCHEMA = {
     table: "التقارير_الشهرية",
@@ -2270,7 +2289,6 @@ function goBack(){
       [col.collectionRate]: perGrade[g].collectionRate,
       [col.unpaidStudents]: perGrade[g].unpaidList
     }));
-    // Clear any previous snapshot for this month first, so saving twice just updates it.
     await supa.from(HIST_SCHEMA.table).delete().eq(col.year, year).eq(col.month, month);
     const { error } = await supa.from(HIST_SCHEMA.table).insert(rows);
     if(error) throw error;
@@ -2294,16 +2312,6 @@ function goBack(){
     }
   }
 
-  /* ---------- Auto-finalize the previous month once the new month starts ----------
-     Runs on every dashboard load. Recomputes the LATEST numbers for the month that
-     just ended and overwrites its saved snapshot with them — even if a snapshot was
-     already saved manually (e.g. a few days early, before more payments came in).
-     This is intentionally an overwrite rather than a "skip if already saved" check,
-     so late payments/attendance recorded after an early manual save are still
-     captured before the month is archived for good.
-     Each browser only finalizes a given month once (tracked in localStorage) so it
-     doesn't keep re-overwriting with fresh numbers every time the page is opened
-     later in the new month. ---------------------------------------------------------------*/
   async function autoBackfillMissedMonth(){
     try{
       const now = new Date();
@@ -2312,7 +2320,7 @@ function goBack(){
       if(prevM === 0){ prevM = 12; prevY -= 1; }
 
       const backfillKey = `dashBackfillFinalized_${prevY}_${prevM}`;
-      if(localStorage.getItem(backfillKey) === "true") return; // already finalized on this device
+      if(localStorage.getItem(backfillKey) === "true") return;
 
       const perGrade = await computeAllGradeSnapshots();
       await saveSnapshotForMonth(prevY, prevM, perGrade);
@@ -2545,8 +2553,8 @@ function goBack(){
 
   let examGrade = "first_prep";
   let examStudents = [];
-  let examList = [];    // rows from `exams` for the selected grade
-  let examScores = [];  // rows from `exam_scores` for those exams
+  let examList = [];
+  let examScores = [];
 
   function onExamGradeChange(){
     examGrade = document.getElementById("examGradeSelect").value;
@@ -2778,7 +2786,7 @@ function goBack(){
         return { name: e[ecol.name], maxScore: e[ecol.maxScore], score: row ? row[scol.score] : null };
       });
     }catch(err){
-      return []; // exams tables missing / no policy — report just shows "no exams" section
+      return [];
     }
   }
 
@@ -3009,6 +3017,7 @@ function goBack(){
   applySidebarState();
 
   loadDashboard();
+  loadSidebarCounts();
   autoBackfillMissedMonth();
 </script>
 </body>
