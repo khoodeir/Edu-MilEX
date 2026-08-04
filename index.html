@@ -34,7 +34,7 @@ body{
   background:var(--card);
   -webkit-backdrop-filter: blur(16px) saturate(110%);
   backdrop-filter: blur(16px) saturate(110%);
-  border-radius:20px; padding:46px 40px 36px;
+  border-radius:20px; padding:38px 38px 34px;
   box-shadow:0 18px 40px rgba(60,30,30,0.14);
   border:1px solid var(--card-border);
   animation:cardIn .5s ease both;
@@ -57,31 +57,69 @@ body{
 .lang-toggle button:hover{ color:var(--gold-light); }
 .lang-toggle button.active{ background:var(--gold-deep); color:#fdfcfa; }
 
-.title-wrap{ text-align:center; margin-bottom:6px; }
+.title-wrap{
+  text-align:center;
+  margin-bottom:24px;
+}
+
 .crest{
-  width:150px;
-  margin:0 auto 14px;
+  width:125px;
+  margin:0 auto 10px;
   display:flex;
   align-items:center;
   justify-content:center;
 }
+
 .crest img{
   width:100%;
   height:auto;
   display:block;
 }
+
 h1{
   font-family:'Cormorant Garamond', 'Poppins', serif;
-  font-weight:600; font-size:28px; letter-spacing:0.3px; margin:0 0 6px; color:var(--gold-light);
+  font-weight:600;
+  font-size:27px;
+  letter-spacing:0.2px;
+  margin:0 0 8px;
+  color:var(--gold-light);
 }
+
 .divider{
-  width:48px; height:1px; margin:0 auto 18px; border:none;
+  width:42px;
+  height:1px;
+  margin:0 auto 12px;
+  border:none;
   background:var(--border);
 }
-.subtitle{ text-align:center; color:var(--muted); font-size:14px; line-height:1.7; margin:0 0 34px; padding:0 6px; }
-.teacher-name{ text-align:center; font-size:15px; font-weight:700; color:var(--gold-deep); letter-spacing:0.2px; margin:0 0 4px; }
-.teacher-tagline{ text-align:center; font-size:12.5px; font-weight:500; font-style:italic; color:var(--bronze); margin:0 0 16px; }
 
+.teacher-name{
+  text-align:center;
+  font-size:15px;
+  font-weight:700;
+  color:var(--gold-deep);
+  letter-spacing:0.1px;
+  margin:0 0 8px;
+}
+
+.teacher-tagline{
+  text-align:center;
+  font-size:12.5px;
+  font-weight:500;
+  font-style:italic;
+  color:var(--bronze);
+  margin:0 0 18px;
+}
+
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+  font-size:13.5px;
+  line-height:1.6;
+  margin:0 auto 26px;
+  padding:0 10px;
+  max-width:460px;
+}
 label{ display:flex; align-items:center; gap:4px; font-weight:600; font-size:13px; margin-bottom:9px; color:var(--gold-light); text-transform:uppercase; letter-spacing:0.6px; }
 label .req{ color:var(--error); text-transform:none; }
 label .note{ color:var(--muted); font-size:10.5px; font-weight:500; text-transform:none; letter-spacing:0.2px; }
