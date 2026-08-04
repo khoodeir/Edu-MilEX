@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Registration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Cairo:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Deep Red / Off-White / Gray palette */
+  --bg-0:#f7f5f1; --bg-1:#f1eee8; --bg-2:#e9e3da;
+  --card:rgba(253,252,250,0.78); --card-border:rgba(139,30,30,0.22);
+  --gold:#8b1e1e; --gold-light:#7a1f1f; --gold-deep:#5e1414; --bronze:#7c7873;
+  --text:#2b2b2b; --muted:#7c7873; --border:rgba(139,30,30,0.20);
+  --error:#c4485a; --success:#2f9e73; --radius:14px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh;
+  background: linear-gradient(165deg, var(--bg-0) 0%, var(--bg-1) 55%, var(--bg-2) 100%);
+  font-family:'Inter', 'Segoe UI', Arial, sans-serif;
+  display:flex; align-items:center; justify-content:center; padding:48px 16px; color:var(--text);
+  transition: background .2s ease;
+}
+[dir="rtl"] body{ font-family:'Cairo','Inter',sans-serif; }
+[dir="rtl"] h1,
+[dir="rtl"] #successView h2{ font-family:'Cairo','Cormorant Garamond',serif; }
+[dir="rtl"] label{ direction:rtl; }
+
+.card{
+  position:relative; width:100%; max-width:540px;
+  background:var(--card);
+  -webkit-backdrop-filter: blur(16px) saturate(110%);
+  backdrop-filter: blur(16px) saturate(110%);
+  border-radius:20px; padding:46px 40px 36px;
+  box-shadow:0 18px 40px rgba(60,30,30,0.14);
+  border:1px solid var(--card-border);
+  animation:cardIn .5s ease both;
+}
+@keyframes cardIn{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion: reduce){ .card{ animation:none; } }
+
+/* ===== Language toggle ===== */
+.lang-toggle{
+  position:absolute; top:18px; right:18px; display:flex; gap:3px;
+  background:rgba(139,30,30,0.07); border:1px solid var(--border);
+  border-radius:999px; padding:4px; z-index:5;
+}
+[dir="rtl"] .lang-toggle{ right:auto; left:18px; }
+.lang-toggle button{
+  border:none; background:transparent; padding:6px 13px; border-radius:999px;
+  font-family:inherit; font-size:11.5px; font-weight:700; color:var(--muted);
+  cursor:pointer; letter-spacing:.3px; transition:all .15s ease;
+}
+.lang-toggle button:hover{ color:var(--gold-light); }
+.lang-toggle button.active{ background:var(--gold-deep); color:#fdfcfa; }
+
+.title-wrap{ text-align:center; margin-bottom:6px; }
+.crest{
+  width:74px;
+  height:74px;
+  margin:0 auto 18px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:#ffffff;
+  border:2px solid #8b1e1e;
+
+  box-shadow:
+    0 8px 18px rgba(139,30,30,0.16),
+    0 2px 6px rgba(0,0,0,0.06);
+
+  opacity:1;
+}
+h1{
+  font-family:'Cormorant Garamond', 'Poppins', serif;
+  font-weight:600; font-size:28px; letter-spacing:0.3px; margin:0 0 6px; color:var(--gold-light);
+}
+.divider{
+  width:48px; height:1px; margin:0 auto 18px; border:none;
+  background:var(--border);
+}
+.subtitle{ text-align:center; color:var(--muted); font-size:14px; line-height:1.7; margin:0 0 34px; padding:0 6px; }
+
+label{ display:flex; align-items:center; gap:4px; font-weight:600; font-size:13px; margin-bottom:9px; color:var(--gold-light); text-transform:uppercase; letter-spacing:0.6px; }
+label .req{ color:var(--error); text-transform:none; }
+label .note{ color:var(--muted); font-size:10.5px; font-weight:500; text-transform:none; letter-spacing:0.2px; }
+.field{ margin-bottom:22px; }
+
+input[type="text"], input[type="tel"], select{
+  width:100%; padding:13px 15px; border:1.5px solid var(--border); border-radius:10px;
+  font-family:inherit; font-size:15px; color:var(--text); background:rgba(255,255,255,0.55); outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  appearance:none; -webkit-appearance:none;
+}
+input::placeholder{ color:#a89a94; }
+select{
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'><path d='M1 1l6 6 6-6' stroke='%238b1e1e' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat:no-repeat; background-position:right 16px center; padding-right:40px; cursor:pointer;
+}
+[dir="rtl"] select{
+  background-position:left 16px center; padding-right:15px; padding-left:40px;
+}
+select:invalid{ color:#a89a94; }
+select option{ color:var(--text); background:#f7f5f1; }
+select option:checked, select option:hover{ background:var(--gold-deep); color:#f5f0e4; }
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus{
+  -webkit-text-fill-color:var(--text);
+  caret-color:var(--text);
+  transition:background-color 9999s ease-in-out 0s;
+  box-shadow:0 0 0 1000px rgba(255,255,255,0.55) inset;
+}
+input:hover, select:hover{ border-color:rgba(139,30,30,0.36); }
+input:focus, select:focus{ border-color:var(--gold); background:rgba(255,255,255,0.85); box-shadow:0 0 0 3px rgba(139,30,30,0.14); }
+input.invalid{ border-color:var(--error); }
+input.invalid:focus{ box-shadow:0 0 0 3px rgba(196,72,90,0.16); }
+
+.hint{ font-size:12.5px; color:var(--muted); margin-top:7px; }
+.error-msg{ font-size:12.5px; color:var(--error); margin-top:7px; display:none; font-weight:500; }
+.field.has-error .error-msg{ display:block; }
+.field.has-error .hint{ display:none; }
+
+button.submit{
+  width:100%; padding:14px; margin-top:10px;
+  background: linear-gradient(135deg, var(--gold-deep) 0%, var(--gold) 100%);
+  color:#fdf5f0; border:none;
+  border-radius:10px; font-family:inherit; font-size:15.5px; font-weight:700; cursor:pointer;
+  letter-spacing:0.2px; box-shadow:0 6px 16px rgba(60,30,30,0.22);
+  transition:filter .15s ease, box-shadow .15s ease;
+}
+button.submit:hover{ filter:brightness(1.06); box-shadow:0 8px 20px rgba(60,30,30,0.28); }
+button.submit:active{ filter:brightness(0.96); }
+button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
+
+.status{
+  margin-top:18px; text-align:center; font-size:14px; font-weight:500; padding:12px 14px;
+  border-radius:10px; display:none;
+}
+.status.success{ color:var(--success); background:rgba(47,158,115,0.1); border:1px solid rgba(47,158,115,0.28); display:block; }
+.status.failure{ color:var(--error); background:rgba(196,72,90,0.08); border:1px solid rgba(196,72,90,0.28); display:block; }
+
+@media (max-width:480px){ .card{ padding:34px 22px 28px; } h1{ font-size:25px; } .lang-toggle{ top:12px; right:12px; } [dir="rtl"] .lang-toggle{ left:12px; } }
+
+#successView{ display:none; text-align:center; }
+.icon-circle{
+  width:72px; height:72px; margin:4px auto 24px; border-radius:50%;
+  background:var(--success);
+  opacity:0.9;
+  display:flex; align-items:center; justify-content:center;
+  animation:popIn .4s ease .1s both;
+}
+@keyframes popIn{ from{ opacity:0; transform:scale(0.85); } to{ opacity:0.9; transform:scale(1); } }
+#successView h2{ font-family:'Cormorant Garamond', 'Poppins', serif; font-size:25px; font-weight:700; margin:0 0 12px; color:var(--gold-light); }
+#successView p{ font-size:15px; line-height:1.75; color:var(--muted); margin:0; }
+.qr-wrap{
+  display:none;
+  margin:22px auto 6px;
+  padding:18px;
+  background:#ffffff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  width:fit-content;
+  box-shadow:0 8px 18px rgba(60,30,30,0.1);
+}
+.qr-wrap img{
+  display:block;
+  width:190px;
+  height:190px;
+  object-fit:contain;
+  margin:0 auto;
+}
+.qr-caption{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:10px;
+  text-align:center;
+}
+.qr-actions{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  margin-top:14px;
+}
+.qr-download, .qr-print{
+  font-size:13px;
+  font-weight:600;
+  color:var(--gold-light);
+  text-decoration:none;
+  border-bottom:1px solid var(--gold-light);
+  padding-bottom:1px;
+  background:none;
+  border-top:none; border-left:none; border-right:none;
+  font-family:inherit;
+  cursor:pointer;
+}
+@media print{
+  body *{ visibility:hidden; }
+  .qr-wrap, .qr-wrap *{ visibility:visible; }
+  .qr-actions{ display:none !important; }
+  .qr-wrap{
+    position:absolute; top:0; left:0; margin:0;
+    box-shadow:none; border:none; width:100%;
+  }
+}
+
+.powered-by{
+  margin-top:32px; text-align:center; font-size:11.5px; letter-spacing:1.2px; text-transform:uppercase;
+  color:var(--bronze);
+}
+.powered-by span{ color:var(--gold); font-weight:600; }
+
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="lang-toggle" id="langToggle">
+    <button type="button" data-lang="en" class="active">EN</button>
+    <button type="button" data-lang="ar">AR</button>
+  </div>
+
+  <div class="title-wrap">
+    <div class="crest">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3L1 8l11 5 9-4.09V16h2V8L12 3z" fill="#1b1712"/>
+        <path d="M5 10.5V15c0 1.5 3 3.5 7 3.5s7-2 7-3.5v-4.5l-7 3.18-7-3.18z" fill="#1b1712" opacity="0.75"/>
+      </svg>
+    </div>
+    <h1 data-i18n="title">Student Registration</h1>
+    <hr class="divider">
+  </div>
+  <p class="subtitle" data-i18n="subtitle">Fill out the form to register. A QR code will appear after submission — keep it, you'll need it to attend.</p>
+
+  <form id="regForm" novalidate>
+    <div class="field" id="fullNameField">
+      <label for="fullName" data-i18n="labelFullName">Full Name</label>
+      <input type="text" id="fullName" name="fullName" data-i18n-ph="phFullName" placeholder="Enter student's full name" required>
+      <div class="hint" data-i18n="hintName">Letters only, no numbers or symbols</div>
+      <div class="error-msg" data-i18n="errName">Full name must contain letters only</div>
+    </div>
+
+    <div class="field" id="studentPhoneField">
+      <label for="studentPhone"><span data-i18n="labelStudentPhone">Student Phone</span></label>
+      <input type="tel" id="studentPhone" name="studentPhone" inputmode="numeric" maxlength="11" data-i18n-ph="phPhone" placeholder="01xxxxxxxxx" required>
+      <div class="hint" data-i18n="hintPhone">11 digits, starting with 01 (e.g. 01012345678)</div>
+      <div class="error-msg" data-i18n="errPhone">Enter a valid 11-digit number starting with 01</div>
+    </div>
+
+    <div class="field" id="parentPhoneField">
+      <label for="parentPhone" data-i18n="labelParentPhone">Parent Phone</label>
+      <input type="tel" id="parentPhone" name="parentPhone" inputmode="numeric" maxlength="11" data-i18n-ph="phPhone" placeholder="01xxxxxxxxx" required>
+      <div class="hint" data-i18n="hintPhone">11 digits, starting with 01 (e.g. 01012345678)</div>
+      <div class="error-msg" data-i18n="errPhone">Enter a valid 11-digit number starting with 01</div>
+    </div>
+
+    <div class="field">
+      <label for="stage" data-i18n="labelStage">Educational Stage</label>
+      <select id="stage" name="stage" required>
+        <option value="" disabled selected data-i18n="selectPlaceholder">Select an option ...</option>
+        <option value="Secondary" data-i18n="stageSecondary">Secondary</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="grade" data-i18n="labelGrade">Grade</label>
+      <select id="grade" name="grade" required>
+        <option value="" disabled selected data-i18n="selectPlaceholder">Select an option ...</option>
+        <option value="First Grade" data-i18n="gradeFirst">First Grade</option>
+        <option value="Second Grade" data-i18n="gradeSecond">Second Grade</option>
+        <option value="Third Grade" data-i18n="gradeThird">Third Grade</option>
+      </select>
+    </div>
+
+    <button type="submit" class="submit" id="submitBtn" data-i18n="btnSubmit">Submit</button>
+    <div class="status" id="status"></div>
+  </form>
+
+  <div id="successView">
+    <div class="icon-circle">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 13l4 4L19 7" stroke="#12281f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2 data-i18n="successTitle">Registration Submitted!</h2>
+    <p data-i18n="successText">Thanks for registering. Here is your QR code.</p>
+
+    <div class="qr-wrap" id="qrWrap">
+      <img id="qrImage" src="" alt="QR Code">
+      <div class="qr-caption" data-i18n="qrCaption">Keep this QR code — you'll need it to attend</div>
+      <div class="qr-actions">
+        <a href="#" download="student-qr.png" class="qr-download" id="qrDownload" data-i18n="qrDownload">Download QR</a>
+        <button type="button" class="qr-print" id="qrPrint" data-i18n="qrPrint">Print</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="powered-by"><span data-i18n="poweredBy">Powered by</span> <span>Milestones Group</span></div>
+</div>
+
+<script>
+/* ============================================================
+   LANGUAGE (English / Arabic) — UI text only.
+   ============================================================ */
+const I18N = {
+  en: {
+    title: "Student Registration",
+    subtitle: "Fill out the form to register. A QR code will appear after submission — keep it, you'll need it to attend.",
+    labelFullName: "Full Name",
+    phFullName: "Enter student's full name",
+    hintName: "Letters only, no numbers or symbols",
+    errName: "Full name must contain letters only",
+    labelStudentPhone: "Student Phone",
+    phPhone: "01xxxxxxxxx",
+    hintPhone: "11 digits, starting with 01 (e.g. 01012345678)",
+    errPhone: "Enter a valid 11-digit number starting with 01",
+    labelParentPhone: "Parent Phone",
+    labelStage: "Educational Stage",
+    labelGrade: "Grade",
+    selectPlaceholder: "Select an option ...",
+    stageSecondary: "Secondary",
+    gradeFirst: "First Grade",
+    gradeSecond: "Second Grade",
+    gradeThird: "Third Grade",
+    btnSubmit: "Submit",
+    submitting: "Submitting...",
+    successTitle: "Registration Submitted!",
+    successText: "Thanks for registering. Here is your QR code.",
+    qrCaption: "Keep this QR code — you'll need it to attend",
+    qrDownload: "Download QR",
+    qrPrint: "Print",
+    poweredBy: "Powered by",
+    chatAssistant: "Teacher's assistant",
+    chatPlaceholder: "Ask about your schedule...",
+    chatSend: "Send",
+    errGeneric: "Something went wrong while submitting. Please try again.",
+    errRegistrationFailed: "Registration failed.",
+    chatNoResponse: "No response",
+    chatServerError: "Server Error"
+  },
+  ar: {
+    title: "تسجيل الطلاب",
+    subtitle: "املأ النموذج للتسجيل. هيظهرلك كود QR بعد التسجيل، لازم تحتفظ بيه عشان تحضر.",
+    labelFullName: "الاسم بالكامل",
+    phFullName: "اكتب اسم الطالب بالكامل",
+    hintName: "حروف فقط، من غير أرقام أو رموز",
+    errName: "الاسم لازم يكون حروف فقط",
+    labelStudentPhone: "رقم هاتف الطالب",
+    phPhone: "01xxxxxxxxx",
+    hintPhone: "11 رقم، تبدأ بـ 01 (مثال: 01012345678)",
+    errPhone: "اكتب رقم صحيح مكوّن من 11 رقم يبدأ بـ 01",
+    labelParentPhone: "رقم هاتف ولي الأمر",
+    labelStage: "المرحلة الدراسية",
+    labelGrade: "الصف",
+    selectPlaceholder: "اختر ...",
+    stageSecondary: "المرحلة الثانوية",
+    gradeFirst: "الصف الأول الثانوي",
+    gradeSecond: "الصف الثاني الثانوي",
+    gradeThird: "الصف الثالث الثانوي",
+    btnSubmit: "تسجيل",
+    submitting: "جاري الإرسال...",
+    successTitle: "تم التسجيل بنجاح!",
+    successText: "شكرًا لتسجيلك. ده كود الـ QR بتاعك.",
+    qrCaption: "احتفظ بكود الـ QR ده، هتحتاجه عشان تحضر",
+    qrDownload: "تحميل الـ QR",
+    qrPrint: "طباعة",
+    poweredBy: "بدعم من",
+    chatAssistant: "مساعد المدرس",
+    chatPlaceholder: "اسأل عن جدولك...",
+    chatSend: "إرسال",
+    errGeneric: "حصل خطأ أثناء الإرسال. حاول تاني.",
+    errRegistrationFailed: "فشل التسجيل.",
+    chatNoResponse: "لا يوجد رد",
+    chatServerError: "خطأ في السيرفر"
+  }
+};
+
+let currentLang = localStorage.getItem("regLang") || "en";
+
+function t(key){
+  return (I18N[currentLang] && I18N[currentLang][key] != null) ? I18N[currentLang][key] : (I18N.en[key] || key);
+}
+
+function applyTranslations(){
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+    el.placeholder = t(el.dataset.i18nPh);
+  });
+}
+
+function setLanguage(lang){
+  currentLang = (lang === "ar") ? "ar" : "en";
+  localStorage.setItem("regLang", currentLang);
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
+  document.querySelectorAll("#langToggle button").forEach(b => {
+    b.classList.toggle("active", b.dataset.lang === currentLang);
+  });
+  applyTranslations();
+}
+
+document.querySelectorAll("#langToggle button").forEach(btn => {
+  btn.addEventListener("click", () => setLanguage(btn.dataset.lang));
+});
+
+setLanguage(currentLang);
+
+/* ============================================================
+   FORM VALIDATION + SUBMISSION (n8n integration)
+   ============================================================ */
+// NOTE: both endpoints now point at the PRODUCTION webhook path.
+// The "webhook-test" path only works while you have the n8n editor open
+// with "Listen for test event" active — that's why the chat was failing.
+const WEBHOOK_URL = "http://0.0.0.0:5678/webhook-test/Student_Registration";
+
+const phoneRegex = /^01[0-9]{9}$/; // 11 digits total, starts with 01
+
+const form = document.getElementById('regForm');
+const submitBtn = document.getElementById('submitBtn');
+const statusEl = document.getElementById('status');
+const successView = document.getElementById('successView');
+const titleWrap = document.querySelector('.title-wrap');
+const subtitle = document.querySelector('.subtitle');
+const qrWrap = document.getElementById('qrWrap');
+const qrImage = document.getElementById('qrImage');
+const qrDownload = document.getElementById('qrDownload');
+const qrPrint = document.getElementById('qrPrint');
+
+qrPrint.addEventListener('click', () => window.print());
+
+function setupPhoneField(inputId, fieldId){
+  const input = document.getElementById(inputId);
+  const field = document.getElementById(fieldId);
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 11);
+  });
+  function validate(){
+    const valid = phoneRegex.test(input.value);
+    field.classList.toggle('has-error', !valid);
+    input.classList.toggle('invalid', !valid);
+    return valid;
+  }
+  input.addEventListener('blur', validate);
+  return validate;
+}
+
+const validateStudentPhone = setupPhoneField('studentPhone', 'studentPhoneField');
+const validateParentPhone = setupPhoneField('parentPhone', 'parentPhoneField');
+
+const nameRegex = /^[A-Za-z\u0600-\u06FF\s]+$/; // English or Arabic letters and spaces only
+const nameInput = document.getElementById('fullName');
+const nameField = document.getElementById('fullNameField');
+
+nameInput.addEventListener('input', () => {
+  nameInput.value = nameInput.value.replace(/[^A-Za-z\u0600-\u06FF\s]/g, '');
+});
+
+function validateFullName(){
+  const valid = nameRegex.test(nameInput.value.trim()) && nameInput.value.trim().length > 0;
+  nameField.classList.toggle('has-error', !valid);
+  nameInput.classList.toggle('invalid', !valid);
+  return valid;
+}
+nameInput.addEventListener('blur', validateFullName);
+
+// Try to pull a readable message out of whatever the webhook returned
+// (JSON body with a message/error/msg field, plain text, or fall back to a generic line).
+async function extractErrorMessage(res){
+  let rawText = '';
+  try{
+    rawText = await res.text();
+  } catch(e){
+    return t('errGeneric');
+  }
+
+  if (rawText){
+    try{
+      const data = JSON.parse(rawText);
+      const msg = data.message || data.error || data.msg || data.detail;
+      if (msg) return msg;
+    } catch(e){
+      // not JSON, treat as plain text message (trimmed so we never dump a full HTML page)
+      return rawText.trim().slice(0, 200);
+    }
+  }
+
+  return res.statusText
+    ? `Submission failed: ${res.statusText}`
+    : t('errGeneric');
+}
+
+// Normalize whatever n8n sent back in the "qr" field into a usable <img> src.
+// Handles: full data URLs, raw base64 strings, and plain image URLs.
+function resolveQrSrc(qrValue){
+  if (!qrValue || typeof qrValue !== 'string') return null;
+  const val = qrValue.trim();
+  if (!val) return null;
+  if (val.startsWith('data:image')) return val;
+  if (val.startsWith('http://') || val.startsWith('https://')) return val;
+  // assume raw base64 (png)
+  return `data:image/png;base64,${val}`;
+}
+
+function showQr(qrValue){
+  const src = resolveQrSrc(qrValue);
+  if (!src){
+    qrWrap.style.display = 'none';
+    return;
+  }
+  qrImage.src = src;
+  qrDownload.href = src;
+  qrWrap.style.display = 'block';
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  statusEl.className = 'status';
+  statusEl.textContent = '';
+
+  const nameOk = validateFullName();
+  const studentOk = validateStudentPhone();
+  const parentOk = validateParentPhone();
+
+  if (!form.checkValidity() || !nameOk || !studentOk || !parentOk){
+    form.reportValidity();
+    return;
+  }
+
+  const payload = {
+    fullName: document.getElementById('fullName').value.trim(),
+    studentPhone: document.getElementById('studentPhone').value.trim(),
+    parentPhone: document.getElementById('parentPhone').value.trim(),
+    educationalStage: document.getElementById('stage').value,
+    grade: document.getElementById('grade').value
+  };
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = t('submitting');
+
+  try{
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Required so ngrok's free-tier interstitial warning page doesn't
+        // intercept the request and return HTML instead of your JSON.
+        'ngrok-skip-browser-warning': 'true'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok){
+      statusEl.textContent = await extractErrorMessage(res);
+      statusEl.className = 'status failure';
+      submitBtn.disabled = false;
+      submitBtn.textContent = t('btnSubmit');
+      return;
+    }
+
+    let data;
+    try{
+      data = await res.json();
+    } catch(parseErr){
+      statusEl.textContent = t('errGeneric');
+      statusEl.className = 'status failure';
+      submitBtn.disabled = false;
+      submitBtn.textContent = t('btnSubmit');
+      return;
+    }
+
+    if (data.success === true){
+      showQr(data.qr);
+      form.style.display = 'none';
+      titleWrap.style.display = 'none';
+      subtitle.style.display = 'none';
+      successView.style.display = 'block';
+    } else {
+      statusEl.textContent = data.message || t('errRegistrationFailed');
+      statusEl.className = 'status failure';
+      submitBtn.disabled = false;
+      submitBtn.textContent = t('btnSubmit');
+    }
+  } catch(err){
+    statusEl.textContent = t('errGeneric');
+    statusEl.className = 'status failure';
+    submitBtn.disabled = false;
+    submitBtn.textContent = t('btnSubmit');
+  }
+});
+
+</script>
+</body>
+</html>
