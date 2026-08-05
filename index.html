@@ -101,18 +101,24 @@
 
   .hero{ text-align:center; margin-top:18px; margin-bottom:34px; }
   .brand-mark{
-  width:120px;
-  height:120px;
+  width:180px;
+  height:110px;
   margin:0 auto 16px;
-  background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
+
+  background:var(--gold);
+
   -webkit-mask-image:var(--logo-mask);
   mask-image:var(--logo-mask);
+
   -webkit-mask-repeat:no-repeat;
   mask-repeat:no-repeat;
+
   -webkit-mask-position:center;
   mask-position:center;
-  -webkit-mask-size:contain;
-  mask-size:contain;
+
+  -webkit-mask-size:650% 650%;
+  mask-size:650% 650%;
+
   filter:drop-shadow(var(--shadow-sm));
 }
   .eyebrow{
