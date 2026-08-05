@@ -280,15 +280,15 @@
         <p data-i18n="teacherDesc">دخول كامل للوحة التحكم والإدارة</p>
       </div>
 
-      <div class="role-card" onclick="selectRole('guardian', this)">
+      <div class="role-card" onclick="selectRole('Parent Portal', this)">
         <div class="role-icon">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4 19V9.5L12 4L20 9.5V19" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
             <path d="M9 19V13H15V19" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
           </svg>
         </div>
-        <h2 data-i18n="guardianTitle">ولي الأمر</h2>
-        <p data-i18n="guardianDesc">تابع تقرير ابنك: الحضور والدرجات والمدفوعات</p>
+        <h2 data-i18n="Parent PortalTitle">ولي الأمر</h2>
+        <p data-i18n="Parent PortalDesc">تابع تقرير ابنك: الحضور والدرجات والمدفوعات</p>
       </div>
 
       <div class="role-card" onclick="selectRole('assistant', this)">
@@ -514,7 +514,7 @@
       title:"أهلاً بيك، مين حضرتك؟",
       subtitle:"اختر دورك للمتابعة إلى الصفحة المناسبة لك",
       teacherTitle:"المدرس", teacherDesc:"دخول كامل للوحة التحكم والإدارة",
-      guardianTitle:"ولي الأمر", guardianDesc:"تابع تقرير ابنك: الحضور والدرجات والمدفوعات",
+      Parent PortalTitle:"ولي الأمر", Parent PortalDesc:"تابع تقرير ابنك: الحضور والدرجات والمدفوعات",
       assistantTitle:"المساعد", assistantDesc:"تسجيل حضور الطلاب عن طريق المسح",
       footer:"Mr Abdullah Elshafay",
       teacherAuthTitle:"دخول المدرس", teacherAuthHint:"من فضلك أدخل كلمة المرور للمتابعة",
@@ -541,7 +541,7 @@
       title:"Welcome — who are you?",
       subtitle:"Choose your role to continue to the right page",
       teacherTitle:"Teacher", teacherDesc:"Full access to the dashboard and management",
-      guardianTitle:"Guardian", guardianDesc:"Track your child's attendance, grades and payments",
+      Parent PortalTitle:"Parent Portal", Parent PortalDesc:"Track your child's attendance, grades and payments",
       assistantTitle:"Assistant", assistantDesc:"Check students in with the scanner",
       footer:"Mr Abdullah Elshafay",
       teacherAuthTitle:"Teacher sign in", teacherAuthHint:"Enter your password to continue",
@@ -595,7 +595,7 @@
     cardEl.classList.add('stamped');
     setTimeout(()=>cardEl.classList.remove('stamped'), 400);
 
-    if(role === 'guardian'){
+    if(role === 'Parent Portal'){
       setTimeout(()=>{ window.location.href = 'parent_portal.html'; }, 180);
       return;
     }
