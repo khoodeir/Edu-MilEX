@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title data-i18n="pageTitle">بوابة الدخول | Abdullah Elshafay</title>
+<title data-i18n="pageTitle">بوابة الدخول | Mr Abdullah Elshafay</title>
 <script>
   // Apply saved theme before first paint to avoid a flash of the wrong look.
   (function(){
@@ -20,8 +20,8 @@
 <link rel="prefetch" href="parent_portal.html">
 <link rel="prefetch" href="scanner.html">
 <link rel="prefetch" href="student_search.html">
-<link rel="prefetch" href="Manage_exams.html">
-<link rel="prefetch" href="Student_registration.html">
+<link rel="prefetch" href="manage_exams.html">
+<link rel="prefetch" href="student_registration.html">
 <style>
   /*
     Design: continues "The Register" — the same ledger, ink and brass-stamp
@@ -305,7 +305,7 @@
       </div>
     </div>
 
-    <div class="footer" data-i18n="footer">Abdullah Elshafay</div>
+    <div class="footer" data-i18n="footer"></div>
   </div>
 
   <!-- TEACHER HUB SCREEN (shown after correct password) -->
@@ -390,7 +390,7 @@
       <button class="link-btn" onclick="logoutTeacher()" data-i18n="logoutLink">تسجيل خروج</button>
     </div>
 
-    <div class="footer" data-i18n="footer">Abdullah Elshafay</div>
+    <div class="footer" data-i18n="footer"></div>
   </div>
 
   <!-- ASSISTANT HUB SCREEN -->
@@ -448,7 +448,7 @@
       </a>
     </div>
 
-    <div class="footer" data-i18n="footer">Abdullah Elshafay</div>
+    <div class="footer" data-i18n="footer"></div>
   </div>
 
   <!-- Teacher login overlay -->
@@ -502,7 +502,7 @@
 
 <script>
   // First-time default teacher password (used only if none has been set yet on this browser).
-  const DEFAULT_TEACHER_PASSWORD = "milestones2026";
+  const DEFAULT_TEACHER_PASSWORD = "2026";
 
   function getTeacherPassword(){
     return localStorage.getItem('mgTeacherPassword') || DEFAULT_TEACHER_PASSWORD;
@@ -510,13 +510,13 @@
 
   const translations = {
     ar:{
-      pageTitle:"بوابة الدخول | Abdullah Elshafay",
+      pageTitle:"بوابة الدخول | ",
       title:"أهلاً بيك، مين حضرتك؟",
       subtitle:"اختر دورك للمتابعة إلى الصفحة المناسبة لك",
       teacherTitle:"المدرس", teacherDesc:"دخول كامل للوحة التحكم والإدارة",
       guardianTitle:"ولي الأمر", guardianDesc:"تابع تقرير ابنك: الحضور والدرجات والمدفوعات",
       assistantTitle:"المساعد", assistantDesc:"تسجيل حضور الطلاب عن طريق المسح",
-      footer:"Abdullah Elshafay",
+      footer:"Mr Abdullah Elshafay",
       teacherAuthTitle:"دخول المدرس", teacherAuthHint:"من فضلك أدخل كلمة المرور للمتابعة",
       passwordLabel:"كلمة المرور", wrongPassword:"كلمة المرور غير صحيحة",
       cancel:"إلغاء", enter:"دخول",
@@ -537,13 +537,13 @@
       errTooShort:"لازم تكون كلمة المرور 4 حروف/أرقام على الأقل"
     },
     en:{
-      pageTitle:"Sign In | Abdullah Elshafay",
+      pageTitle:"Sign In | Mr Abdullah Elshafay",
       title:"Welcome — who are you?",
       subtitle:"Choose your role to continue to the right page",
       teacherTitle:"Teacher", teacherDesc:"Full access to the dashboard and management",
       guardianTitle:"Guardian", guardianDesc:"Track your child's attendance, grades and payments",
       assistantTitle:"Assistant", assistantDesc:"Check students in with the scanner",
-      footer:"Abdullah Elshafay",
+      footer:"Mr Abdullah Elshafay",
       teacherAuthTitle:"Teacher sign in", teacherAuthHint:"Enter your password to continue",
       passwordLabel:"Password", wrongPassword:"Incorrect password",
       cancel:"Cancel", enter:"Enter",
