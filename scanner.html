@@ -610,7 +610,7 @@
   .lang-btn[data-lang="ar"]{ font-family:'Tajawal',sans-serif; }
   .lang-btn.active{ background:linear-gradient(135deg, var(--gold-2), var(--gold)); color:var(--btn-ink); box-shadow:inset 0 1px 0 rgba(255,255,255,0.2); }
   .lang-btn:active{ transform:scale(0.96); }
-  .modal input[type="text"], .modal input[type="number"], .modal input[type="url"], .modal input[type="password"], .modal select{
+  .modal input[type="text"], .modal input[type="number"], .modal input[type="url"], .modal select{
     width:100%; padding:10px 12px; margin-bottom:12px;
     background:var(--field); border:1px solid var(--glass-border);
     border-radius:9px; color:var(--ink); font-family:'Manrope',sans-serif; font-size:14px; outline:none;
@@ -658,36 +658,7 @@
     }
   }
 
-  .auth-overlay{
-    position:fixed; inset:0; z-index:100;
-    display:flex; align-items:center; justify-content:center;
-    padding:20px;
-    background:
-      repeating-linear-gradient( to bottom, rgba(var(--gold-rgb),0.05) 0px, rgba(var(--gold-rgb),0.05) 1px, transparent 1px, transparent 34px),
-      radial-gradient(circle at 15% 10%, rgba(var(--gold-rgb),0.10), transparent 45%),
-      radial-gradient(circle at 85% 90%, rgba(var(--gold-rgb),0.08), transparent 45%),
-      linear-gradient(160deg, var(--cream-bg-1), var(--cream-bg-2));
-  }
-  .auth-card{
-    width:100%; max-width:400px;
-    background:var(--card);
-    border:1px solid var(--glass-border);
-    border-radius:16px;
-    padding:40px 32px 32px;
-    text-align:center;
-    box-shadow:var(--shadow-lg);
-    animation:containerIn .4s ease;
-  }
-  .auth-card .grade-field{ margin-bottom:14px; }
-  .auth-card input[type="email"], .auth-card input[type="password"]{
-    width:100%; padding:11px 12px;
-    background:var(--field); border:1px solid var(--glass-border);
-    border-radius:9px; color:var(--ink);
-    font-family:'Manrope',sans-serif; font-size:14px; outline:none;
-  }
-  html[dir="rtl"] .auth-card input{ font-family:'Tajawal',sans-serif; }
-  .auth-card input:focus{ border-color:var(--accent-2); }
-  .auth-subtitle{ font-size:13px; color:var(--muted); margin-bottom:22px; }
+
 
   .session-ended-overlay{
     position:fixed; inset:0; z-index:150; display:none;
@@ -711,15 +682,13 @@
     margin-top:14px; font-size:12px; color:var(--muted);
   }
 
-  #logoutBtn{ left:18px; }
-  html[dir="rtl"] #logoutBtn{ left:auto; }
+  
 </style>
 </head>
 <body>
 
-<div class="container" id="mainContainer" style="display:none;">
+<div class="container" id="mainContainer">
   <div class="header-actions">
-    <button type="button" class="icon-btn" id="logoutBtn" onclick="handleLogout()" data-i18n-title="title_logout" title="Log out">🚪</button>
     <div class="header-actions-group">
       <button type="button" class="icon-btn" id="backBtn" onclick="goBack()" data-i18n-title="title_back" title="Back">↩️</button>
       <button type="button" class="icon-btn" id="settingsBtn" onclick="openModal('settingsModal')" data-i18n-title="title_settings" title="Settings">⚙️</button>
@@ -813,30 +782,6 @@
   <div class="footer" data-i18n="footer_text">Powered by Milestones Group</div>
 </div>
 
-<div class="auth-overlay" id="authOverlay">
-  <div class="auth-card">
-    <div class="icon-circle">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 3L1 8l11 5 9-4.09V17h2V8L12 3z" fill="currentColor"/>
-        <path d="M5 10.18V14c0 1.86 3.13 4 7 4s7-2.14 7-4v-3.82l-7 3.18-7-3.18z" fill="currentColor"/>
-      </svg>
-    </div>
-    <div class="eyebrow" data-i18n="auth_eyebrow">Sign in</div>
-    <h1 style="font-size:26px;" data-i18n="auth_title">Attendance Scanner</h1>
-    <div class="auth-subtitle" data-i18n="auth_subtitle">Sign in with your staff account to open the scanner</div>
-
-    <div class="grade-field">
-      <label for="authEmail" data-i18n="label_email">Email</label>
-      <input type="email" id="authEmail" placeholder="you@center.com" autocomplete="username">
-    </div>
-    <div class="grade-field">
-      <label for="authPassword" data-i18n="label_password">Password</label>
-      <input type="password" id="authPassword" placeholder="Enter password" autocomplete="current-password">
-    </div>
-    <div class="modal-error" id="authError"></div>
-    <button type="button" class="start-session-btn" id="authLoginBtn" onclick="handleLogin()">🔐 <span data-i18n="btn_login">Log In</span></button>
-  </div>
-</div>
 
 <div class="session-ended-overlay" id="sessionEndedOverlay">
   <div class="session-ended-card">
@@ -983,7 +928,7 @@
 
   const I18N = {
     en: {
-      title_logout:"Log out", title_settings:"Settings", title_back:"Back",
+      title_settings:"Settings", title_back:"Back",
       eyebrow_scanner:"Live scanner", title_app:"Student Attendance System",
       btn_start_session:"Start Session", btn_search:"Search", btn_exam:"Exam", btn_dash:"Dash",
       mode_attendance:"Attendance", mode_payment:"Payment",
@@ -1002,13 +947,7 @@
       payment_hint_missing:"Please enter the month and amount first",
       history_title:"Last Scans", history_empty:"No scans yet",
       footer_text:"Powered by Milestones Group",
-      auth_eyebrow:"Sign in", auth_title:"Attendance Scanner",
-      auth_subtitle:"Sign in with your staff account to open the scanner",
-      label_email:"Email", label_password:"Password", btn_login:"Log In",
-      auth_signing_in:"Signing in…",
-      auth_error_required:"Please enter your email and password",
-      auth_error_invalid:"Invalid email or password",
-      auth_error_network:"Can't reach the server — check your connection",
+
       session_ended_title:"Session Ended",
       session_ended_text:"The attendance session has been ended by another user.",
       session_ended_returning:"Returning to scanner in",
@@ -1031,7 +970,7 @@
       auto_resume_note:"Next scan opens automatically in {s}s"
     },
     ar: {
-      title_logout:"تسجيل الخروج", title_settings:"الإعدادات", title_back:"رجوع",
+      title_settings:"الإعدادات", title_back:"رجوع",
       eyebrow_scanner:"الماسح المباشر", title_app:"نظام حضور الطلاب",
       btn_start_session:"بدء الجلسة", btn_search:"بحث", btn_exam:"الامتحان", btn_dash:"لوحة",
       mode_attendance:"الحضور", mode_payment:"الدفع",
@@ -1050,13 +989,7 @@
       payment_hint_missing:"من فضلك أدخل الشهر والمبلغ أولاً",
       history_title:"آخر عمليات المسح", history_empty:"لا توجد عمليات مسح بعد",
       footer_text:"بدعم من Milestones Group",
-      auth_eyebrow:"تسجيل الدخول", auth_title:"ماسح الحضور",
-      auth_subtitle:"سجّل الدخول بحساب الموظف لفتح الماسح",
-      label_email:"البريد الإلكتروني", label_password:"كلمة المرور", btn_login:"تسجيل الدخول",
-      auth_signing_in:"جارٍ تسجيل الدخول…",
-      auth_error_required:"من فضلك أدخل البريد الإلكتروني وكلمة المرور",
-      auth_error_invalid:"البريد الإلكتروني أو كلمة المرور غير صحيحة",
-      auth_error_network:"تعذّر الوصول إلى الخادم — تحقق من الاتصال",
+
       session_ended_title:"انتهت الجلسة",
       session_ended_text:"تم إنهاء جلسة الحضور بواسطة مستخدم آخر.",
       session_ended_returning:"سيتم الرجوع للماسح خلال",
@@ -1129,78 +1062,7 @@
     });
   }
 
-  function showAuthOverlay(){
-    document.getElementById('authOverlay').style.display = 'flex';
-    document.getElementById('mainContainer').style.display = 'none';
-  }
 
-  function hideAuthOverlay(){
-    document.getElementById('authOverlay').style.display = 'none';
-    document.getElementById('mainContainer').style.display = '';
-  }
-
-  async function initAuth(){
-    try{
-      const { data, error } = await supabaseClient.auth.getSession();
-      if(!error && data && data.session && data.session.user){
-        currentUser = data.session.user;
-        await onAuthenticated();
-        return;
-      }
-    }catch(e){
-      console.error(e);
-    }
-    showAuthOverlay();
-  }
-
-  async function handleLogin(){
-    const email = document.getElementById('authEmail').value.trim();
-    const password = document.getElementById('authPassword').value;
-    const errEl = document.getElementById('authError');
-    errEl.textContent = "";
-
-    if(!email || !password){
-      errEl.textContent = t('auth_error_required');
-      return;
-    }
-
-    const btn = document.getElementById('authLoginBtn');
-    btn.disabled = true;
-    const originalHTML = btn.innerHTML;
-    btn.innerHTML = t('auth_signing_in');
-
-    try{
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if(error || !data || !data.user){
-        errEl.textContent = t('auth_error_invalid');
-        return;
-      }
-      currentUser = data.user;
-      document.getElementById('authPassword').value = "";
-      await onAuthenticated();
-    }catch(e){
-      console.error(e);
-      errEl.textContent = t('auth_error_network');
-    }finally{
-      btn.disabled = false;
-      btn.innerHTML = originalHTML;
-    }
-  }
-
-  async function handleLogout(){
-    cleanupRealtime();
-    try{ await supabaseClient.auth.signOut(); }catch(e){}
-    currentUser = null;
-    activeSessionRow = null;
-    document.getElementById('sessionEndedOverlay').style.display = 'none';
-    showAuthOverlay();
-  }
-
-  async function onAuthenticated(){
-    hideAuthOverlay();
-    await refreshSessionState();
-    resumeSessionSync();
-  }
 
   async function fetchActiveSession(){
     const { data, error } = await supabaseClient
@@ -1949,26 +1811,19 @@
   renderLangButtons();
   setLanguage(currentLang);
 
-  initAuth();
+  refreshSessionState();
+  resumeSessionSync();
 
   document.addEventListener('visibilitychange', ()=>{
-    if(document.visibilityState === 'visible' && currentUser){
+    if(document.visibilityState === 'visible'){
       refreshSessionState();
     }
   });
 
   window.addEventListener('pageshow', (e)=>{
-    if(e.persisted && currentUser){
+    if(e.persisted){
       refreshSessionState();
     }
-  });
-
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const overlay = document.getElementById('authOverlay');
-    if(!overlay) return;
-    overlay.addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter') handleLogin();
-    });
   });
 </script>
 </body>
