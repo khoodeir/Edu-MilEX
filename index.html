@@ -104,9 +104,15 @@
   width:120px;
   height:120px;
   margin:0 auto 16px;
-
-  background:var(--logo-mask) center/contain no-repeat;
-
+  background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
+  -webkit-mask-image:var(--logo-mask);
+  mask-image:var(--logo-mask);
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-position:center;
+  mask-position:center;
+  -webkit-mask-size:contain;
+  mask-size:contain;
   filter:drop-shadow(var(--shadow-sm));
 }
   .eyebrow{
