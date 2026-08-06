@@ -1456,12 +1456,19 @@ function groupLabel(group){
         grade: currentGrade,
         grade_label: GRADE_LABELS_EN[currentGrade],
         group: currentGroup,
-        group_label: GROUP_LABELS_EN[currentGroup],
+        group_label: (groupsForGrade(currentGrade).find(g => g.id === currentGroup)?.en) || currentGroup,
         mode: currentMode,
         started_by: currentUser?.email || 'unknown',
         timestamp: new Date().toISOString()
       })
-    }).catch(()=>{});
+    })
+.then(async (res) => {
+  console.log("Webhook status:", res.status);
+  console.log("Webhook response:", await res.text());
+})
+.catch((err) => {
+  console.error("Webhook Error:", err);
+});
 
     resumeSessionSync();
   }
