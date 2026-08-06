@@ -1315,12 +1315,12 @@
   const GRADE_LABELS = Object.fromEntries(Object.entries(GRADE_CONFIG).map(([k,v]) => [k, v.labelEn]));
   const GRADES = Object.keys(GRADE_CONFIG);
   const GRADE_COLORS = {
-    first_prep: "rgba(139,94,60,0.75)",
-    second_prep: "rgba(122,59,59,0.75)",
-    third_prep: "rgba(110,100,90,0.70)",
-    first_secondary: "rgba(139,94,60,0.75)",
-    second_secondary: "rgba(122,59,59,0.75)",
-    third_secondary: "rgba(110,100,90,0.70)"
+    first_prep: "#5B8FF9",       /* blue */
+    second_prep: "#5AD8A6",      /* green */
+    third_prep: "#F6BD16",       /* gold */
+    first_secondary: "#E8684A",  /* red-orange */
+    second_secondary: "#9270CA", /* purple */
+    third_secondary: "#6DC8EC"   /* cyan */
   };
 
   let currentGrade = "all";
@@ -2113,21 +2113,21 @@ function goBack(){
       });
 
       charts.examAvg = new Chart(canvas, {
-        type: "line",
+        type: "bar",
         data: {
           labels,
           datasets: gradesShown.map(g => ({
             label: tGradeLabel(g),
             data: (data[g] || []).map(e => e.avg),
-            borderColor: GRADE_COLORS[g],
             backgroundColor: GRADE_COLORS[g],
-            fill: false, tension: 0.3, spanGaps: true, pointRadius: 3
+            borderColor: GRADE_COLORS[g],
+            borderRadius: 4, maxBarThickness: 28, categoryPercentage: 0.7, barPercentage: 0.9
           }))
         },
         options: {
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: true, position: "bottom", labels: { font: { family: "Inter", size: 11 }, padding: 12 } },
+            legend: { display: true, position: "bottom", labels: { font: { family: "Inter", size: 11 }, padding: 12, boxWidth: 12, boxHeight: 12 } },
             tooltip: { callbacks: { label: c => {
               const g = gradesShown[c.datasetIndex];
               const ex = (data[g] || [])[c.dataIndex];
@@ -2175,32 +2175,49 @@ function goBack(){
     const gradesShown = currentGrade === "all" ? GRADES : [currentGrade];
     const examData = (combined.examStudentAverages || []).filter(r => gradesShown.includes(r.grade));
     const students = combined.students.filter(s => gradesShown.includes(s.grade));
-    
-    const dataPoints = [];
+
+    const pointsByGrade = {};
+    gradesShown.forEach(g => pointsByGrade[g] = []);
     examData.forEach(ed => {
       const s = students.find(st => st.qrCode === ed.code);
       if (s) {
         const attRate = pct(s.attendanceCount, s.absenceCount);
-        if (attRate != null) {
-          dataPoints.push({ x: attRate, y: ed.avg, name: s.name, grade: s.grade });
+        if (attRate != null && ed.avg != null) {
+          pointsByGrade[s.grade].push({ x: Math.round(attRate), y: Math.round(ed.avg), name: s.name });
         }
       }
     });
 
-    if(dataPoints.length < 3){ canvas.style.display = "none"; emptyEl.classList.add("show"); return; }
+    const totalPoints = Object.values(pointsByGrade).reduce((a, arr) => a + arr.length, 0);
+    if(totalPoints < 3){ canvas.style.display = "none"; emptyEl.classList.add("show"); return; }
     canvas.style.display = "block"; emptyEl.classList.remove("show");
 
+    // Group identical (attendance%, score%) pairs per grade so overlapping
+    // students become one bigger bubble instead of hiding behind each other.
+    const datasets = gradesShown.map(g => {
+      const buckets = {};
+      pointsByGrade[g].forEach(p => {
+        const key = p.x + "|" + p.y;
+        if(!buckets[key]) buckets[key] = { x: p.x, y: p.y, count: 0, names: [] };
+        buckets[key].count++;
+        buckets[key].names.push(p.name);
+      });
+      const data = Object.values(buckets).map(b => ({
+        x: b.x, y: b.y, count: b.count, names: b.names,
+        r: 4 + Math.min(b.count, 8) * 2.2
+      }));
+      return {
+        label: tGradeLabel(g),
+        data,
+        backgroundColor: GRADE_COLORS[g] + "B3",
+        borderColor: GRADE_COLORS[g],
+        borderWidth: 1
+      };
+    }).filter(ds => ds.data.length);
+
     charts.attVsPerf = new Chart(canvas, {
-      type: 'scatter',
-      data: {
-        datasets: [{
-          label: 'Students',
-          data: dataPoints,
-          backgroundColor: dataPoints.map(d => getScoreColor(d.y, 0.6)),
-          borderColor: dataPoints.map(d => getScoreColor(d.y, 1)),
-          borderWidth: 1, pointRadius: 5
-        }]
-      },
+      type: 'bubble',
+      data: { datasets },
       options: {
         maintainAspectRatio: false,
         scales: {
@@ -2208,8 +2225,12 @@ function goBack(){
           y: { title: { display: true, text: 'Exam Score %', font: { size: 10 } }, min: 0, max: 100 }
         },
         plugins: {
-          tooltip: { callbacks: { label: (c) => `${c.raw.name}: Att ${c.raw.x}%, Score ${c.raw.y}%` } },
-          legend: { display: false }
+          legend: { display: gradesShown.length > 1, position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
+          tooltip: { callbacks: { label: c => {
+            const d = c.raw;
+            const who = d.count > 1 ? `${d.count} students` : d.names[0];
+            return `${who} — Att ${d.x}%, Score ${d.y}%`;
+          } } }
         }
       }
     });
@@ -2237,18 +2258,25 @@ function goBack(){
     canvas.style.display = "block"; emptyEl.classList.remove("show");
 
     charts.gradeRadar = new Chart(canvas, {
-      type: 'radar',
+      type: 'bar',
       data: {
         labels: grades.map(g => tGradeLabel(g)),
         datasets: [
-          { label: 'Attendance', data: attData, borderColor: 'rgba(139,94,60,0.8)', backgroundColor: 'rgba(139,94,60,0.2)', fill: true },
-          { label: 'Exam Score', data: scoreData, borderColor: 'rgba(46, 125, 50, 0.8)', backgroundColor: 'rgba(46, 125, 50, 0.2)', fill: true }
+          { label: 'Attendance', data: attData, backgroundColor: '#C9A26D', borderRadius: 4, maxBarThickness: 22 },
+          { label: 'Exam Score', data: scoreData, backgroundColor: '#4CAF7D', borderRadius: 4, maxBarThickness: 22 }
         ]
       },
       options: {
+        indexAxis: 'y',
         maintainAspectRatio: false,
-        scales: { r: { min: 0, max: 100, ticks: { display: false } } },
-        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+        scales: {
+          x: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(139,94,60,0.08)" } },
+          y: { ticks: { font: { size: 11 } }, grid: { display: false } }
+        },
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } },
+          tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw}%` } }
+        }
       }
     });
   }
