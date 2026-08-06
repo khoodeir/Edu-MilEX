@@ -366,7 +366,7 @@
   }
 
   function goBack(){
-    if(document.referrer && document.referrer !== location.href){ history.back(); }
+    if(window.history.length > 1){ history.back(); }
     else{ window.location.href = "index.html"; }
   }
 
