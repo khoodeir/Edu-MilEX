@@ -1478,6 +1478,50 @@
     document.getElementById("gradeLockHint").classList.add("show");
     document.getElementById("gradeLockOverlay").classList.add("show");
 
+
+  const GROUP_LABELS_EN = {
+  prep1_g1: "Saturday & Tuesday - 3 PM",
+
+  prep2_g1: "Saturday & Tuesday - 4 PM",
+
+  prep3_g1: "Saturday & Tuesday - 2 PM",
+
+  first_g1: "Sunday & Wednesday - 2 PM",
+
+  second_g1: "Sunday & Wednesday - 3 PM",
+  second_g2: "Sunday & Wednesday - 6 PM",
+
+  third_g1: "Sunday & Wednesday - 12 PM",
+  third_g2: "Sunday & Wednesday - 5 PM",
+};
+
+    const GROUP_LABELS_AR = {
+  prep1_g1: "السبت والثلاثاء - الساعة 3",
+
+  prep2_g1: "السبت والثلاثاء - الساعة 4",
+
+  prep3_g1: "السبت والثلاثاء - الساعة 2",
+
+  first_g1: "الأحد والأربعاء - الساعة 2",
+
+  second_g1: "الأحد والأربعاء - الساعة 3",
+  second_g2: "الأحد والأربعاء - الساعة 6",
+
+  third_g1: "الأحد والأربعاء - الساعة 12",
+  third_g2: "الأحد والأربعاء - الساعة 5",
+};
+
+    const GRADE_GROUPS = {
+  prep1: ["prep1_g1"],
+  prep2: ["prep2_g1"],
+  prep3: ["prep3_g1"],
+
+  first: ["first_g1"],
+
+  second: ["second_g1", "second_g2"],
+
+  third: ["third_g1", "third_g2"],
+};
     // grade_label always stays in English here — the scanner's display language never changes what n8n receives.
     fetch(WEBHOOKS.session, {
       method: "POST",
