@@ -841,11 +841,43 @@
     return `rgba(167, 58, 46, ${alpha})`; // Error
   }
 
-  const WEBHOOKS = {
-    attendance: "https://helmet-handrail-skipper.ngrok-free.dev/webhook-test/scanner",
-    payment:    "https://helmet-handrail-skipper.ngrok-free.dev/webhook-test/scanner",
-    session:    "https://helmet-handrail-skipper.ngrok-free.dev/webhook-test/Attendance_Session_Manager"
+  // Test mode: n8n must be listening in "Execute workflow" mode for /webhook-test/* URLs.
+  const WEBHOOK_TEST_MODE = true;
+  const WEBHOOK_BASE = "https://helmet-handrail-skipper.ngrok-free.dev";
+  const WEBHOOKS = WEBHOOK_TEST_MODE ? {
+    attendance: `${WEBHOOK_BASE}/webhook-test/scanner`,
+    payment:    `${WEBHOOK_BASE}/webhook-test/scanner`,
+    session:    `${WEBHOOK_BASE}/webhook-test/Attendance_Session_Manager`
+  } : {
+    attendance: `${WEBHOOK_BASE}/webhook/scanner`,
+    payment:    `${WEBHOOK_BASE}/webhook/scanner`,
+    session:    `${WEBHOOK_BASE}/webhook/Attendance_Session_Manager`
   };
+
+  async function postWebhook(url, payload, timeoutMs = 15000){
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    try{
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+        cache: "no-store"
+      });
+      const raw = await response.text();
+      let data = {};
+      if(raw){
+        try{ data = JSON.parse(raw); }catch(e){ data = { message: raw }; }
+      }
+      if(!response.ok){
+        throw new Error(`Webhook HTTP ${response.status}: ${data.message || raw || response.statusText}`);
+      }
+      return data;
+    }finally{
+      clearTimeout(timeout);
+    }
+  }
 
   const SUPABASE_URL = "https://evbjulsahncllewwvlxp.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2Ymp1bHNhaG5jbGxld3d2bHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NzE5MjUsImV4cCI6MjA5OTI0NzkyNX0.Xg9sU6ZenUU3kC2RNIbvZmK19KvE28MM2oyGcKNn8UA";
@@ -1448,27 +1480,16 @@ function groupLabel(group){
     document.getElementById("groupLockOverlay").classList.add("show");
 
     // grade_label always stays in English here — the scanner's display language never changes what n8n receives.
-    fetch(WEBHOOKS.session, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "session_start",
-        grade: currentGrade,
-        grade_label: GRADE_LABELS_EN[currentGrade],
-        group: currentGroup,
-        group_label: (groupsForGrade(currentGrade).find(g => g.id === currentGroup)?.en) || currentGroup,
-        mode: currentMode,
-        started_by: currentUser?.email || 'unknown',
-        timestamp: new Date().toISOString()
-      })
-    })
-.then(async (res) => {
-  console.log("Webhook status:", res.status);
-  console.log("Webhook response:", await res.text());
-})
-.catch((err) => {
-  console.error("Webhook Error:", err);
-});
+    postWebhook(WEBHOOKS.session, {
+      action: "session_start",
+      grade: currentGrade,
+      grade_label: GRADE_LABELS_EN[currentGrade],
+      group: currentGroup,
+      group_label: GROUP_LABELS_EN[currentGroup],
+      mode: currentMode,
+      started_by: currentUser?.email || 'unknown',
+      timestamp: new Date().toISOString()
+    }).catch(error => console.error("Session start webhook failed:", error));
 
     resumeSessionSync();
   }
@@ -1505,21 +1526,17 @@ function groupLabel(group){
     stopScanner();
 
     try{
-      await fetch(WEBHOOKS.session, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "session_end",
-          grade: endedGrade,
-          grade_label: GRADE_LABELS_EN[endedGrade],
-          group: currentGroup,
-          group_label: GROUP_LABELS_EN[currentGroup],
-          mode: endedMode,
-          ended_by: currentUser?.email || 'unknown',
-          timestamp: new Date().toISOString()
-        })
+      await postWebhook(WEBHOOKS.session, {
+        action: "session_end",
+        grade: endedGrade,
+        grade_label: GRADE_LABELS_EN[endedGrade],
+        group: currentGroup,
+        group_label: GROUP_LABELS_EN[currentGroup],
+        mode: endedMode,
+        ended_by: currentUser?.email || 'unknown',
+        timestamp: new Date().toISOString()
       });
-    }catch(e){}
+    }catch(e){ console.error("Session end webhook failed:", e); }
 
     window.location.reload();
   }
@@ -1794,14 +1811,8 @@ function groupLabel(group){
       payload.amount = amount;
     }
 
-    fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    })
-    .then(async response => {
-      let data = {};
-      try{ data = await response.json(); }catch(e){}
+    postWebhook(webhookUrl, payload)
+    .then(data => {
       sending = false;
 
       if(data.success){
