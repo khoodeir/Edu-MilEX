@@ -500,6 +500,17 @@ const GROUP_OPTIONS = {
   ]
 };
 
+function getGroupLabel(groupValue){
+  for (const grade in GROUP_OPTIONS){
+    const opt = GROUP_OPTIONS[grade].find(o => o.value === groupValue);
+    if (opt){
+      const shortTime = opt.time.replace(':00', '');
+      return `${opt.dayAr} ${shortTime}`;
+    }
+  }
+  return groupValue;
+}
+
 const stageSelect = document.getElementById('stage');
 const gradeSelect = document.getElementById('grade');
 const groupSelect = document.getElementById('group');
@@ -737,7 +748,7 @@ form.addEventListener('submit', async (e) => {
     city: document.getElementById('city').value.trim(),
     educationalStage: document.getElementById('stage').value,
     grade: document.getElementById('grade').value,
-    group: document.getElementById('group').value
+    group: getGroupLabel(document.getElementById('group').value)
   };
 
   submitBtn.disabled = true;
