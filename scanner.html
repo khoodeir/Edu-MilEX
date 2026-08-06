@@ -921,49 +921,6 @@ const GRADE_GROUPS = {
   ]
 };
 
-  // Exact Supabase attendance tables shown in the project.
-  const ATTENDANCE_TABLES = {
-    prep1: "حضور_أولى_إعدادي",
-    prep2: "حضور_ثانية_إعدادي",
-    prep3: "حضور_ثالثة_إعدادي",
-    first: "حضور_أولى_ثانوي",
-    second: "حضور_ثانية_ثانوي",
-    third: "حضور_ثالثة_ثانوي"
-  };
-
-  // Values match the group_name format used in the Supabase tables.
-  const GROUP_SCHEDULES = {
-    prep1: { A: { name: "سبت وتلات 3", days: "سبت وتلات", time: "3" } },
-    prep2: { A: { name: "سبت وتلات 4", days: "سبت وتلات", time: "4" } },
-    prep3: { A: { name: "سبت وتلات 2", days: "سبت وتلات", time: "2" } },
-    first: { A: { name: "حد واربع 2", days: "حد واربع", time: "2" } },
-    second: {
-      A: { name: "حد واربع 3", days: "حد واربع", time: "3" },
-      B: { name: "حد واربع 6", days: "حد واربع", time: "6" }
-    },
-    third: {
-      A: { name: "حد واربع 12", days: "حد واربع", time: "12" },
-      B: { name: "حد واربع 5", days: "حد واربع", time: "5" }
-    }
-  };
-
-  const GROUP_LABELS_EN = Object.fromEntries(
-    Object.entries(GROUP_SCHEDULES).flatMap(([grade, groups]) =>
-      Object.entries(groups).map(([id, schedule]) => [`${grade}:${id}`, schedule.name])
-    )
-  );
-
-  function routingInfo(grade = currentGrade, group = currentGroup){
-    const schedule = GROUP_SCHEDULES[grade]?.[group] || {};
-    return {
-      attendance_table: ATTENDANCE_TABLES[grade] || "",
-      table_name: ATTENDANCE_TABLES[grade] || "",
-      group_name: schedule.name || "",
-      days: schedule.days || "",
-      time: schedule.time || ""
-    };
-  }
-
 function groupsForGrade(grade){
   return GRADE_GROUPS[grade] || [{ id: "A", en: "Group A", ar: "المجموعة أ" }];
 }
@@ -1444,8 +1401,7 @@ function groupLabel(group){
         grade: currentGrade,
         grade_label: GRADE_LABELS_EN[currentGrade],
         group: currentGroup,
-group_label: groupLabel(currentGroup),
-        ...routingInfo(currentGrade, currentGroup),
+        group_label: GROUP_LABELS_EN[currentGroup],
         mode: currentMode,
         started_by: currentUser?.email || 'unknown',
         timestamp: new Date().toISOString()
@@ -1495,8 +1451,7 @@ group_label: groupLabel(currentGroup),
           grade: endedGrade,
           grade_label: GRADE_LABELS_EN[endedGrade],
           group: currentGroup,
-          group_label: groupLabel(currentGroup),
-          ...routingInfo(endedGrade, currentGroup),
+          group_label: GROUP_LABELS_EN[currentGroup],
           mode: endedMode,
           ended_by: currentUser?.email || 'unknown',
           timestamp: new Date().toISOString()
@@ -1546,24 +1501,16 @@ group_label: groupLabel(currentGroup),
     }
   }
 
-  function setGrade(grade){
-  if(sessionActive){
-    document.getElementById("gradeLevel").value = currentGrade;
-    notifyGradeLocked();
-    return;
+    function setGrade(grade){
+    if(sessionActive){
+      document.getElementById("gradeLevel").value = currentGrade;
+      notifyGradeLocked();
+      return;
+    }
+    currentGrade = grade;
+    localStorage.setItem("selectedGrade", grade);
+    renderGroupOptions();
   }
-
-  currentGrade = grade;
-  localStorage.setItem("selectedGrade", grade);
-  renderGroupOptions(); // ← السطر الجديد: يحدّث المجموعات حسب الصف
-}
-
-  currentGrade = grade;
-  localStorage.setItem("selectedGrade", grade);
-}
-
-  function groupLabel(group){ return (GROUP_LABELS_I18N[currentLang] || GROUP_LABELS_I18N.en)[group] || group; }
-
   function renderGroupOptions(){
   const groups = groupsForGrade(currentGrade);
   const sel = document.getElementById("groupLevel");
@@ -1779,15 +1726,7 @@ group_label: groupLabel(currentGroup),
     setLoadingStatus(currentMode === "payment" ? t('status_confirming_payment') : t('status_sending_attendance'));
 
     // Payload sent to n8n uses fixed English keys/labels — unaffected by the UI language.
-    const payload = {
-      qr_code: decodedText,
-      mode: currentMode,
-      grade: currentGrade,
-      grade_label: GRADE_LABELS_EN[currentGrade],
-      group: currentGroup,
-      group_label: groupLabel(currentGroup),
-      ...routingInfo(currentGrade, currentGroup)
-    };
+    const payload = { qr_code: decodedText, mode: currentMode, grade: currentGrade, grade_label: GRADE_LABELS_EN[currentGrade], group: currentGroup, group_label: GROUP_LABELS_EN[currentGroup] };
     if(currentMode === "payment"){
       payload.month = month;
       payload.amount = amount;
