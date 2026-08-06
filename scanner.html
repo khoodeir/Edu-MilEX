@@ -447,7 +447,7 @@
   .result-check{
     width:52px; height:52px; margin:0 auto 8px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    font-size:26px; border:2px ed rgba(var(--gold-rgb),0.55);
+    font-size:26px; border:2px solid rgba(var(--gold-rgb),0.55);
     transform:rotate(-6deg);
     animation:stampDown .42s cubic-bezier(.2,1.4,.5,1);
   }
@@ -527,7 +527,7 @@
   .history-list{ display:flex; flex-direction:column; gap:0; }
   .history-item{
     display:flex; align-items:center; justify-content:space-between;
-    padding:9px 2px; border-bottom:1px ed var(--line);
+    padding:9px 2px; border-bottom:1px solid var(--line);
     font-size:13px;
   }
   .history-item:last-child{ border-bottom:none; }
@@ -907,17 +907,38 @@
 
   // كل صف له مجموعة أو مجموعتين حسب الجدول
 const GRADE_GROUPS = {
-  prep3:  [{ id: "A", en: "Sat & Tue - 2:00",  ar: "السبت والثلاثاء - الساعة 2" }],
-  prep1:  [{ id: "A", en: "Sat & Tue - 3:00",  ar: "السبت والثلاثاء - الساعة 3" }],
-  prep2:  [{ id: "A", en: "Sat & Tue - 4:00",  ar: "السبت والثلاثاء - الساعة 4" }],
-  first:  [{ id: "A", en: "Sun & Wed - 2:00",  ar: "الأحد والأربعاء - الساعة 2" }],
-  second: [
-    { id: "A", en: "Sun & Wed - 3:00", ar: "الأحد والأربعاء - الساعة 3" },
-    { id: "B", en: "Sun & Wed - 6:00", ar: "الأحد والأربعاء - الساعة 6" }
+  "اولى اعدادي": [
+    { id: "حد وربع 3", en: "Sun & Wed 3", ar: "حد وربع 3" },
+    { id: "سبت وتلات 3", en: "Sat & Tue 3", ar: "سبت وتلات 3" }
   ],
-  third: [
-    { id: "A", en: "Sun & Wed - 12:00", ar: "الأحد والأربعاء - الساعة 12" },
-    { id: "B", en: "Sun & Wed - 5:00",  ar: "الأحد والأربعاء - الساعة 5" }
+
+  "تانيه اعدادي": [
+    { id: "حد وربع 4", en: "Sun & Wed 4", ar: "حد وربع 4" },
+    { id: "سبت وتلات 4", en: "Sat & Tue 4", ar: "سبت وتلات 4" }
+  ],
+
+  "تالته اعدادي": [
+    { id: "حد وربع 2", en: "Sun & Wed 2", ar: "حد وربع 2" },
+    { id: "سبت وتلات 2", en: "Sat & Tue 2", ar: "سبت وتلات 2" }
+  ],
+
+  "اولى ثانوي": [
+    { id: "حد وربع 2", en: "Sun & Wed 2", ar: "حد وربع 2" },
+    { id: "سبت وتلات 2", en: "Sat & Tue 2", ar: "سبت وتلات 2" }
+  ],
+
+  "تانيه ثانوى": [
+    { id: "حد وربع 3", en: "Sun & Wed 3", ar: "حد وربع 3" },
+    { id: "حد وربع 6", en: "Sun & Wed 6", ar: "حد وربع 6" },
+    { id: "سبت وتلات 3", en: "Sat & Tue 3", ar: "سبت وتلات 3" },
+    { id: "سبت وتلات 6", en: "Sat & Tue 6", ar: "سبت وتلات 6" }
+  ],
+
+  "تالته ثانوى": [
+    { id: "حد وربع 12", en: "Sun & Wed 12", ar: "حد وربع 12" },
+    { id: "حد وربع 5", en: "Sun & Wed 5", ar: "حد وربع 5" },
+    { id: "سبت وتلات 12", en: "Sat & Tue 12", ar: "سبت وتلات 12" },
+    { id: "سبت وتلات 5", en: "Sat & Tue 5", ar: "سبت وتلات 5" }
   ]
 };
 
