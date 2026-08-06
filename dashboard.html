@@ -1315,13 +1315,13 @@
   const GRADE_LABELS = Object.fromEntries(Object.entries(GRADE_CONFIG).map(([k,v]) => [k, v.labelEn]));
   const GRADES = Object.keys(GRADE_CONFIG);
   const GRADE_COLORS = {
-    first_prep: "#5B8FF9",       /* blue */
-    second_prep: "#5AD8A6",      /* green */
-    third_prep: "#F6BD16",       /* gold */
-    first_secondary: "#E8684A",  /* red-orange */
-    second_secondary: "#9270CA", /* purple */
-    third_secondary: "#6DC8EC"   /* cyan */
-  };
+  first_prep: "#7FA6D9",       /* أزرق هادي */
+  second_prep: "#8FC1A0",      /* أخضر سيج */
+  third_prep: "#D9B36B",       /* ذهبي هادي */
+  first_secondary: "#D08E76",  /* تراكوتا */
+  second_secondary: "#A79BC2", /* لافندر */
+  third_secondary: "#8FBFCB"   /* تركواز هادي */
+};
 
   let currentGrade = "all";
   let payFilterState = "all";
@@ -1673,12 +1673,12 @@ function goBack(){
   }
   
   function getScoreColor(score, opacity = 1) {
-    const alpha = opacity;
-    if (score >= 90) return `rgba(47, 158, 115, ${alpha})`; // Success - Green
-    if (score >= 75) return `rgba(102, 187, 106, ${alpha})`; // Good - Light Green
-    if (score >= 60) return `rgba(232, 164, 74, ${alpha})`; // Average - Warm Yellow
-    return `rgba(196, 72, 90, ${alpha})`; // Needs Work - Red
-  }
+  const alpha = opacity;
+  if (score >= 90) return `rgba(111,168,138,${alpha})`;
+  if (score >= 75) return `rgba(150,190,160,${alpha})`;
+  if (score >= 60) return `rgba(216,169,102,${alpha})`;
+  return `rgba(199,127,127,${alpha})`;
+}
   
   function toggleGroup(labelEl) {
     const groupName = labelEl.getAttribute('data-group');
@@ -2079,7 +2079,7 @@ function goBack(){
         labels: ["Paid", "Unpaid"],
         datasets: [{
           data: [paidCount, unpaidCount],
-          backgroundColor: ["rgba(110,100,90,0.70)", "rgba(158,42,42,0.70)"],
+           backgroundColor: ["rgba(129,178,154,0.70)", "rgba(196,110,110,0.65)"],
           borderWidth: 0
         }]
       },
@@ -2293,11 +2293,11 @@ function goBack(){
     canvas.style.display = "block"; emptyEl.classList.remove("show");
 
     const bands = [
-      { label: "Excellent (90-100%)", min: 90, max: 101, color: "rgba(46, 125, 50, 0.8)" },
-      { label: "Good (75-89%)",       min: 75, max: 90,  color: "rgba(102, 187, 106, 0.8)" },
-      { label: "Average (60-74%)",    min: 60, max: 75,  color: "rgba(251, 192, 45, 0.8)" },
-      { label: "Needs Work (<60%)",   min: -1, max: 60,  color: "rgba(211, 47, 47, 0.8)" }
-    ];
+  { label: "Excellent (90-100%)", min: 90, max: 101, color: "rgba(129,178,154,0.75)" },
+  { label: "Good (75-89%)",       min: 75, max: 90,  color: "rgba(166,201,178,0.75)" },
+  { label: "Average (60-74%)",    min: 60, max: 75,  color: "rgba(224,181,120,0.75)" },
+  { label: "Needs Work (<60%)",   min: -1, max: 60,  color: "rgba(199,127,127,0.70)" }
+];
     const counts = bands.map(b => rows.filter(r => r.avg >= b.min && r.avg < b.max).length);
 
     charts.examDist = new Chart(canvas, {
@@ -2426,11 +2426,11 @@ function goBack(){
     if(!groups.length){ if(canvas) canvas.style.display = "none"; if(emptyEl) emptyEl.classList.add("show"); return; }
     if(canvas) canvas.style.display = "block"; if(emptyEl) emptyEl.classList.remove("show");
 
-    const palette = [
-      "rgba(139,94,60,0.75)", "rgba(122,59,59,0.70)", "rgba(110,100,90,0.70)",
-      "rgba(158,42,42,0.70)", "rgba(47,158,115,0.70)", "rgba(232,164,74,0.70)",
-      "rgba(196,72,90,0.70)", "rgba(102,187,106,0.70)"
-    ];
+   const palette = [
+  "rgba(139,94,60,0.65)", "rgba(184,142,94,0.60)", "rgba(122,59,59,0.50)",
+  "rgba(167,155,194,0.55)", "rgba(143,191,203,0.55)", "rgba(143,193,160,0.55)",
+  "rgba(217,142,118,0.55)", "rgba(94,88,74,0.50)"
+];
 
     charts.studentsByGroup = new Chart(canvas, {
       type: "doughnut",
