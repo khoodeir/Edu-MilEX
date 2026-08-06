@@ -907,19 +907,74 @@
 
   // كل صف له مجموعة أو مجموعتين حسب الجدول
 const GRADE_GROUPS = {
-  prep3:  [{ id: "A", en: "Sat & Tue - 2:00",  ar: "السبت والثلاثاء - الساعة 2" }],
-  prep1:  [{ id: "A", en: "Sat & Tue - 3:00",  ar: "السبت والثلاثاء - الساعة 3" }],
-  prep2:  [{ id: "A", en: "Sat & Tue - 4:00",  ar: "السبت والثلاثاء - الساعة 4" }],
-  first:  [{ id: "A", en: "Sun & Wed - 2:00",  ar: "الأحد والأربعاء - الساعة 2" }],
-  second: [
-    { id: "A", en: "Sun & Wed - 3:00", ar: "الأحد والأربعاء - الساعة 3" },
-    { id: "B", en: "Sun & Wed - 6:00", ar: "الأحد والأربعاء - الساعة 6" }
+  prep3: [
+    {
+      id: "سبت وثلاث 2",
+      en: "Sat & Tue - 2:00",
+      ar: "السبت والثلاثاء - الساعة 2"
+    }
   ],
+
+  prep1: [
+    {
+      id: "سبت وثلاث 3",
+      en: "Sat & Tue - 3:00",
+      ar: "السبت والثلاثاء - الساعة 3"
+    }
+  ],
+
+  prep2: [
+    {
+      id: "سبت وثلاث 4",
+      en: "Sat & Tue - 4:00",
+      ar: "السبت والثلاثاء - الساعة 4"
+    }
+  ],
+
+  first: [
+    {
+      id: "الأحد والأربعاء 2",
+      en: "Sun & Wed - 2:00",
+      ar: "الأحد والأربعاء - الساعة 2"
+    }
+  ],
+
+  second: [
+    {
+      id: "الأحد والأربعاء 3",
+      en: "Sun & Wed - 3:00",
+      ar: "الأحد والأربعاء - الساعة 3"
+    },
+    {
+      id: "الأحد والأربعاء 6",
+      en: "Sun & Wed - 6:00",
+      ar: "الأحد والأربعاء - الساعة 6"
+    }
+  ],
+
   third: [
-    { id: "A", en: "Sun & Wed - 12:00", ar: "الأحد والأربعاء - الساعة 12" },
-    { id: "B", en: "Sun & Wed - 5:00",  ar: "الأحد والأربعاء - الساعة 5" }
+    {
+      id: "الأحد والأربعاء 12",
+      en: "Sun & Wed - 12:00",
+      ar: "الأحد والأربعاء - الساعة 12"
+    },
+    {
+      id: "الأحد والأربعاء 5",
+      en: "Sun & Wed - 5:00",
+      ar: "الأحد والأربعاء - الساعة 5"
+    }
   ]
 };
+
+function groupsForGrade(grade){
+  return GRADE_GROUPS[grade] || [];
+}
+
+function groupLabel(group){
+  const g = groupsForGrade(currentGrade).find(x => x.id === group);
+  if (!g) return group;
+  return currentLang === "ar" ? g.ar : g.en;
+}
 
 function groupsForGrade(grade){
   return GRADE_GROUPS[grade] || [{ id: "A", en: "Group A", ar: "المجموعة أ" }];
