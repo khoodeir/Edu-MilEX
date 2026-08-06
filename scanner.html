@@ -905,12 +905,31 @@
   };
   function gradeLabel(grade){ return (GRADE_LABELS_I18N[currentLang] || GRADE_LABELS_I18N.en)[grade] || grade; }
 
-  const GROUP_LABELS_EN = { A: "Group A", B: "Group B", C: "Group C" };
-  const GROUP_LABELS_I18N = {
-    en: GROUP_LABELS_EN,
-    ar: { A: "المجموعة أ", B: "المجموعة ب", C: "المجموعة ج" }
-  };
+  // كل صف له مجموعة أو مجموعتين حسب الجدول
+const GRADE_GROUPS = {
+  prep3:  [{ id: "A", en: "Sat & Tue - 2:00",  ar: "السبت والثلاثاء - الساعة 2" }],
+  prep1:  [{ id: "A", en: "Sat & Tue - 3:00",  ar: "السبت والثلاثاء - الساعة 3" }],
+  prep2:  [{ id: "A", en: "Sat & Tue - 4:00",  ar: "السبت والثلاثاء - الساعة 4" }],
+  first:  [{ id: "A", en: "Sun & Wed - 2:00",  ar: "الأحد والأربعاء - الساعة 2" }],
+  second: [
+    { id: "A", en: "Sun & Wed - 3:00", ar: "الأحد والأربعاء - الساعة 3" },
+    { id: "B", en: "Sun & Wed - 6:00", ar: "الأحد والأربعاء - الساعة 6" }
+  ],
+  third: [
+    { id: "A", en: "Sun & Wed - 12:00", ar: "الأحد والأربعاء - الساعة 12" },
+    { id: "B", en: "Sun & Wed - 5:00",  ar: "الأحد والأربعاء - الساعة 5" }
+  ]
+};
 
+function groupsForGrade(grade){
+  return GRADE_GROUPS[grade] || [{ id: "A", en: "Group A", ar: "المجموعة أ" }];
+}
+
+function groupLabel(group){
+  const g = groupsForGrade(currentGrade).find(x => x.id === group);
+  if(!g) return group;
+  return currentLang === "ar" ? g.ar : g.en;
+}
   const I18N = {
     en: {
       title_settings:"Settings", title_back:"Back",
@@ -1491,24 +1510,37 @@
 
   currentGrade = grade;
   localStorage.setItem("selectedGrade", grade);
+  renderGroupOptions(); // ← السطر الجديد: يحدّث المجموعات حسب الصف
+}
+
+  currentGrade = grade;
+  localStorage.setItem("selectedGrade", grade);
 }
 
   function groupLabel(group){ return (GROUP_LABELS_I18N[currentLang] || GROUP_LABELS_I18N.en)[group] || group; }
 
   function renderGroupOptions(){
-    const groups = ["A","B","C"];
-    const sel = document.getElementById("groupLevel");
-    if(!sel) return;
+  const groups = groupsForGrade(currentGrade);
+  const sel = document.getElementById("groupLevel");
+  if(sel){
     const prev = sel.value;
-    sel.innerHTML = groups.map(g => `<option value="${g}">${groupLabel(g)}</option>`).join("");
-    sel.value = groups.includes(prev) ? prev : currentGroup;
-    const sel2 = document.getElementById("setDefaultGroup");
-    if(sel2){
-      const prev2 = sel2.value;
-      sel2.innerHTML = groups.map(g => `<option value="${g}">${groupLabel(g)}</option>`).join("");
-      sel2.value = groups.includes(prev2) ? prev2 : (settings.defaultGroup || "A");
-    }
+    sel.innerHTML = groups.map(g =>
+      `<option value="${g.id}">${currentLang === "ar" ? g.ar : g.en}</option>`
+    ).join("");
+    sel.value = groups.some(g => g.id === prev) ? prev : groups[0].id;
+    currentGroup = sel.value;
   }
+
+  const sel2 = document.getElementById("setDefaultGroup");
+  if(sel2){
+    const defGroups = groupsForGrade(settings.defaultGrade || currentGrade);
+    const prev2 = sel2.value;
+    sel2.innerHTML = defGroups.map(g =>
+      `<option value="${g.id}">${currentLang === "ar" ? g.ar : g.en}</option>`
+    ).join("");
+    sel2.value = defGroups.some(g => g.id === prev2) ? prev2 : defGroups[0].id;
+  }
+}
 
   function setGroup(group){
   if(sessionActive){
