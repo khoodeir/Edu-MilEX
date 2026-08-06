@@ -765,6 +765,99 @@
         </div>
       </div>
 
+      <!-- City & Group Analytics KPI Cards -->
+      <div class="kpi-grid" id="cityGroupKpiGrid">
+        <div class="kpi-card">
+          <div class="kpi-label" data-i18n="kpiTotalCities">Total Cities</div>
+          <div class="kpi-value num" id="kpiCities">–</div>
+          <div class="kpi-sub" id="kpiCitiesSub"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label" data-i18n="kpiTotalGroups">Total Groups</div>
+          <div class="kpi-value num" id="kpiGroups">–</div>
+          <div class="kpi-sub" id="kpiGroupsSub"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label" data-i18n="kpiTopCity">Top City</div>
+          <div class="kpi-value num" id="kpiTopCity" style="font-size:20px;">–</div>
+          <div class="kpi-sub" id="kpiTopCitySub"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label" data-i18n="kpiTopGroup">Top Group</div>
+          <div class="kpi-value num" id="kpiTopGroup" style="font-size:20px;">–</div>
+          <div class="kpi-sub" id="kpiTopGroupSub"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label" data-i18n="kpiHighestAtt">Highest Attendance</div>
+          <div class="kpi-value num" id="kpiHighestAtt">–</div>
+          <div class="kpi-sub" id="kpiHighestAttSub"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label" data-i18n="kpiHighestColl">Highest Collection</div>
+          <div class="kpi-value num" id="kpiHighestColl" style="font-size:20px;">–</div>
+          <div class="kpi-sub" id="kpiHighestCollSub"></div>
+        </div>
+      </div>
+
+      <!-- City & Group Charts -->
+      <div class="section-title" data-i18n="secCityAnalytics">City & Group Analytics <span class="tag" data-i18n="tagCityGroup">Analytics</span></div>
+      <div class="two-col">
+        <div class="chart-card">
+          <div class="section-title"><span data-i18n="secAttByCity">Attendance Rate by City</span> <span class="tag" data-i18n="tagLive">Live</span></div>
+          <div class="chart-box">
+            <canvas id="attByCityChart"></canvas>
+            <div class="chart-empty" id="attByCityEmpty" data-i18n="emptyCityData">No city data available</div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="section-title" data-i18n="secStudentsByGroup">Students by Group</div>
+          <div class="chart-box">
+            <canvas id="studentsByGroupChart"></canvas>
+            <div class="chart-empty" id="studentsByGroupEmpty" data-i18n="emptyGroupData">No group data available</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="chart-card">
+          <div class="section-title"><span data-i18n="secRevenueByCity">Revenue by City</span></div>
+          <div class="chart-box">
+            <canvas id="revenueByCityChart"></canvas>
+            <div class="chart-empty" id="revenueByCityEmpty" data-i18n="emptyCityData">No city data available</div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="section-title"><span data-i18n="secCollectionByGroup">Collection by Group</span></div>
+          <div class="chart-box">
+            <canvas id="collectionByGroupChart"></canvas>
+            <div class="chart-empty" id="collectionByGroupEmpty" data-i18n="emptyGroupData">No group data available</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- City & Group Analytics Lists -->
+      <div class="list-grid">
+        <div class="list-card">
+          <div class="section-title" data-i18n="secTopCitiesAtt">Top Cities by Attendance</div>
+          <div id="topCitiesAttList"></div>
+        </div>
+        <div class="list-card">
+          <div class="section-title" data-i18n="secTopGroupsAtt">Top Groups by Attendance</div>
+          <div id="topGroupsAttList"></div>
+        </div>
+      </div>
+
+      <div class="list-grid">
+        <div class="list-card">
+          <div class="section-title" data-i18n="secTopCitiesColl">Top Cities by Collection</div>
+          <div id="topCitiesCollList"></div>
+        </div>
+        <div class="list-card">
+          <div class="section-title" data-i18n="secTopGroupsColl">Top Groups by Collection</div>
+          <div id="topGroupsCollList"></div>
+        </div>
+      </div>
+
       <div class="two-col">
         <div class="chart-card">
           <div class="section-title"><span data-i18n="secAttByGrade">Attendance Rate by Grade</span> <span class="tag" data-i18n="tagLive">Live</span></div>
@@ -864,6 +957,8 @@
             <thead>
               <tr>
                 <th data-i18n="colName">Name</th>
+                <th data-i18n="colCity">City</th>
+                <th data-i18n="colGroup">Group</th>
                 <th data-i18n="colGrade">Grade</th>
                 <th data-i18n="colPresent">Present</th>
                 <th data-i18n="colAbsent">Absent</th>
@@ -1113,7 +1208,9 @@
       lastAttendance: "last_attendance",
       amountPaid: "amount_paid",
       paymentStatus: "payment_status",
-      lastPaymentDate: "last_payment_date"
+      lastPaymentDate: "last_payment_date",
+      city: "city",
+      groupName: "group_name"
     }
   };
 
@@ -1165,7 +1262,7 @@
   let currentGrade = "all";
   let payFilterState = "all";
   let combined = { students: [], statsRows: [], examAverages: {}, examStudentAverages: [] }; // students = merged attendance+payment rows, tagged with grade
-  let charts = { attVsPerf: null, gradeRadar: null };
+  let charts = { attVsPerf: null, gradeRadar: null, attByCity: null, studentsByGroup: null, revenueByCity: null, collectionByGroup: null };
   let histCharts = { rate: null, rev: null, students: null };
 
   /* ============================================================
@@ -1192,7 +1289,7 @@
       searchNamePhone: "Search by name or phone…",
       filterAll: "All", filterPaid: "Paid", filterUnpaid: "Unpaid",
       gradeReportBtn: "Grade Report (PDF)", exportExcel: "Export Excel",
-      colName: "Name", colGrade: "Grade", colPresent: "Present", colAbsent: "Absent",
+      colName: "Name", colCity: "City", colGroup: "Group", colGrade: "Grade", colPresent: "Present", colAbsent: "Absent",
       colAttendanceRate: "Attendance Rate", colStudentPhone: "Student Phone", colParentPhone: "Parent Phone",
       colPayment: "Payment", colLastAttendance: "Last Attendance", colReport: "Report",
       colMonth: "Month", colStudents: "Students", colCollectionRate: "Collection Rate", colRevenue: "Revenue",
@@ -1233,7 +1330,19 @@
       outOf: "out of", noPaymentRecords: "no payment records",
       noPaymentsToday: "no payments recorded today",
       lastUpdated: "Last updated:",
-      exams_: "exams", exam_: "exam"
+      exams_: "exams", exam_: "exam",
+      secCityAnalytics: "City & Group Analytics", tagCityGroup: "Analytics",
+      colCity: "City", colGroup: "Group",
+      kpiTotalCities: "Total Cities", kpiTotalGroups: "Total Groups",
+      secTopCitiesAtt: "Top Cities by Attendance", secTopGroupsAtt: "Top Groups by Attendance",
+      secTopCitiesColl: "Top Cities by Collection", secTopGroupsColl: "Top Groups by Collection",
+      secAttByCity: "Attendance Rate by City", secStudentsByGroup: "Students by Group",
+      secRevenueByCity: "Revenue by City", secCollectionByGroup: "Collection by Group",
+      emptyCityData: "No city data available", emptyGroupData: "No group data available",
+      kpiTopCity: "Top City", kpiTopGroup: "Top Group",
+      kpiHighestAtt: "Highest Attendance", kpiHighestColl: "Highest Collection",
+      studentsCount: "students", revenueCollected: "collected",
+      attendanceRate: "attendance rate", collectionRate: "collection rate"
     },
     ar: {
       tabAll: "🎓 كل الصفوف",
@@ -1254,7 +1363,7 @@
       searchNamePhone: "ابحث بالاسم أو رقم الهاتف…",
       filterAll: "الكل", filterPaid: "مدفوع", filterUnpaid: "غير مدفوع",
       gradeReportBtn: "تقرير الصف (PDF)", exportExcel: "تصدير إكسل",
-      colName: "الاسم", colGrade: "الصف", colPresent: "حضور", colAbsent: "غياب",
+      colName: "الاسم", colCity: "المدينة", colGroup: "المجموعة", colGrade: "الصف", colPresent: "حضور", colAbsent: "غياب",
       colAttendanceRate: "نسبة الحضور", colStudentPhone: "هاتف الطالب", colParentPhone: "هاتف ولي الأمر",
       colPayment: "الدفع", colLastAttendance: "آخر حضور", colReport: "التقرير",
       colMonth: "الشهر", colStudents: "الطلاب", colCollectionRate: "نسبة التحصيل", colRevenue: "الإيراد",
@@ -1295,7 +1404,19 @@
       outOf: "من أصل", noPaymentRecords: "لا توجد سجلات دفع",
       noPaymentsToday: "لا توجد مدفوعات اليوم",
       lastUpdated: "آخر تحديث:",
-      exams_: "امتحانات", exam_: "امتحان"
+      exams_: "امتحانات", exam_: "امتحان",
+      secCityAnalytics: "تحليل المدن والمجموعات", tagCityGroup: "تحليلات",
+      colCity: "المدينة", colGroup: "المجموعة",
+      kpiTotalCities: "إجمالي المدن", kpiTotalGroups: "إجمالي المجموعات",
+      secTopCitiesAtt: "أعلى المدن حضورًا", secTopGroupsAtt: "أعلى المجموعات حضورًا",
+      secTopCitiesColl: "أعلى المدن تحصيلًا", secTopGroupsColl: "أعلى المجموعات تحصيلًا",
+      secAttByCity: "نسبة الحضور حسب المدينة", secStudentsByGroup: "الطلاب حسب المجموعة",
+      secRevenueByCity: "الإيراد حسب المدينة", secCollectionByGroup: "التحصيل حسب المجموعة",
+      emptyCityData: "لا توجد بيانات مدينة", emptyGroupData: "لا توجد بيانات مجموعة",
+      kpiTopCity: "أعلى مدينة", kpiTopGroup: "أعلى مجموعة",
+      kpiHighestAtt: "أعلى حضور", kpiHighestColl: "أعلى تحصيل",
+      studentsCount: "طالب", revenueCollected: "مُحصّل",
+      attendanceRate: "نسبة الحضور", collectionRate: "نسبة التحصيل"
     }
   };
 
@@ -1523,12 +1644,13 @@ function goBack(){
 
   function exportRosterExcel(){
     if(!combined.students.length){ alert("No student data loaded yet — try refreshing the dashboard first."); return; }
-    const header = ["Name","Grade","Present","Absent","Attendance Rate","Student Phone","Parent Phone","Payment","Amount Paid","Last Attendance"];
+    const header = ["Name","City","Group","Grade","Present","Absent","Attendance Rate","Student Phone","Parent Phone","Payment","Amount Paid","Last Attendance"];
     const rows = combined.students.map(s => {
       const p = pct(s.attendanceCount, s.absenceCount);
       const paymentLabel = s.paymentStatus !== "" ? (isPaid(s.paymentStatus) ? "Paid" : "Unpaid") : "—";
       return [
-        s.name || "—", tGradeLabel(s.grade) || "—", s.attendanceCount, s.absenceCount,
+        s.name || "—", s.city || "—", s.groupName || "—", tGradeLabel(s.grade) || "—",
+        s.attendanceCount, s.absenceCount,
         p != null ? `${p}%` : "—", s.studentPhone || "—", s.parentPhone || "—",
         paymentLabel, s.amountPaid || 0, s.lastAttendance || "—"
       ];
@@ -1597,7 +1719,9 @@ function goBack(){
         lastAttendance: a[col.lastAttendance] ?? "",
         paymentStatus: p[col.paymentStatus] ?? "",
         amountPaid: Number(p[col.amountPaid] || 0),
-        lastPaymentDate: p[col.lastPaymentDate] ?? ""
+        lastPaymentDate: p[col.lastPaymentDate] ?? "",
+        city: a[col.city] ?? "",
+        groupName: a[col.groupName] ?? ""
       };
     });
   }
@@ -1820,6 +1944,15 @@ function goBack(){
     renderTopAttenders(students);
     renderUnpaidList(unpaidStudents);
     renderExamPerformerLists();
+    renderCityGroupKpis(students);
+    renderAttByCityChart(students);
+    renderStudentsByGroupChart(students);
+    renderRevenueByCityChart(students);
+    renderCollectionByGroupChart(students);
+    renderTopCitiesByAttendance(students);
+    renderTopGroupsByAttendance(students);
+    renderTopCitiesByCollection(students);
+    renderTopGroupsByCollection(students);
     payFilterState = "all";
     document.querySelectorAll("#payFilter button").forEach(b => b.classList.toggle("active", b.dataset.f === "all"));
     document.getElementById("rosterSearch").value = "";
@@ -1827,6 +1960,7 @@ function goBack(){
   }
 
   function destroyChart(key){ if(charts[key]){ charts[key].destroy(); charts[key] = null; } }
+  function destroyChartSafe(key){ if(typeof charts !== 'undefined' && charts[key]){ charts[key].destroy(); charts[key] = null; } }
   const chartLibReady = () => typeof Chart !== "undefined";
 
   function renderAttendanceByGradeChart(students){
@@ -2090,6 +2224,298 @@ function goBack(){
     });
   }
 
+  /* ---------- City & Group Analytics ---------- */
+  function aggregateByField(students, field){
+    const map = {};
+    students.forEach(s => {
+      const key = (s[field] || "").trim() || "—";
+      if(!map[key]) map[key] = { students: 0, attCount: 0, absCount: 0, paidCount: 0, unpaidCount: 0, revenue: 0, withPaymentRecord: 0 };
+      map[key].students++;
+      map[key].attCount += s.attendanceCount || 0;
+      map[key].absCount += s.absenceCount || 0;
+      if(isPaid(s.paymentStatus)) map[key].paidCount++;
+      else if(s.paymentStatus !== "") map[key].unpaidCount++;
+      if(s.paymentStatus !== "") map[key].withPaymentRecord++;
+      map[key].revenue += s.amountPaid || 0;
+    });
+    return map;
+  }
+
+  function computeFieldRate(agg){
+    const total = agg.attCount + agg.absCount;
+    return total > 0 ? Math.round((agg.attCount / total) * 100) : 0;
+  }
+
+  function renderCityGroupKpis(students){
+    const cityMap = aggregateByField(students, "city");
+    const groupMap = aggregateByField(students, "groupName");
+    const cities = Object.keys(cityMap).filter(k => k !== "—");
+    const groups = Object.keys(groupMap).filter(k => k !== "—");
+
+    document.getElementById("kpiCities").textContent = cities.length;
+    document.getElementById("kpiCitiesSub").textContent = cities.length ? `${cities.length} ${t('studentsCount')}` : t('emptyCityData');
+
+    document.getElementById("kpiGroups").textContent = groups.length;
+    document.getElementById("kpiGroupsSub").textContent = groups.length ? `${groups.length} ${t('studentsCount')}` : t('emptyGroupData');
+
+    // Top City by students
+    const topCity = cities.length ? cities.reduce((a,b) => cityMap[a].students > cityMap[b].students ? a : b) : "—";
+    document.getElementById("kpiTopCity").textContent = topCity;
+    document.getElementById("kpiTopCitySub").textContent = cities.length ? `${cityMap[topCity].students} ${t('studentsCount')}` : "—";
+
+    // Top Group by students
+    const topGroup = groups.length ? groups.reduce((a,b) => groupMap[a].students > groupMap[b].students ? a : b) : "—";
+    document.getElementById("kpiTopGroup").textContent = topGroup;
+    document.getElementById("kpiTopGroupSub").textContent = groups.length ? `${groupMap[topGroup].students} ${t('studentsCount')}` : "—";
+
+    // Highest attendance (city or group)
+    let bestAttLabel = "—", bestAttRate = 0;
+    [...cities, ...groups].forEach(key => {
+      const agg = cityMap[key] || groupMap[key];
+      const rate = computeFieldRate(agg);
+      if(rate > bestAttRate){ bestAttRate = rate; bestAttLabel = key; }
+    });
+    document.getElementById("kpiHighestAtt").textContent = `${bestAttRate}%`;
+    document.getElementById("kpiHighestAttSub").textContent = bestAttLabel !== "—" ? `${bestAttLabel}` : "—";
+
+    // Highest collection (city or group)
+    let bestCollLabel = "—", bestCollRev = 0;
+    [...cities, ...groups].forEach(key => {
+      const agg = cityMap[key] || groupMap[key];
+      if(agg.revenue > bestCollRev){ bestCollRev = agg.revenue; bestCollLabel = key; }
+    });
+    document.getElementById("kpiHighestColl").textContent = fmtEGP(bestCollRev);
+    document.getElementById("kpiHighestCollSub").textContent = bestCollLabel !== "—" ? `${bestCollLabel}` : "—";
+  }
+
+  function renderAttByCityChart(students){
+    const canvas = document.getElementById("attByCityChart");
+    const emptyEl = document.getElementById("attByCityEmpty");
+    if(charts.attByCity){ charts.attByCity.destroy(); charts.attByCity = null; }
+    if(!chartLibReady()){ if(canvas) canvas.style.display="none"; if(emptyEl) emptyEl.classList.add("show"); return; }
+
+    const cityMap = aggregateByField(students, "city");
+    const cities = Object.keys(cityMap).filter(k => k !== "—");
+    if(!cities.length){ if(canvas) canvas.style.display = "none"; if(emptyEl) emptyEl.classList.add("show"); return; }
+    if(canvas) canvas.style.display = "block"; if(emptyEl) emptyEl.classList.remove("show");
+
+    const rows = cities.map(c => ({ city: c, rate: computeFieldRate(cityMap[c]) }));
+    const colors = cities.map((_, i) => `rgba(139,94,60,${0.3 + (i / Math.max(1, cities.length)) * 0.5})`);
+
+    charts.attByCity = new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: rows.map(r => r.city),
+        datasets: [{
+          data: rows.map(r => r.rate),
+          backgroundColor: colors,
+          borderRadius: 6, maxBarThickness: 46
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw}%` } } },
+        scales: {
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(139,94,60,0.05)" } },
+          x: { ticks: { font: { size: 10, family: "Inter" } }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  function renderStudentsByGroupChart(students){
+    const canvas = document.getElementById("studentsByGroupChart");
+    const emptyEl = document.getElementById("studentsByGroupEmpty");
+    if(charts.studentsByGroup){ charts.studentsByGroup.destroy(); charts.studentsByGroup = null; }
+    if(!chartLibReady()){ if(canvas) canvas.style.display="none"; if(emptyEl) emptyEl.classList.add("show"); return; }
+
+    const groupMap = aggregateByField(students, "groupName");
+    const groups = Object.keys(groupMap).filter(k => k !== "—");
+    if(!groups.length){ if(canvas) canvas.style.display = "none"; if(emptyEl) emptyEl.classList.add("show"); return; }
+    if(canvas) canvas.style.display = "block"; if(emptyEl) emptyEl.classList.remove("show");
+
+    const palette = [
+      "rgba(139,94,60,0.75)", "rgba(122,59,59,0.70)", "rgba(110,100,90,0.70)",
+      "rgba(158,42,42,0.70)", "rgba(47,158,115,0.70)", "rgba(232,164,74,0.70)",
+      "rgba(196,72,90,0.70)", "rgba(102,187,106,0.70)"
+    ];
+
+    charts.studentsByGroup = new Chart(canvas, {
+      type: "doughnut",
+      data: {
+        labels: groups,
+        datasets: [{
+          data: groups.map(g => groupMap[g].students),
+          backgroundColor: groups.map((_, i) => palette[i % palette.length]),
+          borderWidth: 0
+        }]
+      },
+      options: {
+        maintainAspectRatio: false, cutout: "60%",
+        plugins: {
+          legend: { position: "bottom", labels: { font: { family: "Inter", size: 11 }, padding: 12 } }
+        }
+      }
+    });
+  }
+
+  function renderRevenueByCityChart(students){
+    const canvas = document.getElementById("revenueByCityChart");
+    const emptyEl = document.getElementById("revenueByCityEmpty");
+    if(charts.revenueByCity){ charts.revenueByCity.destroy(); charts.revenueByCity = null; }
+    if(!chartLibReady()){ if(canvas) canvas.style.display="none"; if(emptyEl) emptyEl.classList.add("show"); return; }
+
+    const cityMap = aggregateByField(students, "city");
+    const cities = Object.keys(cityMap).filter(k => k !== "—");
+    if(!cities.length){ if(canvas) canvas.style.display = "none"; if(emptyEl) emptyEl.classList.add("show"); return; }
+    if(canvas) canvas.style.display = "block"; if(emptyEl) emptyEl.classList.remove("show");
+
+    charts.revenueByCity = new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: cities,
+        datasets: [{
+          data: cities.map(c => cityMap[c].revenue),
+          backgroundColor: "rgba(47,158,115,0.60)",
+          borderRadius: 6, maxBarThickness: 46
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmtEGP(c.raw) } } },
+        scales: {
+          y: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: "rgba(139,94,60,0.05)" } },
+          x: { ticks: { font: { size: 10, family: "Inter" } }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  function renderCollectionByGroupChart(students){
+    const canvas = document.getElementById("collectionByGroupChart");
+    const emptyEl = document.getElementById("collectionByGroupEmpty");
+    if(charts.collectionByGroup){ charts.collectionByGroup.destroy(); charts.collectionByGroup = null; }
+    if(!chartLibReady()){ if(canvas) canvas.style.display="none"; if(emptyEl) emptyEl.classList.add("show"); return; }
+
+    const groupMap = aggregateByField(students, "groupName");
+    const groups = Object.keys(groupMap).filter(k => k !== "—");
+    if(!groups.length){ if(canvas) canvas.style.display = "none"; if(emptyEl) emptyEl.classList.add("show"); return; }
+    if(canvas) canvas.style.display = "block"; if(emptyEl) emptyEl.classList.remove("show");
+
+    const rows = groups.map(g => {
+      const agg = groupMap[g];
+      const rate = agg.withPaymentRecord ? Math.round((agg.paidCount / agg.withPaymentRecord) * 100) : 0;
+      return { group: g, rate, revenue: agg.revenue };
+    });
+
+    charts.collectionByGroup = new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: rows.map(r => r.group),
+        datasets: [{
+          label: "Collection Rate",
+          data: rows.map(r => r.rate),
+          backgroundColor: "rgba(139,94,60,0.60)",
+          borderRadius: 6, maxBarThickness: 46
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw}%` } } },
+        scales: {
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(139,94,60,0.05)" } },
+          x: { ticks: { font: { size: 10, family: "Inter" } }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  function renderTopCitiesByAttendance(students){
+    const el = document.getElementById("topCitiesAttList");
+    const cityMap = aggregateByField(students, "city");
+    const cities = Object.keys(cityMap).filter(k => k !== "—");
+    const sorted = cities.map(c => ({ name: c, rate: computeFieldRate(cityMap[c]), students: cityMap[c].students }))
+      .sort((a, b) => b.rate - a.rate || b.students - a.students)
+      .slice(0, 6);
+
+    if(!sorted.length){ el.innerHTML = `<div class="empty-note">${t('emptyCityData')}</div>`; return; }
+    el.innerHTML = sorted.map((c, i) => `
+      <div class="list-row">
+        <div class="list-name">
+          <span class="rank">${i+1}</span>
+          <span class="name">${c.name}</span>
+        </div>
+        <div class="val high">${c.rate}%</div>
+      </div>
+    `).join("");
+  }
+
+  function renderTopGroupsByAttendance(students){
+    const el = document.getElementById("topGroupsAttList");
+    const groupMap = aggregateByField(students, "groupName");
+    const groups = Object.keys(groupMap).filter(k => k !== "—");
+    const sorted = groups.map(g => ({ name: g, rate: computeFieldRate(groupMap[g]), students: groupMap[g].students }))
+      .sort((a, b) => b.rate - a.rate || b.students - a.students)
+      .slice(0, 6);
+
+    if(!sorted.length){ el.innerHTML = `<div class="empty-note">${t('emptyGroupData')}</div>`; return; }
+    el.innerHTML = sorted.map((g, i) => `
+      <div class="list-row">
+        <div class="list-name">
+          <span class="rank">${i+1}</span>
+          <span class="name">${g.name}</span>
+        </div>
+        <div class="val high">${g.rate}%</div>
+      </div>
+    `).join("");
+  }
+
+  function renderTopCitiesByCollection(students){
+    const el = document.getElementById("topCitiesCollList");
+    const cityMap = aggregateByField(students, "city");
+    const cities = Object.keys(cityMap).filter(k => k !== "—");
+    const sorted = cities.map(c => ({
+      name: c, revenue: cityMap[c].revenue,
+      rate: cityMap[c].withPaymentRecord ? Math.round((cityMap[c].paidCount / cityMap[c].withPaymentRecord) * 100) : 0
+    }))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 6);
+
+    if(!sorted.length){ el.innerHTML = `<div class="empty-note">${t('emptyCityData')}</div>`; return; }
+    el.innerHTML = sorted.map((c, i) => `
+      <div class="list-row">
+        <div class="list-name">
+          <span class="rank">${i+1}</span>
+          <span class="name">${c.name}</span>
+        </div>
+        <div class="val high">${fmtEGP(c.revenue)}</div>
+      </div>
+    `).join("");
+  }
+
+  function renderTopGroupsByCollection(students){
+    const el = document.getElementById("topGroupsCollList");
+    const groupMap = aggregateByField(students, "groupName");
+    const groups = Object.keys(groupMap).filter(k => k !== "—");
+    const sorted = groups.map(g => ({
+      name: g, revenue: groupMap[g].revenue,
+      rate: groupMap[g].withPaymentRecord ? Math.round((groupMap[g].paidCount / groupMap[g].withPaymentRecord) * 100) : 0
+    }))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 6);
+
+    if(!sorted.length){ el.innerHTML = `<div class="empty-note">${t('emptyGroupData')}</div>`; return; }
+    el.innerHTML = sorted.map((g, i) => `
+      <div class="list-row">
+        <div class="list-name">
+          <span class="rank">${i+1}</span>
+          <span class="name">${g.name}</span>
+        </div>
+        <div class="val high">${fmtEGP(g.revenue)}</div>
+      </div>
+    `).join("");
+  }
+
   function renderTopAttenders(students){
     const el = document.getElementById("topAttendersList");
     const top = [...students]
@@ -2104,6 +2530,8 @@ function goBack(){
           <span class="rank">${i+1}</span>
           <span class="name">${s.name}</span>
           ${currentGrade === "all" ? `<span class="grade-chip">${tGradeLabel(s.grade)}</span>` : ""}
+          ${s.city ? `<span class="grade-chip" style="background:rgba(139,94,60,0.12); color:var(--muted);">${s.city}</span>` : ""}
+          ${s.groupName ? `<span class="grade-chip" style="background:rgba(47,158,115,0.12); color:var(--success);">${s.groupName}</span>` : ""}
         </div>
         <div class="val" style="color: ${getScoreColor(s.p, 1)}">${s.p}%</div>
       </div>
@@ -2118,6 +2546,8 @@ function goBack(){
         <div class="list-name">
           <span class="name">${s.name}</span>
           ${currentGrade === "all" ? `<span class="grade-chip">${tGradeLabel(s.grade)}</span>` : ""}
+          ${s.city ? `<span class="grade-chip" style="background:rgba(139,94,60,0.12); color:var(--muted);">${s.city}</span>` : ""}
+          ${s.groupName ? `<span class="grade-chip" style="background:rgba(47,158,115,0.12); color:var(--success);">${s.groupName}</span>` : ""}
         </div>
         ${s.studentPhone ? `<a class="phone-link" href="tel:${s.studentPhone}">${s.studentPhone}</a>` : `<span class="empty-note" style="padding:0;">—</span>`}
       </div>
@@ -2152,6 +2582,8 @@ function goBack(){
           <span class="rank">${i+1}</span>
           <span class="name">${s.name}</span>
           ${currentGrade === "all" ? `<span class="grade-chip">${tGradeLabel(s.grade)}</span>` : ""}
+          ${s.city ? `<span class="grade-chip" style="background:rgba(139,94,60,0.12); color:var(--muted);">${s.city}</span>` : ""}
+          ${s.groupName ? `<span class="grade-chip" style="background:rgba(47,158,115,0.12); color:var(--success);">${s.groupName}</span>` : ""}
           ${examCountChip(s.count)}
         </div>
         <div class="val ${valClass}" style="color: ${getScoreColor(s.avg, 1)}">${s.avg}%</div>
@@ -2183,6 +2615,8 @@ function goBack(){
     if(q){
       rows = rows.filter(s =>
         (s.name || "").toLowerCase().includes(q) ||
+        (s.city || "").toLowerCase().includes(q) ||
+        (s.groupName || "").toLowerCase().includes(q) ||
         (s.studentPhone || "").includes(q) ||
         (s.parentPhone || "").includes(q) ||
         (s.qrCode || "").toLowerCase().includes(q)
@@ -2191,7 +2625,7 @@ function goBack(){
 
     const body = document.getElementById("rosterBody");
     if(!rows.length){
-      body.innerHTML = `<tr><td colspan="10" style="text-align:center; color:var(--muted); padding:24px;">No matching results</td></tr>`;
+      body.innerHTML = `<tr><td colspan="12" style="text-align:center; color:var(--muted); padding:24px;">No matching results</td></tr>`;
       return;
     }
 
@@ -2202,6 +2636,8 @@ function goBack(){
       return `
         <tr>
           <td style="font-weight:600;">${s.name || "—"}</td>
+          <td>${s.city || "—"}</td>
+          <td>${s.groupName || "—"}</td>
           <td>${tGradeLabel(s.grade) || "—"}</td>
           <td>${s.attendanceCount}</td>
           <td>${s.absenceCount}</td>
@@ -2837,6 +3273,8 @@ function deltaBadge(curr, prev, suffix = ""){
       theme: "grid",
       head: [["Field", "Value"]],
       body: [
+        ["City", student.city || "—"],
+        ["Group", student.groupName || "—"],
         ["Student Phone", student.studentPhone || "—"],
         ["Parent Phone", student.parentPhone || "—"],
         ["Attendance", `${student.attendanceCount} present / ${student.absenceCount} absent${attRate != null ? ` (${attRate}%)` : ""}`],
@@ -2933,12 +3371,12 @@ function deltaBadge(curr, prev, suffix = ""){
     const rosterBody = students.map(s => {
       const p = pct(s.attendanceCount, s.absenceCount);
       const paymentLabel = s.paymentStatus !== "" ? (isPaid(s.paymentStatus) ? "Paid" : "Unpaid") : "—";
-      return [s.name || "—", GRADE_LABELS[s.grade] || "—", p != null ? `${p}%` : "—", paymentLabel];
+      return [s.name || "—", s.city || "—", s.groupName || "—", GRADE_LABELS[s.grade] || "—", p != null ? `${p}%` : "—", paymentLabel];
     });
     doc.autoTable({
       startY: y,
       theme: "grid",
-      head: [["Name", "Grade", "Attendance", "Payment"]],
+      head: [["Name", "City", "Group", "Grade", "Attendance", "Payment"]],
       body: rosterBody,
       headStyles: { fillColor: PDF_COLORS.gold2, textColor: 255 },
       styles: { fontSize: 9, cellPadding: 3, lineColor: [220, 207, 195], lineWidth: 0.1 },
