@@ -1735,7 +1735,7 @@
   function scanNext(){
     if(resumeTimer){ clearTimeout(resumeTimer); resumeTimer = null; }
     if(!canScan()) return;
-    resumeScannerOrStart();
+    startScanner();
   }
 
   function onScanSuccess(decodedText){
@@ -1766,7 +1766,7 @@
 
     lastScanTimes[decodedText] = Date.now();
     sending = true;
-    pauseScanner();
+    stopScanner();
 
     const webhookUrl = WEBHOOKS[currentMode];
     setLoadingStatus(currentMode === "payment" ? t('status_confirming_payment') : t('status_sending_attendance'));
@@ -1828,28 +1828,10 @@
       scannerRunning = false;
       const s = scanner;
       scanner = null;
+      // Track the teardown so startScanner() can wait for the camera to actually be released
       scannerReleasePromise = s.clear().catch(()=>{});
     }
     return scannerReleasePromise;
-  }
-
-  // Freezes the live camera feed between scans instead of tearing the camera
-  // down. Much faster than stopScanner()+startScanner(), which re-requests
-  // camera permission and rebuilds the whole UI from scratch every time.
-  function pauseScanner(){
-    if(scanner && scannerRunning){
-      try{ scanner.pause(true); }catch(e){}
-    }
-  }
-
-  // Unfreezes a paused camera feed. Falls back to a full startScanner() only
-  // if there's no live scanner to resume (e.g. right after a session start).
-  function resumeScannerOrStart(){
-    if(!canScan()) return;
-    if(scanner && scannerRunning){
-      try{ scanner.resume(); return; }catch(e){}
-    }
-    startScanner();
   }
 
   async function startScanner(){
@@ -1859,20 +1841,20 @@
     idleStatusKey = "status_wait_scanning";
     setStatus(t('status_wait_scanning'), "wait");
 
+    // Wait for any previous camera instance to fully release before requesting a new one.
+    // This is the fix for the scanner randomly hanging and requiring a page refresh:
+    // without this await, a new Html5QrcodeScanner could be created (and the #reader div
+    // wiped) before the old one's getUserMedia stream was actually stopped, leaving an
+    // orphaned camera stream that blocks the next camera request.
     try{ await scannerReleasePromise; }catch(e){}
 
+    // State may have changed while we were waiting (e.g. session ended) — bail out if so.
     if(!canScan()) return;
 
     document.getElementById("reader").innerHTML = "";
     scanner = new Html5QrcodeScanner(
       "reader",
-      {
-        fps: 20,
-        qrbox: 240,
-        rememberLastUsedCamera: true,
-        disableFlip: true,
-        formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ]
-      },
+      { fps: 12, qrbox: 240, rememberLastUsedCamera: true },
       false
     );
     scanner.render(onScanSuccess, onScanFailure);
