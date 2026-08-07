@@ -3383,14 +3383,22 @@ function deltaBadge(curr, prev, suffix = ""){
   function pdfText(value){
     const str = value == null ? "" : String(value);
     if(!ARABIC_CHAR_RE.test(str)) return str;
-    const bidiFactory = typeof bidi_js !== "undefined" ? bidi_js : window.bidi_js;
-    if(typeof ArabicReshaper === "undefined" || typeof bidiFactory !== "function") return str;
+    const bidiFactory = (typeof bidi_js !== "undefined" ? bidi_js : null)
+      || window.bidi_js || window.bidi || window.Bidi;
+    if(typeof ArabicReshaper === "undefined") return str;
     try{
-      if(!_bidiEngine) _bidiEngine = bidiFactory();
       const reshaped = ArabicReshaper.convertArabic(str);
-      const levels = _bidiEngine.getEmbeddingLevels(reshaped);
-      return _bidiEngine.getReorderedString(reshaped, levels);
-    }catch(e){ return str; }
+      if(typeof bidiFactory === "function"){
+        if(!_bidiEngine) _bidiEngine = bidiFactory();
+        const levels = _bidiEngine.getEmbeddingLevels(reshaped, "rtl");
+        return _bidiEngine.getReorderedString(reshaped, levels);
+      }
+      // Fallback when the CDN exposes no bidi factory: reverse Arabic runs only.
+      return reshaped.replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+/g,
+        run => Array.from(run).reverse().join(""));
+    }catch(e){
+      return str;
+    }
   }
 
   // Runs pdfText() over every cell of a jspdf-autotable head/body array
