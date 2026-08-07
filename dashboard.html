@@ -1028,7 +1028,6 @@
                 <th data-i18n="colParentPhone">Parent Phone</th>
                 <th data-i18n="colPayment">Payment</th>
                 <th data-i18n="colLastAttendance">Last Attendance</th>
-                <th data-i18n="colReport">Report</th>
               </tr>
             </thead>
             <tbody id="rosterBody"></tbody>
@@ -1350,7 +1349,7 @@
       filterAll: "All", filterPaid: "Paid", filterUnpaid: "Unpaid", exportExcel: "Export Excel",
       colName: "Name", colCity: "City", colGroup: "Group", colGrade: "Grade", colPresent: "Present", colAbsent: "Absent",
       colAttendanceRate: "Attendance Rate", colStudentPhone: "Student Phone", colParentPhone: "Parent Phone",
-      colPayment: "Payment", colLastAttendance: "Last Attendance", colReport: "Report",
+      colPayment: "Payment", colLastAttendance: "Last Attendance",
       colMonth: "Month", colStudents: "Students", colCollectionRate: "Collection Rate", colRevenue: "Revenue",
       colPaid: "Paid", colUnpaid: "Unpaid",
       saveCurrentMonth: "Save Current Month",
@@ -1422,7 +1421,7 @@
       filterAll: "الكل", filterPaid: "مدفوع", filterUnpaid: "غير مدفوع", exportExcel: "تصدير إكسل",
       colName: "الاسم", colCity: "المدينة", colGroup: "المجموعة", colGrade: "الصف", colPresent: "حضور", colAbsent: "غياب",
       colAttendanceRate: "نسبة الحضور", colStudentPhone: "هاتف الطالب", colParentPhone: "هاتف ولي الأمر",
-      colPayment: "الدفع", colLastAttendance: "آخر حضور", colReport: "التقرير",
+      colPayment: "الدفع", colLastAttendance: "آخر حضور",
       colMonth: "الشهر", colStudents: "الطلاب", colCollectionRate: "نسبة التحصيل", colRevenue: "الإيراد",
       colPaid: "مدفوع", colUnpaid: "غير مدفوع",
       saveCurrentMonth: "حفظ الشهر الحالي",
@@ -3043,7 +3042,6 @@ function deltaBadge(curr, prev, suffix = ""){
           <td>${fmtEGP(r[col.revenue])} ${deltaBadge(r[col.revenue], prev ? prev[col.revenue] : null, " EGP")}</td>
           <td>${r[col.paidCount]}</td>
           <td>${r[col.unpaidCount]}</td>
-          <td><button class="unpaid-link" onclick="showUnpaidModal(${origIdx})">👁 Who Hasn't Paid</button></td>
         </tr>`;
     }).join("");
     wireTopScrollbar("histScrollTop", "histScrollTopInner", "histTableWrap");
