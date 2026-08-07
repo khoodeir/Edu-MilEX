@@ -1734,7 +1734,7 @@
   function scanNext(){
     if(resumeTimer){ clearTimeout(resumeTimer); resumeTimer = null; }
     if(!canScan()) return;
-    startScanner();
+    resumeScannerOrStart();
   }
 
   function onScanSuccess(decodedText){
@@ -1765,7 +1765,7 @@
 
     lastScanTimes[decodedText] = Date.now();
     sending = true;
-    stopScanner();
+    pauseScanner();
 
     const webhookUrl = WEBHOOKS[currentMode];
     setLoadingStatus(currentMode === "payment" ? t('status_confirming_payment') : t('status_sending_attendance'));
@@ -1830,6 +1830,25 @@
       scannerReleasePromise = s.clear().catch(()=>{});
     }
     return scannerReleasePromise;
+  }
+
+  // Freezes the live camera feed between scans instead of tearing the camera
+  // down. Much faster than stopScanner()+startScanner(), which re-requests
+  // camera permission and rebuilds the whole UI from scratch every time.
+  function pauseScanner(){
+    if(scanner && scannerRunning){
+      try{ scanner.pause(true); }catch(e){}
+    }
+  }
+
+  // Unfreezes a paused camera feed. Falls back to a full startScanner() only
+  // if there's no live scanner to resume (e.g. right after a session start).
+  function resumeScannerOrStart(){
+    if(!canScan()) return;
+    if(scanner && scannerRunning){
+      try{ scanner.resume(); return; }catch(e){}
+    }
+    startScanner();
   }
 
   async function startScanner(){
