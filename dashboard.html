@@ -3383,9 +3383,10 @@ function deltaBadge(curr, prev, suffix = ""){
   function pdfText(value){
     const str = value == null ? "" : String(value);
     if(!ARABIC_CHAR_RE.test(str)) return str;
-    if(typeof ArabicReshaper === "undefined" || typeof bidi_js === "undefined") return str;
+    const bidiFactory = typeof bidi_js !== "undefined" ? bidi_js : window.bidi_js;
+    if(typeof ArabicReshaper === "undefined" || typeof bidiFactory !== "function") return str;
     try{
-      if(!_bidiEngine) _bidiEngine = bidi_js();
+      if(!_bidiEngine) _bidiEngine = bidiFactory();
       const reshaped = ArabicReshaper.convertArabic(str);
       const levels = _bidiEngine.getEmbeddingLevels(reshaped);
       return _bidiEngine.getReorderedString(reshaped, levels);
@@ -3398,6 +3399,14 @@ function deltaBadge(curr, prev, suffix = ""){
     return rows.map(row => row.map(cell => pdfText(cell)));
   }
 
+  // Draws standalone PDF text on the correct visual side in Arabic mode.
+  // This changes only PDF text placement; the dashboard and English PDFs remain unchanged.
+  function pdfDrawText(doc, value, x, y, options = {}){
+    const isAr = currentLang === "ar";
+    const opts = { ...options, align: isAr ? "right" : (options.align || "left") };
+    doc.text(pdfText(value), isAr ? 196 : x, y, opts);
+  }
+
   function pdfHeader(doc, title, subtitle){
     registerArabicFont(doc);
     const c = PDF_COLORS.gold2;
@@ -3406,17 +3415,17 @@ function deltaBadge(curr, prev, suffix = ""){
     doc.setTextColor(255,255,255);
     setPdfFont(doc, "bold");
     doc.setFontSize(18);
-    doc.text(pdfText(title), 14, 16);
+    pdfDrawText(doc, title, 14, 16);
     setPdfFont(doc, "normal");
     doc.setFontSize(10);
-    doc.text(pdfText(subtitle), 14, 24);
+    pdfDrawText(doc, subtitle, 14, 24);
   }
 
   function pdfFooterNote(doc, text){
     setPdfFont(doc, "normal");
     doc.setFontSize(8);
     doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
-    doc.text(pdfText(text), 14, 290);
+    pdfDrawText(doc, text, 14, 290);
   }
 
   async function fetchStudentExamScores(grade, qrCode){
@@ -3460,11 +3469,11 @@ function deltaBadge(curr, prev, suffix = ""){
     doc.setTextColor(PDF_COLORS.ink[0], PDF_COLORS.ink[1], PDF_COLORS.ink[2]);
     setPdfFont(doc, "bold");
     doc.setFontSize(14);
-    doc.text(pdfText(student.name || "—"), 14, 44);
+    pdfDrawText(doc, student.name || "—", 14, 44);
     setPdfFont(doc, "normal");
     doc.setFontSize(10);
     doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
-    doc.text(pdfText(tGradeLabel(student.grade) || "—"), 14, 50);
+    pdfDrawText(doc, tGradeLabel(student.grade) || "—", 14, 50);
 
     const attRate = pct(student.attendanceCount, student.absenceCount);
     const paid = isPaid(student.paymentStatus);
@@ -3496,7 +3505,7 @@ function deltaBadge(curr, prev, suffix = ""){
       setPdfFont(doc, "normal");
       doc.setFontSize(12);
       doc.setTextColor(PDF_COLORS.ink[0], PDF_COLORS.ink[1], PDF_COLORS.ink[2]);
-      doc.text(pdfText(t("rptExamScores")), 14, y);
+      pdfDrawText(doc, t("rptExamScores"), 14, y);
       y += 4;
 
       let sumPct = 0, cnt = 0;
@@ -3523,13 +3532,13 @@ function deltaBadge(curr, prev, suffix = ""){
       setPdfFont(doc, "normal");
       doc.setFontSize(11);
       doc.setTextColor(avgColor[0], avgColor[1], avgColor[2]);
-      doc.text(pdfText(`${t("rptOverallAverage")}: ${avg != null ? avg + "%" : "—"}`), 14, y);
+      pdfDrawText(doc, `${t("rptOverallAverage")}: ${avg != null ? avg + "%" : "—"}`, 14, y);
       y += 10;
     } else {
       setPdfFont(doc, "normal");
       doc.setFontSize(10);
       doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
-      doc.text(pdfText(t("rptNoExamScores")), 14, y);
+      pdfDrawText(doc, t("rptNoExamScores"), 14, y);
       y += 10;
     }
 
@@ -3574,7 +3583,7 @@ function deltaBadge(curr, prev, suffix = ""){
     setPdfFont(doc, "normal");
     doc.setFontSize(12);
     doc.setTextColor(PDF_COLORS.ink[0], PDF_COLORS.ink[1], PDF_COLORS.ink[2]);
-    doc.text(pdfText(t("rptStudentRoster")), 14, y);
+    pdfDrawText(doc, t("rptStudentRoster"), 14, y);
     y += 4;
 
     const rosterBody = students.map(s => {
@@ -3606,7 +3615,7 @@ function deltaBadge(curr, prev, suffix = ""){
       setPdfFont(doc, "normal");
       doc.setFontSize(12);
       doc.setTextColor(PDF_COLORS.ink[0], PDF_COLORS.ink[1], PDF_COLORS.ink[2]);
-      doc.text(pdfText(t("rptExamAverages")), 14, y);
+      pdfDrawText(doc, t("rptExamAverages"), 14, y);
       y += 4;
       doc.autoTable({
         startY: y,
@@ -3659,7 +3668,7 @@ function deltaBadge(curr, prev, suffix = ""){
     setPdfFont(doc, "normal");
     doc.setFontSize(12);
     doc.setTextColor(PDF_COLORS.ink[0], PDF_COLORS.ink[1], PDF_COLORS.ink[2]);
-    doc.text(pdfText(t("colWhoUnpaid")), 14, y);
+    pdfDrawText(doc, t("colWhoUnpaid"), 14, y);
     y += 4;
 
     const unpaidList = row[col.unpaidStudents] || [];
@@ -3677,7 +3686,7 @@ function deltaBadge(curr, prev, suffix = ""){
       setPdfFont(doc, "normal");
       doc.setFontSize(10);
       doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
-      doc.text(pdfText(t("everyonePaidMonth")), 14, y);
+      pdfDrawText(doc, t("everyonePaidMonth"), 14, y);
     }
 
     pdfFooterNote(doc, t("rptFooterMonthly"));
