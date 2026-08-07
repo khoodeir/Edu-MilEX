@@ -2732,8 +2732,6 @@ function goBack(){
           <td>${s.parentPhone ? `<a class="phone-link" href="tel:${s.parentPhone}">${s.parentPhone}</a>` : "—"}</td>
           <td>${hasPaymentRecord ? `<span class="chip ${paid ? 'paid' : 'unpaid'}">${paid ? t('filterPaid') : t('filterUnpaid')}</span>` : "—"}</td>
           <td>${s.lastAttendance || "—"}</td>
-          <td><button class="unpaid-link" onclick="showPaymentHistory('${s.qrCode}', '${(s.name||"").replace(/'/g,"\\'")}')" title="سجل الدفع الشهري">📅 عرض</button></td>
-        </tr>`;
         </tr>`;
     }).join("");
     wireTopScrollbar("rosterScrollTop", "rosterScrollTopInner", "rosterTableWrap");
@@ -3080,16 +3078,6 @@ function deltaBadge(curr, prev, suffix = ""){
     document.getElementById("unpaidModalOverlay").classList.remove("show");
   }
 
-  <div class="modal-overlay" id="paymentHistoryModalOverlay" onclick="if(event.target===this) closePaymentHistoryModal()">
-  <div class="modal-box">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-      <div class="section-title" id="paymentHistoryTitle" style="margin-bottom:0;"></div>
-      <button class="modal-close" onclick="closePaymentHistoryModal()">×</button>
-    </div>
-    <div id="paymentHistoryBody"></div>
-  </div>
-</div>
-
   /* ============================================================
      EXAM GRADES (dynamic columns, driven by an "الامتحانات" table)
      ============================================================ */
@@ -3291,42 +3279,6 @@ function deltaBadge(curr, prev, suffix = ""){
     document.getElementById("studentTrendModalOverlay").classList.remove("show");
   }
 
-
-   async function showPaymentHistory(qrCode, name){
-  document.getElementById("paymentHistoryTitle").textContent = `📅 سجل الدفع – ${name}`;
-  document.getElementById("paymentHistoryBody").innerHTML = `<div class="empty-note"><span class="spinner"></span> جاري التحميل…</div>`;
-  document.getElementById("paymentHistoryModalOverlay").classList.add("show");
-  try{
-    const [{ data: allRows, error: allErr }, { data: rows, error }] = await Promise.all([
-      supa.from("payment_history").select("month,year"),
-      supa.from("payment_history").select("month,year,amount_paid").eq("qr_code", qrCode)
-    ]);
-    if(allErr) throw allErr;
-    if(error) throw error;
-
-    const allPeriods = new Set();
-    (allRows || []).forEach(r => allPeriods.add(`${r.year}-${String(r.month).padStart(2,'0')}`));
-    const paidPeriods = new Set((rows || []).map(r => `${r.year}-${String(r.month).padStart(2,'0')}`));
-    const sortedAll = [...allPeriods].sort();
-    const paidList = sortedAll.filter(p => paidPeriods.has(p));
-    const unpaidList = sortedAll.filter(p => !paidPeriods.has(p));
-
-    document.getElementById("paymentHistoryBody").innerHTML = `
-      <div style="margin-bottom:16px;">
-        <div style="font-weight:700; color:var(--success); margin-bottom:8px;">✅ الشهور المدفوعة (${paidList.length})</div>
-        ${paidList.length ? paidList.map(p => `<span class="chip paid" style="margin:3px; display:inline-block;">${p}</span>`).join("") : `<div class="empty-note">لا توجد شهور مدفوعة</div>`}
-      </div>
-      <div>
-        <div style="font-weight:700; color:var(--error); margin-bottom:8px;">❌ الشهور غير المدفوعة (${unpaidList.length})</div>
-        ${unpaidList.length ? unpaidList.map(p => `<span class="chip unpaid" style="margin:3px; display:inline-block;">${p}</span>`).join("") : `<div class="empty-note">لا توجد شهور غير مدفوعة</div>`}
-      </div>`;
-  }catch(err){
-    document.getElementById("paymentHistoryBody").innerHTML = `<div class="empty-note" style="color:var(--error);">تعذر تحميل بيانات الدفع: ${err.message || err}</div>`;
-  }
-}
-function closePaymentHistoryModal(){
-  document.getElementById("paymentHistoryModalOverlay").classList.remove("show");
-}
   /* ---------- Startup: Restore saved theme and language ---------- */
   setTheme(currentTheme);
   setLanguage(currentLang);
