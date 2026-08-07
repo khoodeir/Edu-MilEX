@@ -988,7 +988,8 @@
       stat_attendance:"Attendance", stat_absence:"Absence", stat_month:"Month", stat_egp:"EGP",
       stat_status:"Status", chip_paid:"Paid",
       next_scan_btn:"Scan Next Student",
-      auto_resume_note:"Next scan opens automatically in {s}s"
+      auto_resume_note:"Next scan opens automatically in {s}s",
+      status_generic_error:"Something went wrong"
     },
     ar: {
       title_settings:"الإعدادات", title_back:"رجوع",
@@ -1030,7 +1031,8 @@
       stat_attendance:"الحضور", stat_absence:"الغياب", stat_month:"الشهر", stat_egp:"جنيه",
       stat_status:"الحالة", chip_paid:"مدفوع",
       next_scan_btn:"مسح الطالب التالي",
-      auto_resume_note:"سيبدأ المسح التالي تلقائيًا خلال {s}ث"
+      auto_resume_note:"سيبدأ المسح التالي تلقائيًا خلال {s}ث",
+      status_generic_error:"حدث خطأ ما"
     }
   };
 
@@ -1239,7 +1241,7 @@
     }, 1000);
   }
 
-  const RESULT_DISPLAY_MS = 1500;
+  const RESULT_DISPLAY_MS = 2000;
 
   let settings = {
     defaultFee: "",
@@ -1775,7 +1777,8 @@
       grade: currentGrade,
       grade_label: GRADE_LABELS_EN[currentGrade],
       group: currentGroup,
-      group_label: GROUP_LABELS_EN[currentGroup]
+      group_label: GROUP_LABELS_EN[currentGroup],
+      lang: currentLang
     };
     if(currentMode === "payment"){
       payload.month = month;
@@ -1798,7 +1801,7 @@
         pushHistory(s.name || "Student", s.time || "", true);
         beep("success");
       } else {
-        const msg = data.message || "Something went wrong";
+        const msg = data.message || t('status_generic_error');
         const alreadyRecorded = data.already_recorded || /already|مسجل|مدفوع/i.test(msg);
         setStatus((alreadyRecorded ? "🔴 " : "⚠️ ") + msg, alreadyRecorded ? "error" : "warning", false);
         document.getElementById("scanFrame").classList.add("locked");
@@ -1843,7 +1846,13 @@
     document.getElementById("reader").innerHTML = "";
     scanner = new Html5QrcodeScanner(
       "reader",
-      { fps: 12, qrbox: 240, rememberLastUsedCamera: true },
+      {
+        fps: 20,
+        qrbox: 240,
+        rememberLastUsedCamera: true,
+        disableFlip: true,
+        formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ]
+      },
       false
     );
     scanner.render(onScanSuccess, onScanFailure);
