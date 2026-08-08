@@ -963,7 +963,9 @@
       confirm_end_session:"End the attendance session for everyone currently scanning?",
       result_attendance_title:"Attendance Recorded", result_payment_title:"Payment Confirmed",
       stat_attendance:"Attendance", stat_absence:"Absence", stat_month:"Month", stat_egp:"EGP",
-      stat_status:"Status", chip_paid:"Paid",
+      stat_status:"Status", chip_paid:"Paid", chip_unpaid:"Unpaid",
+      stat_payment:"Payment", stat_last_session:"Last Session",
+      chip_present:"Attended", chip_absent:"Absent", chip_unknown:"–",
       next_scan_btn:"Scan Next Student",
       auto_resume_note:"Next scan opens automatically in {s}s",
       status_generic_error:"Something went wrong"
@@ -1006,7 +1008,9 @@
       confirm_end_session:"هل تريد إنهاء جلسة الحضور لكل من يقوم بالمسح الآن؟",
       result_attendance_title:"تم تسجيل الحضور", result_payment_title:"تم تأكيد الدفع",
       stat_attendance:"الحضور", stat_absence:"الغياب", stat_month:"الشهر", stat_egp:"جنيه",
-      stat_status:"الحالة", chip_paid:"مدفوع",
+      stat_status:"الحالة", chip_paid:"مدفوع", chip_unpaid:"غير مدفوع",
+      stat_payment:"الاشتراك", stat_last_session:"الحصة السابقة",
+      chip_present:"حضر", chip_absent:"غايب", chip_unknown:"–",
       next_scan_btn:"مسح الطالب التالي",
       auto_resume_note:"سيبدأ المسح التالي تلقائيًا خلال {s}ث",
       status_generic_error:"حدث خطأ ما"
@@ -1603,10 +1607,26 @@
 
     let statsHtml = "";
     if(kind === "attendance"){
+      // payment_status comes back as "Paid" / "Unpaid" (case-insensitive).
+      const isPaid = String(s.payment_status ?? "").toLowerCase() === "paid";
+      const hasPaymentInfo = s.payment_status != null && s.payment_status !== "";
+      const paymentChipClass = hasPaymentInfo ? (isPaid ? "paid" : "unpaid") : "";
+      const paymentChipLabel = hasPaymentInfo ? (isPaid ? t('chip_paid') : t('chip_unpaid')) : t('chip_unknown');
+
+      // last_session_status comes back as "Present" / "Absent" (case-insensitive).
+      const hasLastSessionInfo = s.last_session_status != null && s.last_session_status !== "";
+      const wasPresent = String(s.last_session_status ?? "").toLowerCase() === "present";
+      const lastSessionChipClass = hasLastSessionInfo ? (wasPresent ? "paid" : "unpaid") : "";
+      const lastSessionChipLabel = hasLastSessionInfo ? (wasPresent ? t('chip_present') : t('chip_absent')) : t('chip_unknown');
+
       statsHtml = `
         <div class="result-stats">
           <div class="result-stat"><div class="num">${s.attendance_count ?? "–"}</div><div class="lab">${t('stat_attendance')}</div></div>
           <div class="result-stat"><div class="num">${s.absence_count ?? "–"}</div><div class="lab">${t('stat_absence')}</div></div>
+        </div>
+        <div class="result-stats">
+          <div class="result-stat"><div class="chip ${paymentChipClass}">${paymentChipLabel}</div><div class="lab">${t('stat_payment')}</div></div>
+          <div class="result-stat"><div class="chip ${lastSessionChipClass}">${lastSessionChipLabel}</div><div class="lab">${t('stat_last_session')}</div></div>
         </div>`;
     } else {
       statsHtml = `
