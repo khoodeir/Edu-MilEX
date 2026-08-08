@@ -1222,7 +1222,7 @@
     }, 1000);
   }
 
-  const RESULT_DISPLAY_MS = 5000;
+  const RESULT_DISPLAY_MS = 3000;
 
   let settings = {
     defaultFee: "",
@@ -1645,7 +1645,7 @@
         <div class="result-student">
           ${photoHtml}
           <div>
-            <div class="result-name">${s.name ?? ""}</div>
+            <div class="result-name">${s.name ?? s.full_name ?? ""}</div>
             <div class="result-sub">${kind === "payment" ? (s.time ?? "") : `${s.grade ?? gradeLabel(currentGrade)} · ${s.time ?? ""}`}</div>
           </div>
         </div>
@@ -1795,7 +1795,7 @@
       if(data.success){
         const s = data.student || {};
         renderResultCard(currentMode, s, { month, amount }, true);
-        pushHistory(s.name || "Student", s.time || "", true);
+        pushHistory(s.name || s.full_name || "Student", s.time || "", true);
         beep("success");
       } else {
         const msg = data.message || t('status_generic_error');
