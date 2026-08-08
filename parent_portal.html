@@ -245,10 +245,30 @@
   clear:both !important;
   width:auto;
 }
+
+  .watermark{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+.watermark img{
+  width:60vw;
+  max-width:640px;
+  opacity:0.05;
+  filter:grayscale(100%);
+}
+.wrap{ position:relative; z-index:1; }
 </style>
 </head>
 <body>
-
+<div class="brand-mark">
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoYAAAHtCAYAAACEUb99AABhLElEQVR4nO3dZ...">
+</div>
 <div class="wrap">
 
   <a class="back-top-btn" href="index.html">
