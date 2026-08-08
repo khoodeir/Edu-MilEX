@@ -6,8 +6,6 @@
 <title>تقرير الطالب | بوابة ولي الأمر</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -297,8 +295,6 @@
       </div>
       <div class="head-actions">
         <button class="back-btn" onclick="resetToSearch()"><span id="backArrow">↩</span> <span data-i18n="backBtn">بحث جديد</span></button>
-        <button class="pdf-btn" onclick="downloadParentReport()">📄 <span data-i18n="pdfBtn">تحميل تقرير PDF</span></button>
-      </div>
     </div>
 
     <div class="kpi-grid">
@@ -447,7 +443,7 @@
       searchHint: "أدخل رقم الهاتف المسجل (هاتفك أو هاتف ابنك) أو كود الـ QR الخاص بالطالب، أو اضغط \"مسح QR\" لتصوير الكود مباشرة بالكاميرا.",
       loading: "جاري البحث…",
       emptyTitle: "لم يتم العثور على نتائج", emptyDesc: "تأكد من كتابة الرقم كما هو مسجل لدى المركز، أو جرّب كود الـ QR.",
-      backBtn: "بحث جديد", pdfBtn: "تحميل تقرير PDF",
+      backBtn: "بحث جديد",
       kAttRateLabel: "نسبة الحضور", kLastAttLabel: "آخر حضور", kLastAttSub: "تاريخ آخر يوم حضور مسجّل",
       kPayLabel: "حالة الدفع", kExamLabel: "متوسط الامتحانات",
       attChartTitle: "الحضور والغياب", examChartTitle: "تطور درجات الامتحانات",
@@ -463,7 +459,6 @@
       examsRecorded: (n) => `${n} امتحان مسجّل`, noExamsYet: "لا توجد امتحانات مسجّلة لهذا الصف بعد",
       searchErrTitle: "تعذّر البحث", loadErrTitle: "تعذّر تحميل بيانات الطالب",
       cameraErr: "تعذّر تشغيل الكاميرا — تأكد من السماح بالوصول للكاميرا من إعدادات المتصفح.",
-      libFailPdf: "تعذّر تحميل مكتبة PDF — تحقق من الاتصال بالإنترنت وحاول مرة أخرى.",
       gradeLabels: Object.fromEntries(GRADES.map(g => [g, GRADE_LABELS[g].ar]))
     },
     en: {
@@ -475,7 +470,7 @@
       searchHint: "Enter the registered phone number (yours or your child's) or the student's QR code, or press \"Scan QR\" to scan it with your camera.",
       loading: "Searching…",
       emptyTitle: "No results found", emptyDesc: "Double-check the number as registered with the center, or try the QR code.",
-      backBtn: "New search", pdfBtn: "Download PDF report",
+      backBtn: "New search",
       kAttRateLabel: "Attendance Rate", kLastAttLabel: "Last Attendance", kLastAttSub: "Date of the last recorded attendance",
       kPayLabel: "Payment Status", kExamLabel: "Exam Average",
       attChartTitle: "Attendance vs. Absence", examChartTitle: "Exam Score Trend",
@@ -491,7 +486,6 @@
       examsRecorded: (n) => `${n} exam${n===1?"":"s"} recorded`, noExamsYet: "No exams recorded for this grade yet",
       searchErrTitle: "Couldn't search", loadErrTitle: "Couldn't load student data",
       cameraErr: "Couldn't start the camera — check camera permissions in your browser settings.",
-      libFailPdf: "The PDF library failed to load — check your connection and try again.",
       gradeLabels: Object.fromEntries(GRADES.map(g => [g, GRADE_LABELS[g].en]))
     }
   };
@@ -848,96 +842,6 @@
     }
   }
 
-  /* ---------- PDF download for the parent ---------- */
-  const PDF_COLORS = { gold: [154, 30, 30], gold2: [94, 20, 20], ink: [43, 43, 43], success: [47, 158, 115], error: [196, 72, 90], muted: [124, 120, 115] };
-
-  function downloadParentReport(){
-    if(typeof window.jspdf === "undefined"){ alert(t('libFailPdf')); return; }
-    const s = currentStudent;
-    if(!s){ return; }
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    doc.setFillColor(PDF_COLORS.gold2[0], PDF_COLORS.gold2[1], PDF_COLORS.gold2[2]);
-    doc.rect(0, 0, 210, 32, "F");
-    doc.setTextColor(255,255,255);
-    doc.setFontSize(18);
-    doc.text("Student Report", 14, 16);
-    doc.setFontSize(10);
-    doc.text(`Generated ${new Date().toLocaleString("en-US")}`, 14, 24);
-
-    doc.setTextColor(PDF_COLORS.ink[0], PDF_COLORS.ink[1], PDF_COLORS.ink[2]);
-    doc.setFontSize(14);
-    doc.text(s.name || "—", 14, 44);
-    doc.setFontSize(10);
-    doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
-    doc.text(I18N.en.gradeLabels[s.grade] || "—", 14, 50);
-
-    const attRate = pct(s.attendanceCount, s.absenceCount);
-    const paid = isPaid(s.paymentStatus);
-    const hasPaymentRecord = s.paymentStatus !== "";
-
-    doc.autoTable({
-      startY: 58, theme: "grid", head: [["Field", "Value"]],
-      body: [
-        ["Student Phone", s.studentPhone || "—"],
-        ["Parent Phone", s.parentPhone || "—"],
-        ["City", s.city || "—"],
-        ["Group", s.groupName || "—"],
-        ["Attendance", `${s.attendanceCount} present / ${s.absenceCount} absent${attRate != null ? ` (${attRate}%)` : ""}`],
-        ["Last Attendance", s.lastAttendance || "—"],
-        ["Payment Status", hasPaymentRecord ? (paid ? "Paid" : "Unpaid") : "No record"],
-        ["Amount Paid", fmtEGP(s.amountPaid)],
-        ["Last Payment Date", s.lastPaymentDate || "—"]
-      ],
-      headStyles: { fillColor: PDF_COLORS.gold, textColor: 255 },
-      styles: { fontSize: 10, cellPadding: 4, lineColor: [220, 207, 195], lineWidth: 0.1 },
-      margin: { left: 14, right: 14 }
-    });
-
-    let y = doc.lastAutoTable.finalY + 10;
-    const validScores = currentExamRows.filter(e => e.score != null);
-
-    if(currentExamRows.length){
-      doc.setFontSize(12);
-      doc.setTextColor(PDF_COLORS.ink[0], PDF_COLORS.ink[1], PDF_COLORS.ink[2]);
-      doc.text("Exam Scores", 14, y);
-      y += 4;
-
-      const body = currentExamRows.map(e => {
-        if(e.score == null) return [e.name, "—", `${e.maxScore}`, "—"];
-        const p = Math.round((e.score / e.maxScore) * 100);
-        return [e.name, e.score, e.maxScore, `${p}%`];
-      });
-
-      doc.autoTable({
-        startY: y, theme: "grid", head: [["Exam", "Score", "Out of", "Percentage"]], body,
-        headStyles: { fillColor: PDF_COLORS.gold, textColor: 255 },
-        styles: { fontSize: 10, cellPadding: 4, lineColor: [220, 207, 195], lineWidth: 0.1 },
-        margin: { left: 14, right: 14 }
-      });
-
-      y = doc.lastAutoTable.finalY + 8;
-      const avg = validScores.length
-        ? Math.round(validScores.reduce((sum,e) => sum + (e.score / e.maxScore) * 100, 0) / validScores.length)
-        : null;
-      const avgColor = avg != null && avg >= 60 ? PDF_COLORS.success : PDF_COLORS.error;
-      doc.setFontSize(11);
-      doc.setTextColor(avgColor[0], avgColor[1], avgColor[2]);
-      doc.text(`Overall Average: ${avg != null ? avg + "%" : "—"}`, 14, y);
-    } else {
-      doc.setFontSize(10);
-      doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
-      doc.text("No exam scores recorded for this student yet.", 14, y);
-    }
-
-    doc.setFontSize(8);
-    doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
-    doc.text("Generated from the Parent Portal — data reflects the moment this report was created.", 14, 290);
-
-    doc.save(`${(s.name || "student").trim().replace(/\s+/g, "_")}_report.pdf`);
-  }
 
   /* ---------- Startup ---------- */
   setLanguage(currentLang);
