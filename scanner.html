@@ -825,7 +825,7 @@
   const WEBHOOKS = {
     attendance: "https://helmet-handrail-skipper.ngrok-free.dev/webhook-test/scanner",
     payment:    "https://helmet-handrail-skipper.ngrok-free.dev/webhook/scanner",
-    session:    "https://helmet-handrail-skipper.ngrok-free.dev/webhook-test/Attendance_Session_Manager"
+    session:    "https://helmet-handrail-skipper.ngrok-free.dev/webhook/Attendance_Session_Manager"
   };
 
   const SUPABASE_URL = "https://utrchkjtrpmdmbxnortt.supabase.co";
@@ -1222,7 +1222,7 @@
     }, 1000);
   }
 
-  const RESULT_DISPLAY_MS = 1100;
+  const RESULT_DISPLAY_MS = 5000;
 
   let settings = {
     defaultFee: "",
@@ -1613,9 +1613,9 @@
       const paymentChipClass = hasPaymentInfo ? (isPaid ? "paid" : "unpaid") : "";
       const paymentChipLabel = hasPaymentInfo ? (isPaid ? t('chip_paid') : t('chip_unpaid')) : t('chip_unknown');
 
-      // last_session_status comes back as "Present" / "Absent" (case-insensitive).
-      const hasLastSessionInfo = s.last_session_status != null && s.last_session_status !== "";
-      const wasPresent = String(s.last_session_status ?? "").toLowerCase() === "present";
+      // previous_session_status comes back as "Present" / "Absent" (case-insensitive).
+      const hasLastSessionInfo = s.previous_session_status != null && s.previous_session_status !== "";
+      const wasPresent = String(s.previous_session_status ?? "").toLowerCase() === "present";
       const lastSessionChipClass = hasLastSessionInfo ? (wasPresent ? "paid" : "unpaid") : "";
       const lastSessionChipLabel = hasLastSessionInfo ? (wasPresent ? t('chip_present') : t('chip_absent')) : t('chip_unknown');
 
