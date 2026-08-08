@@ -1299,7 +1299,7 @@
       colAttendanceRate: "Attendance Rate", colStudentPhone: "Student Phone", colParentPhone: "Parent Phone",
       colPayment: "Payment", colMonthsPaid: "Months Paid", colLastAttendance: "Last Attendance",
       colMonth: "Month", colStudents: "Students", colCollectionRate: "Collection Rate", colRevenue: "Revenue",
-      colPaid: "Paid", colUnpaid: "Unpaid",
+      colPaid: "Paid", colUnpaid: "Unpaid", colWhoUnpaid: "Who Hasn't Paid",
       saveCurrentMonth: "Save Current Month",
       secAttCollTrend: "Attendance & Collection Rate", tagTrend: "Trend",
       secRevenueByMonth: "Revenue by Month",
@@ -1376,7 +1376,7 @@
       colAttendanceRate: "نسبة الحضور", colStudentPhone: "هاتف الطالب", colParentPhone: "هاتف ولي الأمر",
       colPayment: "الدفع", colMonthsPaid: "الشهور المدفوعة", colLastAttendance: "آخر حضور",
       colMonth: "الشهر", colStudents: "الطلاب", colCollectionRate: "نسبة التحصيل", colRevenue: "الإيراد",
-      colPaid: "مدفوع", colUnpaid: "غير مدفوع",
+      colPaid: "مدفوع", colUنpaid: "غير مدفوع", colWhoUnpaid: "من لم يدفع",
       saveCurrentMonth: "حفظ الشهر الحالي",
       secAttCollTrend: "نسبة الحضور والتحصيل", tagTrend: "اتجاه",
       secRevenueByMonth: "الإيراد حسب الشهر",
@@ -2950,7 +2950,7 @@ function deltaBadge(curr, prev, suffix = ""){
       const olderRows = rows.slice(0, rows.length - 1 - idx);
       const prev = olderRows.length ? olderRows[olderRows.length - 1] : null;
       const origIdx = rows.length - 1 - idx;
-      return `
+     return `
         <tr>
           <td style="font-weight:600;">${monthLabel(r[col.year], r[col.month])}</td>
           <td>${r[col.students]}</td>
@@ -2959,6 +2959,7 @@ function deltaBadge(curr, prev, suffix = ""){
           <td>${fmtEGP(r[col.revenue])} ${deltaBadge(r[col.revenue], prev ? prev[col.revenue] : null, " EGP")}</td>
           <td>${r[col.paidCount]}</td>
           <td>${r[col.unpaidCount]}</td>
+          <td><button class="unpaid-link" onclick="showUnpaidModal(${origIdx})">👀 ${t('viewBtn')}</button></td>
         </tr>`;
     }).join("");
     wireTopScrollbar("histScrollTop", "histScrollTopInner", "histTableWrap");
