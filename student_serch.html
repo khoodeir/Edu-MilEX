@@ -237,78 +237,6 @@
     display:inline-block; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600;
     background:rgba(139,31,31,0.12); color:var(--gold-2);
   }
-  .payment-history-modal{
-  max-width:560px;
-}
-
-.payment-history-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:18px;
-}
-
-.payment-history-header h3{
-  margin:0;
-  font-family:'Cairo',sans-serif;
-  font-size:20px;
-  font-weight:800;
-  color:var(--gold-2);
-}
-
-.payment-history-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 4px;
-  border-bottom:1px solid var(--line);
-}
-
-.payment-history-row:last-child{
-  border-bottom:none;
-}
-
-.payment-month{
-  font-family:'Cairo',sans-serif;
-  font-size:13px;
-  font-weight:600;
-  color:var(--ink);
-}
-
-.payment-amount{
-  direction:ltr;
-  color:var(--success);
-  font-size:14px;
-  font-weight:800;
-}
-
-.payment-history-total{
-  text-align:center;
-  margin-top:8px;
-  padding-top:16px;
-  border-top:2px solid var(--line);
-  color:var(--muted);
-  font-family:'Cairo',sans-serif;
-  font-size:13px;
-}
-
-  .payment-history-btn{
-  border:none;
-  background:rgba(139,31,31,0.09);
-  color:var(--gold-2);
-  cursor:pointer;
-  font-family:'Inter',sans-serif;
-  font-weight:700;
-  font-size:11px;
-  padding:6px 11px;
-  border-radius:8px;
-  transition:all .15s ease;
-  white-space:nowrap;
-}
-
-.payment-history-btn:hover{
-  background:var(--gold-soft);
-}
 
   .footer-note{ text-align:center; font-size:11.5px; color:var(--muted); margin-top:24px; display:flex; align-items:center; justify-content:center; gap:7px; }
   .footer-note::before{ content:"🔒"; font-size:11px; }
@@ -953,12 +881,6 @@
           <td style="display:flex; gap:6px;">
             <button class="trend-btn" onclick="showStudentTrend('${s.qrCode}','${s.grade}','${safeName}')" title="${tr.thExams}">📈</button>
             <button class="trend-btn" onclick="showStudentGrades('${s.qrCode}','${s.grade}','${safeName}')" title="${tr.thExams}">📋</button>
-            <button
-            class="payment-history-btn"
-           onclick="showPaymentHistory('${s.qrCode}', '${safeName}')"
-           title="سجل المدفوعات">
-           🧾 عرض
-           </button>
           </td>
           <td>
             <button class="trend-btn" onclick="showStudentQr('${safeQrUrl}','${safeName}')" title="${tr.thQr}">🔳</button>
@@ -1241,22 +1163,5 @@
 
   loadData();
 </script>
-  <div class="modal-overlay" id="paymentHistoryModal">
-  <div class="modal-box payment-history-modal">
-
-    <div class="payment-history-header">
-      <h3 id="paymentHistoryTitle">سجل المدفوعات</h3>
-
-      <button
-        class="modal-close"
-        onclick="closePaymentHistory()">
-        ×
-      </button>
-    </div>
-
-    <div id="paymentHistoryContent"></div>
-
-  </div>
-</div>
 </body>
 </html>
