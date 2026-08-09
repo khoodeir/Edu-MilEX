@@ -424,6 +424,17 @@
   </div>
 </div>
 
+<!-- Student paid months modal -->
+<div class="modal-overlay" id="studentPaidMonthsModalOverlay" onclick="if(event.target===this) closeStudentPaidMonthsModal()">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div class="section-title" id="studentPaidMonthsTitle" style="margin-bottom:0;"></div>
+      <button class="modal-close" onclick="closeStudentPaidMonthsModal()">×</button>
+    </div>
+    <div id="studentPaidMonthsBody"></div>
+  </div>
+</div>
+
 <script>
   /* ============================================================
      SUPABASE CONNECTION — same database as the main dashboard
@@ -876,7 +887,11 @@
           <td>${hasPaymentRecord ? `<span class="chip ${paid ? 'paid' : 'unpaid'}">${paid ? tr.paid : tr.unpaid}</span>` : tr.dash}</td>
           <td>${s.lastAttendance || tr.dash}</td>
           <td>
-            ${s.paidMonths && s.paidMonths.length > 0 ? `<span class="months-badge">${s.paidMonths.map(m => m.month + '/' + m.year).join(', ')}</span>` : tr.dash}
+            ${s.paidMonths && s.paidMonths.length > 0 ? `
+              <button class="trend-btn" style="background:var(--success-soft); color:var(--success); display:inline-flex; align-items:center; gap:5px;" onclick="showStudentPaidMonths('${safeName}', '${encodeURIComponent(JSON.stringify(s.paidMonths))}')" title="عرض تفاصيل الشهور المدفوعة">
+                📅 ${s.paidMonths.length} شهر (عرض)
+              </button>
+            ` : tr.dash}
           </td>
           <td style="display:flex; gap:6px;">
             <button class="trend-btn" onclick="showStudentTrend('${s.qrCode}','${s.grade}','${safeName}')" title="${tr.thExams}">📈</button>
@@ -1140,6 +1155,77 @@
 
   function closeStudentQrModal(){
     document.getElementById("studentQrModalOverlay").classList.remove("show");
+  }
+
+  /* ---------- Student paid months modal ---------- */
+  function showStudentPaidMonths(name, encodedJson){
+    const overlay = document.getElementById("studentPaidMonthsModalOverlay");
+    const titleEl = document.getElementById("studentPaidMonthsTitle");
+    const bodyEl = document.getElementById("studentPaidMonthsBody");
+
+    titleEl.textContent = `${name} — الشهور المدفوعة`;
+    bodyEl.innerHTML = "";
+    overlay.classList.add("show");
+
+    let months = [];
+    try {
+      months = JSON.parse(decodeURIComponent(encodedJson));
+    } catch(e) {
+      months = [];
+    }
+
+    if(!months.length){
+      bodyEl.innerHTML = `<div style="text-align:center; color:var(--muted); padding:24px 0;">لا توجد شهور مدفوعة مسجلة</div>`;
+      return;
+    }
+
+    const totalAmount = months.reduce((sum, m) => sum + Number(m.amount_paid || m.amount || 0), 0);
+
+    let html = `
+      <div style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; background:var(--paper); padding:12px 16px; border-radius:10px; border:1px solid var(--line);">
+        <div>
+          <span style="font-size:12px; color:var(--muted); display:block;">إجمالي عدد الشهور المدفوعة</span>
+          <span style="font-size:16px; font-weight:700; color:var(--gold-2);">${months.length} شهر</span>
+        </div>
+        ${totalAmount > 0 ? `
+        <div style="text-align:left;">
+          <span style="font-size:12px; color:var(--muted); display:block;">إجمالي المبلغ المدفوع</span>
+          <span class="num" style="font-size:16px; font-weight:700; color:var(--success);">${totalAmount} ج.م</span>
+        </div>` : ''}
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+    `;
+
+    months.forEach((m) => {
+      const monthNum = m.month || '-';
+      const yearNum = m.year || '-';
+      const amount = m.amount_paid || m.amount || null;
+      const paymentDate = m.created_at || m.paymentDate || null;
+      
+      html += `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:var(--card); border:1px solid var(--line); border-radius:10px; transition:transform .1s ease;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:36px; height:36px; border-radius:8px; background:var(--success-soft); color:var(--success); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;">
+              ✓
+            </div>
+            <div>
+              <div style="font-weight:700; font-size:14px; color:var(--ink);">شهر ${monthNum} لسنة ${yearNum}</div>
+              ${paymentDate ? `<div style="font-size:11.5px; color:var(--muted); margin-top:2px;">تاريخ الدفع: ${new Date(paymentDate).toLocaleDateString('ar-EG')}</div>` : ''}
+            </div>
+          </div>
+          <div>
+            ${amount != null && amount > 0 ? `<span class="chip paid" style="font-size:12px; padding:4px 10px;">${amount} ج.م</span>` : `<span class="chip paid" style="font-size:12px; padding:4px 10px;">مدفوع</span>`}
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    bodyEl.innerHTML = html;
+  }
+
+  function closeStudentPaidMonthsModal(){
+    document.getElementById("studentPaidMonthsModalOverlay").classList.remove("show");
   }
 
   /* ---------- Init: restore saved language / dark-mode preference ---------- */
