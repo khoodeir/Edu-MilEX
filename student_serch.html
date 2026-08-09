@@ -747,15 +747,27 @@
       students = results.flat();
 
       // Fetch payment history for each student
-      for(let i = 0; i < students.length; i++){
-        try{
-          const paymentHistory = await fetchPaymentHistoryByStudent(students[i].qrCode);
-          students[i].paidMonths = paymentHistory;
-        }catch(err){
-          console.warn(`Could not fetch payment history for student ${students[i].qrCode}:`, err);
-          students[i].paidMonths = [];
-        }
-      }
+     for (let i = 0; i < students.length; i++) {
+  const studentCode = String(students[i].qrCode || "").trim();
+
+  try {
+    const paymentHistory = await fetchPaymentHistoryByStudent(studentCode);
+
+    students[i].paidMonths = Array.isArray(paymentHistory)
+      ? paymentHistory
+      : [];
+
+  } catch (err) {
+    console.error(
+      "Payment history error for:",
+      studentCode,
+      err
+    );
+
+    // مهم: ما نخليش الخطأ يبان كأن الطالب مفيش له شهور مدفوعة
+    students[i].paidMonths = [];
+  }
+}
 
       document.getElementById("searchInput").value = "";
       payFilterState = "all";
