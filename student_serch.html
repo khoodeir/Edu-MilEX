@@ -232,7 +232,11 @@
     font-family:'Inter',sans-serif; font-weight:700; font-size:13px; padding:6px 11px; border-radius:8px;
     transition:all .15s ease;
   }
-  .trend-btn:hover{ background:var(--gold-soft); }
+    .trend-btn:hover{ background:var(--gold-soft); }
+  .months-badge{
+    display:inline-block; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600;
+    background:rgba(139,31,31,0.12); color:var(--gold-2);
+  }
 
   .footer-note{ text-align:center; font-size:11.5px; color:var(--muted); margin-top:24px; display:flex; align-items:center; justify-content:center; gap:7px; }
   .footer-note::before{ content:"🔒"; font-size:11px; }
@@ -361,6 +365,7 @@
               <th id="thParentPhone">هاتف ولي الأمر</th>
               <th id="thPayment">الدفع</th>
               <th id="thLast">آخر حضور</th>
+              <th id="thMonths">الشهور المدفوعة</th>
               <th id="thExams">الامتحانات</th>
               <th id="thQr">عرض QR</th>
             </tr>
@@ -457,6 +462,19 @@
     }
   };
 
+  // Payment history table schema
+  const PAYMENT_HISTORY_SCHEMA = {
+    table: "payment_history",
+    col: {
+      id: "id",
+      studentCode: "student_code",
+      month: "month",
+      year: "year",
+      paymentDate: "payment_date",
+      amount: "amount"
+    }
+  };
+
   // Shared exam tables used by the dashboard's "Exam Grades" tab.
   // Real Arabic table names: الامتحانات (exam definitions) / نتائج_الامتحانات (scores)
   const EXAMS_SCHEMA = {
@@ -495,7 +513,7 @@
       resultCount: (n) => `${n} student${n === 1 ? "" : "s"} found`,
       noResults: "No matching results",
       thName: "Name", thGrade: "Grade", thCity: "City", thGroupName: "Group", thPresent: "Present", thAbsent: "Absent", thRate: "Attendance Rate",
-      thStudentPhone: "Student Phone", thParentPhone: "Parent Phone", thPayment: "Payment", thLast: "Last Attendance",
+      thStudentPhone: "Student Phone", thParentPhone: "Parent Phone", thPayment: "Payment", thLast: "Last Attendance", thMonths: "Paid Months",
       paid: "Paid", unpaid: "Unpaid",
       thExams: "\u00A0Exams",
       thQr: "QR",
@@ -531,7 +549,7 @@
       resultCount: (n) => `تم العثور على ${n} طالب`,
       noResults: "لا توجد نتائج مطابقة",
       thName: "الاسم", thGrade: "الصف", thCity: "المدينة", thGroupName: "المجموعة", thPresent: "حضور", thAbsent: "غياب", thRate: "نسبة الحضور",
-      thStudentPhone: "هاتف الطالب", thParentPhone: "هاتف ولي الأمر", thPayment: "الدفع", thLast: "آخر حضور",
+      thStudentPhone: "هاتف الطالب", thParentPhone: "هاتف ولي الأمر", thPayment: "الدفع", thLast: "آخر حضور", thMonths: "الشهور المدفوعة",
       thExams: "الامتحانات", thQr: "QR",
       paid: "مدفوع", unpaid: "غير مدفوع",
       footer: "يتم قراءة البيانات مباشرة من Supabase باستخدام مفتاح للقراءة فقط",
@@ -640,6 +658,7 @@
     document.getElementById("thParentPhone").textContent = tr.thParentPhone;
     document.getElementById("thPayment").textContent = tr.thPayment;
     document.getElementById("thLast").textContent = tr.thLast;
+    document.getElementById("thMonths").textContent = tr.thMonths;
     document.getElementById("thExams").textContent = tr.thExams;
     document.getElementById("thQr").textContent = tr.thQr;
     document.getElementById("footerNoteText").textContent = tr.footer;
@@ -664,6 +683,19 @@
     payFilterState = f;
     document.querySelectorAll("#payFilter button").forEach(b => b.classList.toggle("active", b.dataset.f === f));
     renderResults();
+  }
+
+  // Fetch payment history for a student
+  async function fetchPaymentHistoryByStudent(studentCode){
+    const col = PAYMENT_HISTORY_SCHEMA.col;
+    const { data, error } = await supa
+      .from(PAYMENT_HISTORY_SCHEMA.table)
+      .select("*")
+      .eq(col.studentCode, studentCode)
+      .order(col.year, { ascending: false })
+      .order(col.month, { ascending: false });
+    if(error) throw error;
+    return data || [];
   }
 
   async function fetchGrade(grade){
@@ -694,7 +726,8 @@
         lastAttendance: a[col.lastAttendance] ?? "",
         paymentStatus: p[col.paymentStatus] ?? "",
         amountPaid: Number(p[col.amountPaid] || 0),
-        lastPaymentDate: p[col.lastPaymentDate] ?? ""
+        lastPaymentDate: p[col.lastPaymentDate] ?? "",
+        paidMonths: []
       };
     });
   }
@@ -712,6 +745,17 @@
       const gradesToFetch = currentGrade === "all" ? GRADES : [currentGrade];
       const results = await Promise.all(gradesToFetch.map(fetchGrade));
       students = results.flat();
+
+      // Fetch payment history for each student
+      for(let i = 0; i < students.length; i++){
+        try{
+          const paymentHistory = await fetchPaymentHistoryByStudent(students[i].qrCode);
+          students[i].paidMonths = paymentHistory;
+        }catch(err){
+          console.warn(`Could not fetch payment history for student ${students[i].qrCode}:`, err);
+          students[i].paidMonths = [];
+        }
+      }
 
       document.getElementById("searchInput").value = "";
       payFilterState = "all";
@@ -807,6 +851,9 @@
           <td>${s.parentPhone ? `<a class="phone-link" href="tel:${s.parentPhone}">${s.parentPhone}</a>` : tr.dash}</td>
           <td>${hasPaymentRecord ? `<span class="chip ${paid ? 'paid' : 'unpaid'}">${paid ? tr.paid : tr.unpaid}</span>` : tr.dash}</td>
           <td>${s.lastAttendance || tr.dash}</td>
+          <td>
+            ${s.paidMonths && s.paidMonths.length > 0 ? `<span class="months-badge">${s.paidMonths.map(m => m.month + '/' + m.year).join(', ')}</span>` : tr.dash}
+          </td>
           <td style="display:flex; gap:6px;">
             <button class="trend-btn" onclick="showStudentTrend('${s.qrCode}','${s.grade}','${safeName}')" title="${tr.thExams}">📈</button>
             <button class="trend-btn" onclick="showStudentGrades('${s.qrCode}','${s.grade}','${safeName}')" title="${tr.thExams}">📋</button>
