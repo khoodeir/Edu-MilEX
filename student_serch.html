@@ -746,28 +746,40 @@
       const results = await Promise.all(gradesToFetch.map(fetchGrade));
       students = results.flat();
 
-      // Fetch payment history for each student
-     for (let i = 0; i < students.length; i++) {
-  const studentCode = String(students[i].qrCode || "").trim();
+      // Fetch payment history for all students in one batch query for better performance
+      const allCodes = students.map(s => String(s.qrCode || "").trim()).filter(c => c !== "");
+      
+      if (allCodes.length > 0) {
+        try {
+          // We fetch all history records for these students in one go
+          const { data: historyData, error: historyErr } = await supa
+            .from(PAYMENT_HISTORY_SCHEMA.table)
+            .select("*")
+            .in(PAYMENT_HISTORY_SCHEMA.col.studentCode, allCodes)
+            .order(PAYMENT_HISTORY_SCHEMA.col.year, { ascending: false })
+            .order(PAYMENT_HISTORY_SCHEMA.col.month, { ascending: false });
 
-  try {
-    const paymentHistory = await fetchPaymentHistoryByStudent(studentCode);
+          if (historyErr) throw historyErr;
 
-    students[i].paidMonths = Array.isArray(paymentHistory)
-      ? paymentHistory
-      : [];
+          // Group history by student code
+          const historyByCode = {};
+          (historyData || []).forEach(h => {
+            const code = String(h[PAYMENT_HISTORY_SCHEMA.col.studentCode] || "").trim();
+            if (!historyByCode[code]) historyByCode[code] = [];
+            historyByCode[code].push(h);
+          });
 
-  } catch (err) {
-    console.error(
-      "Payment history error for:",
-      studentCode,
-      err
-    );
-
-    // مهم: ما نخليش الخطأ يبان كأن الطالب مفيش له شهور مدفوعة
-    students[i].paidMonths = [];
-  }
-}
+          // Assign to students
+          students.forEach(s => {
+            const code = String(s.qrCode || "").trim();
+            s.paidMonths = historyByCode[code] || [];
+          });
+        } catch (hErr) {
+          console.error("Payment history batch fetch error:", hErr);
+          // Fallback: ensure all students have an empty array if fetch fails
+          students.forEach(s => { if(!s.paidMonths) s.paidMonths = []; });
+        }
+      }
 
       document.getElementById("searchInput").value = "";
       payFilterState = "all";
