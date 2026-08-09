@@ -1099,7 +1099,9 @@
       sel.innerHTML = groups.map(g =>
         `<option value="${g.id}">${currentLang === "ar" ? g.ar : g.en}</option>`
       ).join("");
-      sel.value = groups.some(g => g.id === prev) ? prev : (groups[0] ? groups[0].id : "");
+      sel.value = groups.some(g => g.id === prev)
+        ? prev
+        : (groups.some(g => g.id === currentGroup) ? currentGroup : (groups[0] ? groups[0].id : ""));
       currentGroup = sel.value;
     }
 
