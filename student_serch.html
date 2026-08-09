@@ -546,7 +546,15 @@
       noQrSaved: "No QR code saved for this student",
       openFullSize: "Open Full Size",
       couldntLoadQr: "Couldn't load the QR image",
-      student: "Student", dash: "—"
+      student: "Student", dash: "—",
+      paidMonthsTitleSuffix: " — Paid Months",
+      paidMonthsBtn: (n) => `📅 ${n} mo (View)`,
+      totalPaidMonths: "Total Paid Months",
+      totalPaidAmount: "Total Amount Paid",
+      noPaidMonthsRecorded: "No paid months recorded",
+      monthYearFormat: (m, y) => `Month ${m}, ${y}`,
+      paymentDateLabel: "Paid on: ",
+      currencyEGP: "EGP"
     },
     ar: {
       eyebrow: "بحث عن طالب", title: "بحث الطلاب",
@@ -581,7 +589,15 @@
       noQrSaved: "لا يوجد رمز QR محفوظ لهذا الطالب",
       openFullSize: "فتح بالحجم الكامل",
       couldntLoadQr: "تعذر تحميل صورة QR",
-      student: "طالب", dash: "—"
+      student: "طالب", dash: "—",
+      paidMonthsTitleSuffix: " — الشهور المدفوعة",
+      paidMonthsBtn: (n) => `📅 ${n} شهر (عرض)`,
+      totalPaidMonths: "إجمالي عدد الشهور المدفوعة",
+      totalPaidAmount: "إجمالي المبلغ المدفوع",
+      noPaidMonthsRecorded: "لا توجد شهور مدفوعة مسجلة",
+      monthYearFormat: (m, y) => `شهر ${m} لسنة ${y}`,
+      paymentDateLabel: "تاريخ الدفع: ",
+      currencyEGP: "ج.م"
     }
   };
 
@@ -888,8 +904,8 @@
           <td>${s.lastAttendance || tr.dash}</td>
           <td>
             ${s.paidMonths && s.paidMonths.length > 0 ? `
-              <button class="trend-btn" style="background:var(--success-soft); color:var(--success); display:inline-flex; align-items:center; gap:5px;" onclick="showStudentPaidMonths('${safeName}', '${encodeURIComponent(JSON.stringify(s.paidMonths))}')" title="عرض تفاصيل الشهور المدفوعة">
-                📅 ${s.paidMonths.length} شهر (عرض)
+              <button class="trend-btn" style="background:var(--success-soft); color:var(--success); display:inline-flex; align-items:center; gap:5px;" onclick="showStudentPaidMonths('${safeName}', '${encodeURIComponent(JSON.stringify(s.paidMonths))}')" title="${tr.thMonths}">
+                ${tr.paidMonthsBtn(s.paidMonths.length)}
               </button>
             ` : tr.dash}
           </td>
@@ -1159,11 +1175,12 @@
 
   /* ---------- Student paid months modal ---------- */
   function showStudentPaidMonths(name, encodedJson){
+    const tr = t();
     const overlay = document.getElementById("studentPaidMonthsModalOverlay");
     const titleEl = document.getElementById("studentPaidMonthsTitle");
     const bodyEl = document.getElementById("studentPaidMonthsBody");
 
-    titleEl.textContent = `${name} — الشهور المدفوعة`;
+    titleEl.textContent = `${name || tr.student}${tr.paidMonthsTitleSuffix}`;
     bodyEl.innerHTML = "";
     overlay.classList.add("show");
 
@@ -1175,7 +1192,7 @@
     }
 
     if(!months.length){
-      bodyEl.innerHTML = `<div style="text-align:center; color:var(--muted); padding:24px 0;">لا توجد شهور مدفوعة مسجلة</div>`;
+      bodyEl.innerHTML = `<div style="text-align:center; color:var(--muted); padding:24px 0;">${tr.noPaidMonthsRecorded}</div>`;
       return;
     }
 
@@ -1184,13 +1201,13 @@
     let html = `
       <div style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; background:var(--paper); padding:12px 16px; border-radius:10px; border:1px solid var(--line);">
         <div>
-          <span style="font-size:12px; color:var(--muted); display:block;">إجمالي عدد الشهور المدفوعة</span>
-          <span style="font-size:16px; font-weight:700; color:var(--gold-2);">${months.length} شهر</span>
+          <span style="font-size:12px; color:var(--muted); display:block;">${tr.totalPaidMonths}</span>
+          <span style="font-size:16px; font-weight:700; color:var(--gold-2);">${months.length}</span>
         </div>
         ${totalAmount > 0 ? `
         <div style="text-align:left;">
-          <span style="font-size:12px; color:var(--muted); display:block;">إجمالي المبلغ المدفوع</span>
-          <span class="num" style="font-size:16px; font-weight:700; color:var(--success);">${totalAmount} ج.م</span>
+          <span style="font-size:12px; color:var(--muted); display:block;">${tr.totalPaidAmount}</span>
+          <span class="num" style="font-size:16px; font-weight:700; color:var(--success);">${totalAmount} ${tr.currencyEGP}</span>
         </div>` : ''}
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
@@ -1202,6 +1219,8 @@
       const amount = m.amount_paid || m.amount || null;
       const paymentDate = m.created_at || m.paymentDate || null;
       
+      const dateStr = paymentDate ? new Date(paymentDate).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US') : '';
+
       html += `
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:var(--card); border:1px solid var(--line); border-radius:10px; transition:transform .1s ease;">
           <div style="display:flex; align-items:center; gap:12px;">
@@ -1209,12 +1228,12 @@
               ✓
             </div>
             <div>
-              <div style="font-weight:700; font-size:14px; color:var(--ink);">شهر ${monthNum} لسنة ${yearNum}</div>
-              ${paymentDate ? `<div style="font-size:11.5px; color:var(--muted); margin-top:2px;">تاريخ الدفع: ${new Date(paymentDate).toLocaleDateString('ar-EG')}</div>` : ''}
+              <div style="font-weight:700; font-size:14px; color:var(--ink);">${tr.monthYearFormat(monthNum, yearNum)}</div>
+              ${dateStr ? `<div style="font-size:11.5px; color:var(--muted); margin-top:2px;">${tr.paymentDateLabel}${dateStr}</div>` : ''}
             </div>
           </div>
           <div>
-            ${amount != null && amount > 0 ? `<span class="chip paid" style="font-size:12px; padding:4px 10px;">${amount} ج.م</span>` : `<span class="chip paid" style="font-size:12px; padding:4px 10px;">مدفوع</span>`}
+            ${amount != null && amount > 0 ? `<span class="chip paid" style="font-size:12px; padding:4px 10px;">${amount} ${tr.currencyEGP}</span>` : `<span class="chip paid" style="font-size:12px; padding:4px 10px;">${tr.paid}</span>`}
           </div>
         </div>
       `;
