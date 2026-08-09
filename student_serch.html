@@ -467,11 +467,11 @@
     table: "payment_history",
     col: {
       id: "id",
-      studentCode: "student_code",
+      studentCode: "qr_code",
       month: "month",
       year: "year",
-      paymentDate: "payment_date",
-      amount: "amount"
+      paymentDate: "created_at",
+      amount: "amount_paid"
     }
   };
 
@@ -686,20 +686,17 @@
   }
 
   // Fetch payment history for a student
- async function fetchPaymentHistoryByStudent(qrCode) {
-  const col = PAYMENT_HISTORY_SCHEMA.col;
-
-  const { data, error } = await supa
-    .from(PAYMENT_HISTORY_SCHEMA.table)
-    .select("*")
-    .eq(col.qrCode, qrCode)
-    .order(col.year, { ascending: false })
-    .order(col.month, { ascending: false });
-
-  if (error) throw error;
-
-  return data || [];
-}
+  async function fetchPaymentHistoryByStudent(studentCode){
+    const col = PAYMENT_HISTORY_SCHEMA.col;
+    const { data, error } = await supa
+      .from(PAYMENT_HISTORY_SCHEMA.table)
+      .select("*")
+      .eq(col.studentCode, studentCode)
+      .order(col.year, { ascending: false })
+      .order(col.month, { ascending: false });
+    if(error) throw error;
+    return data || [];
+  }
 
   async function fetchGrade(grade){
     const [{ data: att, error: attErr }, { data: pay, error: payErr }] = await Promise.all([
@@ -880,28 +877,11 @@
           <td>${s.lastAttendance || tr.dash}</td>
           <td>
             ${s.paidMonths && s.paidMonths.length > 0 ? `<span class="months-badge">${s.paidMonths.map(m => m.month + '/' + m.year).join(', ')}</span>` : tr.dash}
-        <td style="display:flex; gap:6px;">
-  <button
-    class="trend-btn"
-    onclick="showStudentTrend('${s.qrCode}','${s.grade}','${safeName}')"
-    title="${tr.thExams}">
-    📈
-  </button>
-
-  <button
-    class="trend-btn"
-    onclick="showStudentGrades('${s.qrCode}','${s.grade}','${safeName}')"
-    title="${tr.thExams}">
-    📋
-  </button>
-
-  <button
-    class="trend-btn"
-    onclick="showPaymentHistory('${s.qrCode}','${safeName}')"
-    title="Payment History">
-    💳
-  </button>
-</td>
+          </td>
+          <td style="display:flex; gap:6px;">
+            <button class="trend-btn" onclick="showStudentTrend('${s.qrCode}','${s.grade}','${safeName}')" title="${tr.thExams}">📈</button>
+            <button class="trend-btn" onclick="showStudentGrades('${s.qrCode}','${s.grade}','${safeName}')" title="${tr.thExams}">📋</button>
+          </td>
           <td>
             <button class="trend-btn" onclick="showStudentQr('${safeQrUrl}','${safeName}')" title="${tr.thQr}">🔳</button>
           </td>
