@@ -263,6 +263,8 @@
 
   /* ---------- value cards (what we do) ---------- */
   .value-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .value-grid-4{ display:grid; grid-template-columns:repeat(2,1fr); gap:24px; }
+  @media (max-width:860px){ .value-grid-4{ grid-template-columns:1fr; } }
   .value-card{
     background:#fff; border:1px solid var(--line); border-radius:var(--radius);
     padding:30px 26px; transition:transform .4s var(--ease), box-shadow .4s var(--ease), border-color .4s var(--ease);
@@ -389,6 +391,7 @@
     <nav class="site-nav" id="siteNav">
       <a href="#about">من نحن</a>
       <a href="#what-we-do">خدماتنا</a>
+      <a href="#product">منتجنا</a>
       <a href="#offices">مكاتبنا</a>
       <a href="#contact">تواصل معنا</a>
     </nav>
@@ -552,6 +555,39 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRODUCT ============ -->
+<section class="section-pad" id="product" style="background:var(--paper);">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">منتجاتنا</span>
+      <h2>نظام متكامل لإدارة الحضور والمدفوعات والمتابعة الأكاديمية</h2>
+      <p>من أبرز الأنظمة التي طوّرتها Milestones Group نظام مخصص لإدارة السناتر التعليمية والمدرّسين، يمنح كل طالب عند تسجيله رمز QR خاصًا به يُستخدم لتوثيق حضوره وتسجيل مدفوعاته في ثوانٍ، مع واجهة مستقلة لولي الأمر لمتابعة ابنه على مدار الساعة، ولوحة تحكم شاملة للمدرس لإدارة الإيرادات والمصروفات ومستوى الطلاب.</p>
+    </div>
+    <div class="value-grid value-grid-4 reveal" style="margin-top:40px;">
+      <div class="value-card">
+        <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM18 14h3v3M14 18h3v3M18 18h3v3"/></svg></div>
+        <h3>تسجيل الطالب وإصدار رمز QR خاص به</h3>
+        <p>عند تسجيل بيانات الطالب في النظام، يُصدر تلقائيًا رمز QR فريدًا يمثّل هويته، ليصبح هو وسيلته الوحيدة لإتمام كل عمليات الحضور والدفع لاحقًا دون أي إدخال يدوي.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h3M17 4h3v3M20 17v3h-3M7 20H4v-3"/><rect x="8.5" y="8.5" width="7" height="7" rx="1"/></svg></div>
+        <h3>تسجيل حضور ومدفوعات فوري بالمسح</h3>
+        <p>بمجرد مسح رمز الطالب، يُسجَّل حضوره أو تُوثَّق دفعته لحظيًا في قاعدة البيانات، مع أرشفة كاملة لتاريخ ووقت كل عملية، دون تدخل يدوي أو احتمالية خطأ.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+        <h3>بوابة ولي الأمر — متابعة على مدار 24 ساعة</h3>
+        <p>واجهة مستقلة تتيح لولي الأمر متابعة ابنه في أي وقت: نسب الحضور، نتائج الامتحانات، وحالة المدفوعات، أولاً بأول ودون الحاجة إلى التواصل المباشر مع المدرس.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12.5" y="8" width="3" height="10"/><rect x="18" y="5" width="3" height="13"/></svg></div>
+        <h3>لوحة تحكم المدرس</h3>
+        <p>رؤية شاملة ولحظية على الإيرادات والمصروفات، نتائج الامتحانات، وأداء كل طالب ومجموعة على حدة — لدعم قرارات إدارية وتعليمية أدق.</p>
+      </div>
     </div>
   </div>
 </section>
