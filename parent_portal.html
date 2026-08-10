@@ -384,7 +384,7 @@
     </div>
   </div>
 
-  <div class="footer-note" data-i18n="footerNote">Powered by Milestones Group</div>
+  <div class="footer-note" data-i18n="footerNote">تُقرأ البيانات مباشرة من نظام المركز باستخدام مفتاح قراءة فقط</div>
 
 </div>
 
@@ -464,7 +464,7 @@
       cityLabel: "المدينة", groupLabel: "المجموعة",
       examTableTitle: "درجات الامتحانات بالتفصيل",
       colExam: "الامتحان", colScore: "الدرجة", colOutOf: "من إجمالي", colPercent: "النسبة",
-      footerNote: "Powered by Milestones Group",
+      footerNote: "تُقرأ البيانات مباشرة من نظام المركز باستخدام مفتاح قراءة فقط",
       scanModalTitle: "وجّه الكاميرا نحو كود QR", scanModalHint: "امسك الهاتف بثبات حتى يتم التعرف على الكود تلقائيًا.",
       present: "حضور", absent: "غياب", present_absent_sub: (p,a) => `${p} حضور / ${a} غياب`,
       paid: "مدفوع", unpaid: "غير مدفوع", noPayRecord: "لا يوجد سجل دفع", noExamRecord: "لا توجد درجات بعد",
@@ -491,7 +491,7 @@
       cityLabel: "City", groupLabel: "Group",
       examTableTitle: "Detailed Exam Scores",
       colExam: "Exam", colScore: "Score", colOutOf: "Out of", colPercent: "Percentage",
-      footerNote: "Powered by Milestones Group",
+      footerNote: "Data is read live from the center's system using a read-only key",
       scanModalTitle: "Point the camera at the QR code", scanModalHint: "Hold the phone steady until the code is recognized automatically.",
       present: "present", absent: "absent", present_absent_sub: (p,a) => `${p} present / ${a} absent`,
       paid: "Paid", unpaid: "Unpaid", noPayRecord: "No payment record", noExamRecord: "No scores yet",
@@ -859,5 +859,9 @@
   setLanguage(currentLang);
   setState("idle");
 </script>
+
+  <footer style="text-align:center; padding:18px 10px 22px; font-size:13px; color:#9a9a9a; opacity:0.85;">
+    Powered by <a href="https://github.com/khoodeir/MRELSHAFAY/blob/main/milestones_html" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:underline; font-weight:600;">Milestones Group</a>
+  </footer>
 </body>
 </html>
