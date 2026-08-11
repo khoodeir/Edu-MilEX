@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="prefetch" href="board.html">
+<link rel="prefetch" href="dashboard.html">
 <link rel="prefetch" href="student_serch.html">
 <link rel="preconnect" href="https://unpkg.com">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
@@ -745,7 +745,7 @@
     </div>
   </div>
 
-  <div class="footer">Powered by <a href="milestones.html" target="_blank" rel="noopener noreferrer" style="color:inherit;">Milestones Group</a></div>
+  <div class="footer">Powered by <a href="milex.html" target="_blank" rel="noopener noreferrer" style="color:inherit;">MilEX</a></div>
 </div>
 
 
@@ -840,8 +840,8 @@
     session:    "https://helmet-handrail-skipper.ngrok-free.dev/webhook/Attendance_Session_Manager"
   };
 
-  const SUPABASE_URL = "https://utrchkjtrpmdmbxnortt.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0cmNoa2p0cnBtZG1ieG5vcnR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MzUzMDEsImV4cCI6MjEwMTQxMTMwMX0.IgkJ66atsGXguoQsfpQumTgEEYFMzfS7fv_CHAAVS0g";
+  const SUPABASE_URL = "https://evbjulsahncllewwvlxp.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2Ymp1bHNhaG5jbGxld3d2bHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NzE5MjUsImV4cCI6MjA5OTI0NzkyNX0.Xg9sU6ZenUU3kC2RNIbvZmK19KvE28MM2oyGcKNn8UA";
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const SESSION_TABLE = "attendance_sessions";
   const SESSION_POLL_MS = 5000;
@@ -962,7 +962,7 @@
       status_cant_connect:"Can't reach the server",
       payment_hint_missing:"Please enter the month and amount first",
       history_title:"Last Scans", history_empty:"No scans yet",
-      footer_text:"Powered by Milestones Group",
+      footer_text:"Powered by MilEX",
 
       session_ended_title:"Session Ended",
       session_ended_text:"The attendance session has been ended by another user.",
@@ -1010,7 +1010,7 @@
       status_cant_connect:"تعذّر الوصول إلى الخادم",
       payment_hint_missing:"من فضلك أدخل الشهر والمبلغ أولاً",
       history_title:"آخر عمليات المسح", history_empty:"لا توجد عمليات مسح بعد",
-      footer_text:"بدعم من Milestones Group",
+      footer_text:"بدعم من MilEX",
 
       session_ended_title:"انتهت الجلسة",
       session_ended_text:"تم إنهاء جلسة الحضور بواسطة مستخدم آخر.",
