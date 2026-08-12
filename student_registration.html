@@ -10,10 +10,10 @@
 <style>
 :root{
   /* Deep Red / Off-White / Gray palette */
-  --bg-0:#f7f5f1; --bg-1:#f1eee8; --bg-2:#e9e3da;
-  --card:rgba(253,252,250,0.78); --card-border:rgba(139,30,30,0.22);
-  --gold:#8b1e1e; --gold-light:#7a1f1f; --gold-deep:#5e1414; --bronze:#7c7873;
-  --text:#2b2b2b; --muted:#7c7873; --border:rgba(139,30,30,0.20);
+  --bg-0:#F3F6F9; --bg-1:#EEF3F8; --bg-2:#E2E9F0;
+  --card:rgba(253,252,250,0.78); --card-border:rgba(27,79,114,0.22);
+  --gold:#1B4F72; --gold-light:#2E6F9E; --gold-deep:#123A57; --bronze:#64748B;
+  --text:#1E2A38; --muted:#64748B; --border:rgba(27,79,114,0.20);
   --error:#c4485a; --success:#2f9e73; --radius:14px;
 }
 *{box-sizing:border-box;}
@@ -45,7 +45,7 @@ body{
 /* ===== Language toggle ===== */
 .lang-toggle{
   position:absolute; top:18px; right:18px; display:flex; gap:3px;
-  background:rgba(139,30,30,0.07); border:1px solid var(--border);
+  background:rgba(27,79,114,0.07); border:1px solid var(--border);
   border-radius:999px; padding:4px; z-index:5;
 }
 [dir="rtl"] .lang-toggle{ right:auto; left:18px; }
@@ -140,9 +140,9 @@ select{
   background-position:left 16px center; padding-right:15px; padding-left:40px;
 }
 select:invalid{ color:#a89a94; }
-select option{ color:var(--text); background:#f7f5f1; }
+select option{ color:var(--text); background:#F3F6F9; }
 select option:checked, select option:hover{ background:var(--gold-deep); color:#f5f0e4; }
-.group-time{ font-size:10.5px; color:rgba(139,30,30,0.38); font-weight:400; letter-spacing:0; text-transform:none; margin-left:8px; }
+.group-time{ font-size:10.5px; color:rgba(27,79,114,0.38); font-weight:400; letter-spacing:0; text-transform:none; margin-left:8px; }
 [dir="rtl"] .group-time{ margin-left:0; margin-right:8px; }
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
@@ -152,8 +152,8 @@ input:-webkit-autofill:focus{
   transition:background-color 9999s ease-in-out 0s;
   box-shadow:0 0 0 1000px rgba(255,255,255,0.55) inset;
 }
-input:hover, select:hover{ border-color:rgba(139,30,30,0.36); }
-input:focus, select:focus{ border-color:var(--gold); background:rgba(255,255,255,0.85); box-shadow:0 0 0 3px rgba(139,30,30,0.14); }
+input:hover, select:hover{ border-color:rgba(27,79,114,0.36); }
+input:focus, select:focus{ border-color:var(--gold); background:rgba(255,255,255,0.85); box-shadow:0 0 0 3px rgba(27,79,114,0.14); }
 input.invalid{ border-color:var(--error); }
 input.invalid:focus{ box-shadow:0 0 0 3px rgba(196,72,90,0.16); }
 
