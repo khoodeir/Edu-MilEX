@@ -36,15 +36,15 @@
     and the card carries a faint ruled-paper texture instead of a plain flat surface.
   */
   :root{
-    --ink:#2d2d2b;
-    --ink-2:#161615;
-    --muted:#8b8b85;
-    --paper:#f4f2ec;
-    --card:#fbfaf6;
+    --ink:#1E2A38;
+    --ink-2:#0E1F30;
+    --muted:#64748B;
+    --paper:#F3F6F9;
+    --card:#FFFFFF;
     --field:#ffffff;
-    --line:rgba(45,45,43,0.14);
-    --gold-rgb:139,32,34;
-    --gold-2-rgb:107,24,26;
+    --line:rgba(30,42,56,0.14);
+    --gold-rgb:27,79,114;
+    --gold-2-rgb:18,58,87;
     --gold:rgb(var(--gold-rgb));
     --gold-2:rgb(var(--gold-2-rgb));
     --gold-soft:rgba(var(--gold-rgb),0.08);
@@ -58,29 +58,29 @@
     --success-soft:rgba(var(--success-rgb),0.13);
     --warning-soft:rgba(var(--warning-rgb),0.14);
     --error-soft:rgba(var(--error-rgb),0.13);
-    --cream-bg-1:#e8e5dd;
-    --cream-bg-2:#f4f2ec;
-    --surface-off:#eeece4;
-    --scrim:rgba(20,27,18,0.55);
+    --cream-bg-1:#EAF0F6;
+    --cream-bg-2:#F3F6F9;
+    --surface-off:#EDF2F7;
+    --scrim:rgba(10,18,32,0.55);
     --btn-ink:#fbfaf6;
-    --shadow-sm:0 1px 3px rgba(30,35,20,0.08);
-    --shadow-md:0 8px 24px rgba(30,35,20,0.10);
-    --shadow-lg:0 22px 52px rgba(24,30,18,0.16);
+    --shadow-sm:0 1px 3px rgba(14,31,48,0.08);
+    --shadow-md:0 8px 24px rgba(14,31,48,0.10);
+    --shadow-lg:0 22px 52px rgba(10,18,32,0.16);
     --accent:var(--gold);
     --accent-2:var(--gold-2);
     --glass-border:var(--line);
   }
 
   :root[data-theme="dark"]{
-    --ink:#e6e3da;
-    --ink-2:#f7f5ee;
-    --muted:#a3a29a;
-    --paper:#1a1a19;
-    --card:#242423;
-    --field:#2a2a29;
+    --ink:#E8EDF4;
+    --ink-2:#F0F5FA;
+    --muted:#8A96A8;
+    --paper:#10182A;
+    --card:#182338;
+    --field:#1B2436;
     --line:rgba(255,255,255,0.08);
-    --gold-rgb:196,68,62;
-    --gold-2-rgb:168,50,46;
+    --gold-rgb:79,168,216;
+    --gold-2-rgb:127,200,238;
     --gold-soft:rgba(var(--gold-rgb),0.14);
     --gold-soft-2:rgba(var(--gold-rgb),0.22);
     --success-rgb:98,178,168;
@@ -89,9 +89,9 @@
     --success-soft:rgba(var(--success-rgb),0.16);
     --warning-soft:rgba(var(--warning-rgb),0.16);
     --error-soft:rgba(var(--error-rgb),0.16);
-    --cream-bg-1:#1a1a19;
-    --cream-bg-2:#212120;
-    --surface-off:#1f1f1e;
+    --cream-bg-1:#10182A;
+    --cream-bg-2:#141C2E;
+    --surface-off:#131B2C;
     --scrim:rgba(0,0,0,0.62);
     --shadow-sm:0 1px 3px rgba(0,0,0,0.35);
     --shadow-md:0 8px 24px rgba(0,0,0,0.4);
@@ -154,7 +154,7 @@
     display:flex; align-items:center; justify-content:center;
     font-size:15px; transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
     position:static !important;
-    box-shadow:0 1px 2px rgba(24,30,18,0.06);
+    box-shadow:0 1px 2px rgba(10,18,32,0.06);
   }
   .icon-btn:hover{ color:var(--accent); border-color:var(--accent-2); background:var(--gold-soft-2); box-shadow:0 3px 8px rgba(var(--gold-rgb),0.18); transform:translateY(-1px); }
   .icon-btn:active{ transform:translateY(0) scale(0.94); }
@@ -246,7 +246,7 @@
     letter-spacing:0.01em;
     cursor:pointer; transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     display:flex; flex-direction:row; align-items:center; justify-content:center; gap:8px;
-    box-shadow:0 1px 0 var(--line), 0 4px 10px rgba(24,30,18,0.05);
+    box-shadow:0 1px 0 var(--line), 0 4px 10px rgba(10,18,32,0.05);
     overflow:hidden;
   }
   html[dir="rtl"] .tool-btn{ font-family:'Tajawal',sans-serif; }
@@ -569,7 +569,7 @@
   .theme-option:hover{ transform:translateY(-2px); }
   .theme-option.selected{ border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-soft); }
   .theme-swatch{ height:34px; border-radius:7px; margin-bottom:6px; }
-  .theme-swatch.light{ background:linear-gradient(135deg,#fbfaf6,#e8e5dd); border:1px solid rgba(45,45,43,0.18); }
+  .theme-swatch.light{ background:linear-gradient(135deg,#fbfaf6,#e8e5dd); border:1px solid rgba(30,42,56,0.18); }
   .theme-swatch.dark{ background:linear-gradient(135deg,#242423,#1a1a19); border:1px solid rgba(255,255,255,0.1); }
   .theme-option-label{ font-size:12px; font-weight:600; color:var(--ink); }
   html[dir="rtl"] .theme-option-label{ font-family:'Tajawal',sans-serif; }
