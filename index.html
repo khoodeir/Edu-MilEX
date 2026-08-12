@@ -276,6 +276,121 @@
   .btn-primary:hover{ filter:brightness(1.05); }
   .btn-primary:disabled{ opacity:0.7; cursor:default; }
   .btn-ghost{ background:transparent; color:var(--muted); border:1px solid var(--line); }
+
+  /* ============ Professional animation layer ============ */
+
+  /* --- Page intro / splash --- */
+  .page-intro{
+    position:fixed; inset:0; z-index:300;
+    background:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    animation:introFadeOut .85s ease forwards;
+    animation-delay:.55s;
+  }
+  .page-intro-mark{
+    width:120px; height:92px;
+    background:var(--gold);
+    -webkit-mask-image:var(--logo-mask); mask-image:var(--logo-mask);
+    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+    -webkit-mask-position:center; mask-position:center;
+    -webkit-mask-size:contain; mask-size:contain;
+    animation:introPulse 1s ease-in-out infinite;
+  }
+  @keyframes introPulse{
+    0%,100%{ transform:scale(1); opacity:.82; }
+    50%{ transform:scale(1.1); opacity:1; }
+  }
+  @keyframes introFadeOut{
+    0%{ opacity:1; visibility:visible; }
+    88%{ opacity:0; }
+    100%{ opacity:0; visibility:hidden; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .page-intro{ display:none; }
+  }
+
+  /* --- Generic entrance keyframes --- */
+  @keyframes fadeInUp{
+    from{ opacity:0; transform:translateY(16px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeInDown{
+    from{ opacity:0; transform:translateY(-10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes screenIn{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes screenOut{
+    from{ opacity:1; transform:translateY(0); }
+    to{ opacity:0; transform:translateY(-10px); }
+  }
+
+  /* --- Hero staggered entrance --- */
+  .hero .brand-mark{ opacity:0; animation:fadeInDown .6s ease .05s both; }
+  .hero .eyebrow{ opacity:0; animation:fadeInUp .5s ease .15s both; }
+  .hero h1{ opacity:0; animation:fadeInUp .55s ease .22s both; }
+  .hero .subtitle{ opacity:0; animation:fadeInUp .55s ease .3s both; }
+
+  /* --- Topbar entrance --- */
+  .topbar{ opacity:0; animation:fadeInDown .5s ease both; }
+
+  /* --- Screens crossfade (whole-section transition) --- */
+  #roleScreen, #hubScreen, #assistantHubScreen{ animation:screenIn .45s ease both; }
+  #roleScreen.screen-exit, #hubScreen.screen-exit, #assistantHubScreen.screen-exit{
+    animation:screenOut .2s ease forwards;
+  }
+
+  /* --- Role card entrance stagger + refined interactions --- */
+  .role-card{ opacity:0; animation:fadeInUp .5s ease both; will-change:transform; }
+  .roles .role-card:nth-child(1){ animation-delay:.32s; }
+  .roles .role-card:nth-child(2){ animation-delay:.4s; }
+  .roles .role-card:nth-child(3){ animation-delay:.48s; }
+  .hub-grid .role-card:nth-child(1){ animation-delay:.3s; }
+  .hub-grid .role-card:nth-child(2){ animation-delay:.37s; }
+  .hub-grid .role-card:nth-child(3){ animation-delay:.44s; }
+  .hub-grid .role-card:nth-child(4){ animation-delay:.51s; }
+  .hub-grid .role-card:nth-child(5){ animation-delay:.58s; }
+
+  .role-icon{ transition:transform .35s cubic-bezier(.34,1.56,.64,1), background .25s ease, color .25s ease; }
+  .role-card:hover .role-icon{ transform:scale(1.14) rotate(-6deg); }
+  .role-card:active .role-icon{ transform:scale(0.95) rotate(0deg); }
+  .role-card.danger:hover .role-icon{ transform:scale(1.14) rotate(6deg); }
+  .role-card h2, .role-card p{ transition:color .2s ease; }
+
+  /* --- Buttons: micro-interactions --- */
+  .icon-toggle-btn, .back-top-btn{ transition:transform .18s ease, box-shadow .18s ease, background .2s ease; }
+  .icon-toggle-btn:active, .back-top-btn:active{ transform:translateY(0) scale(.94); }
+  .link-btn{ transition:color .2s ease, transform .15s ease; display:inline-block; }
+  .link-btn:active{ transform:scale(.96); }
+  .btn{ transition:transform .16s ease, filter .2s ease, box-shadow .2s ease; }
+  .btn:active{ transform:scale(.97); }
+  .btn-primary:not(:disabled):hover{ box-shadow:0 8px 20px rgba(29,65,69,0.28); transform:translateY(-1px); }
+  .btn-ghost:hover{ border-color:var(--gold); color:var(--gold); }
+
+  /* --- Overlays: smooth scale + fade instead of instant toggle --- */
+  .overlay{
+    display:flex; opacity:0; visibility:hidden; pointer-events:none;
+    transition:opacity .25s ease, visibility .25s ease;
+  }
+  .overlay.open{ opacity:1; visibility:visible; pointer-events:auto; }
+  .auth-card{
+    transform:scale(.9) translateY(14px);
+    transition:transform .32s cubic-bezier(.34,1.56,.64,1);
+  }
+  .overlay.open .auth-card{ transform:scale(1) translateY(0); }
+
+  /* --- Message banners: soft pop-in --- */
+  .msg-text.show{ animation:fadeInUp .3s ease both; }
+
+  /* --- Field focus micro-lift --- */
+  .field input{ transition:border-color .2s ease, box-shadow .2s ease, transform .15s ease; }
+  .field input:focus{ transform:translateY(-1px); }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{ animation-duration:.001ms !important; animation-delay:0s !important; transition-duration:.001ms !important; }
+  }
 </style>
 </head>
 <body>
