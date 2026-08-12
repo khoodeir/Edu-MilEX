@@ -2752,25 +2752,7 @@ function goBack(){
     }
   }
 
-  async function autoBackfillMissedMonth(){
-    try{
-      const now = new Date();
-      const curY = now.getFullYear(), curM = now.getMonth() + 1;
-      let prevM = curM - 1, prevY = curY;
-      if(prevM === 0){ prevM = 12; prevY -= 1; }
-
-      const backfillKey = `dashBackfillFinalized_${prevY}_${prevM}`;
-      if(localStorage.getItem(backfillKey) === "true") return;
-
-      const perGrade = await computeAllGradeSnapshots();
-      await saveSnapshotForMonth(prevY, prevM, perGrade);
-      localStorage.setItem(backfillKey, "true");
-      console.info(`Finalized snapshot for ${monthLabel(prevY, prevM)} with the latest numbers.`);
-    }catch(err){
-      console.warn("Skipped auto-finalize of previous month:", err.message || err);
-    }
-  }
-
+  
   async function loadHistory(){
     const loadingEl = document.getElementById("histLoadingMsg");
     const errorEl = document.getElementById("histErrorMsg");
@@ -3263,7 +3245,7 @@ function deltaBadge(curr, prev, suffix = ""){
 
   loadDashboard();
   loadSidebarCounts();
-  autoBackfillMissedMonth();
+
 </script>
 </body>
 </html>
