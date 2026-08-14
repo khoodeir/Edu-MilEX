@@ -10,18 +10,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy: #28565A;
-    --navy-deep: #1D4145;
-    --navy-soft: #3F8A8F;
-    --lime: #B89B7A;
-    --lime-deep: #967354;
-    --paper: #F7F4EE;
+    --navy: #0B4DA6;
+    --navy-deep: #072A5E;
+    --navy-soft: #4A80D6;
+    --lime: #A8D400;
+    --lime-deep: #6E9B00;
+    --paper: #F5F8FC;
     --white: #FFFFFF;
-    --ink: #302F2C;
-    --muted: #77736B;
-    --line: #DDD5C8;
+    --ink: #101B33;
+    --muted: #5C6A80;
+    --line: #DCE3ED;
     --line-on-navy: rgba(255,255,255,0.16);
-    --shadow: 0 20px 45px -20px rgba(48,47,44,0.22);
+    --shadow: 0 20px 45px -20px rgba(7,42,94,0.28);
     --radius: 18px;
     --ease: cubic-bezier(.22,.9,.32,1);
   }
@@ -65,6 +65,11 @@
     width:22px; height:2px;
     background:var(--lime-deep);
     display:inline-block;
+    animation:eyebrowPulse 2.6s ease-in-out infinite;
+  }
+  @keyframes eyebrowPulse{
+    0%,100%{ opacity:1; width:22px; }
+    50%{ opacity:0.5; width:14px; }
   }
 
   .wrap{
@@ -125,9 +130,9 @@
   .btn svg{ width:17px; height:17px; flex-shrink:0; }
   .btn-lime{
     background:var(--lime); color:var(--navy-deep);
-    box-shadow:0 10px 24px -10px rgba(184,155,122,0.65);
+    box-shadow:0 10px 24px -10px rgba(168,212,0,0.65);
   }
-  .btn-lime:hover{ transform:translateY(-2px); box-shadow:0 16px 28px -10px rgba(184,155,122,0.75); }
+  .btn-lime:hover{ transform:translateY(-2px); box-shadow:0 16px 28px -10px rgba(168,212,0,0.75); }
   .btn-outline{
     background:transparent; color:var(--navy); border-color:var(--navy);
   }
@@ -147,9 +152,29 @@
     padding:96px 0 120px;
     overflow:hidden;
     background:
-      radial-gradient(ellipse 60% 55% at 82% 8%, rgba(184,155,122,0.16), transparent 60%),
-      linear-gradient(180deg, #F7F4EE 0%, var(--paper) 100%);
+      radial-gradient(ellipse 60% 55% at 82% 8%, rgba(168,212,0,0.16), transparent 60%),
+      linear-gradient(180deg, #F5F8FC 0%, var(--paper) 100%);
   }
+  .hero::before, .hero::after{
+    content:""; position:absolute; border-radius:50%;
+    filter:blur(60px); pointer-events:none; z-index:0;
+    background:radial-gradient(circle, rgba(11,77,166,0.20), transparent 70%);
+  }
+  .hero::before{
+    width:420px; height:420px; top:-140px; left:-120px;
+    animation:blobDrift 16s ease-in-out infinite;
+  }
+  .hero::after{
+    width:360px; height:360px; bottom:-160px; right:-100px;
+    background:radial-gradient(circle, rgba(168,212,0,0.22), transparent 70%);
+    animation:blobDrift 18s ease-in-out infinite reverse;
+  }
+  @keyframes blobDrift{
+    0%,100%{ transform:translate(0,0) scale(1); }
+    33%{ transform:translate(30px,20px) scale(1.08); }
+    66%{ transform:translate(-20px,25px) scale(0.94); }
+  }
+  .hero .wrap{ position:relative; z-index:1; }
   .hero-grid{
     display:grid; grid-template-columns:1.15fr 0.85fr; gap:56px; align-items:center;
   }
@@ -157,10 +182,41 @@
     font-size:clamp(34px, 4.6vw, 54px);
     margin:18px 0 22px;
   }
-  .hero h1 .accent{ color:var(--lime-deep); }
+  .hero h1 .accent{
+    background:linear-gradient(90deg, var(--navy), var(--lime-deep), var(--navy));
+    background-size:200% auto;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:gradientShift 6s linear infinite;
+  }
+  @keyframes gradientShift{
+    to{ background-position:200% center; }
+  }
   .hero p.lead{
     font-size:17.5px; line-height:1.7; color:var(--muted);
     max-width:52ch;
+  }
+  .hero p.lead-sub{
+    font-size:15px; font-weight:600; color:var(--navy);
+    margin-top:22px;
+  }
+  .sector-tags{
+    display:flex; flex-wrap:wrap; gap:10px;
+    margin-top:14px; max-width:52ch;
+  }
+  .sector-tags .tag{
+    display:inline-flex; align-items:center;
+    padding:8px 16px;
+    border-radius:999px;
+    background:#fff;
+    border:1px solid var(--line);
+    font-size:13.5px; font-weight:600; color:var(--navy);
+    box-shadow:0 6px 16px -10px rgba(7,42,94,0.25);
+    transition:transform .3s var(--ease), border-color .3s var(--ease), background .3s var(--ease);
+  }
+  .sector-tags .tag:hover{
+    transform:translateY(-3px);
+    border-color:var(--lime-deep);
+    background:rgba(168,212,0,0.08);
   }
   .hero-cta{ display:flex; gap:14px; margin-top:34px; flex-wrap:wrap; }
   .cta-groups{ display:flex; gap:14px; flex-wrap:wrap; }
@@ -169,10 +225,19 @@
 
   /* hero dashboard mockup */
   .hero-scene{ position:relative; height:400px; }
+  .hero-scene::before{
+    content:""; position:absolute; inset:8% 10%;
+    border-radius:50%;
+    background:conic-gradient(from 0deg, var(--navy), var(--lime), var(--navy-soft), var(--navy));
+    opacity:0.12; filter:blur(2px);
+    animation:ringSpin 14s linear infinite;
+    z-index:0;
+  }
+  @keyframes ringSpin{ to{ transform:rotate(360deg); } }
 
   .mockup-window{
     position:absolute; inset:6% 4%;
-    filter:drop-shadow(0 24px 40px rgba(48,47,44,0.22));
+    filter:drop-shadow(0 24px 40px rgba(16,27,51,0.22));
     animation:floatSlow 7s ease-in-out infinite;
   }
   @keyframes floatSlow{
@@ -260,6 +325,42 @@
   .stat-row div span{ font-size:13px; color:var(--muted); }
   @media (max-width:760px){ .about-body{ grid-template-columns:1fr; } }
 
+  /* ---------- parent brand callout ---------- */
+  .parent-brand{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 32px; margin-top:8px;
+  }
+  .parent-brand .parent-label{
+    display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  }
+  .parent-brand .parent-label strong{
+    font-family:'Space Grotesk'; font-size:15px; color:var(--navy);
+    letter-spacing:0.02em;
+  }
+  .parent-brand .parent-badge{
+    font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--lime-deep); background:rgba(168,212,0,0.14);
+    padding:4px 10px; border-radius:999px;
+  }
+  .parent-brand p{ font-size:15.5px; line-height:1.8; color:var(--muted); }
+
+  .info-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:26px;
+  }
+  .info-card{
+    background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:20px 18px;
+  }
+  .info-card span.label{
+    display:block; font-size:12px; color:var(--muted); margin-bottom:8px;
+  }
+  .info-card strong{
+    display:block; font-family:'Space Grotesk'; font-size:17px; color:var(--navy);
+    line-height:1.35;
+  }
+  @media (max-width:860px){ .info-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .info-grid{ grid-template-columns:1fr; } }
+
   /* ---------- value cards (what we do) ---------- */
   .value-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
   .value-grid-4{ display:grid; grid-template-columns:repeat(2,1fr); gap:24px; }
@@ -283,7 +384,7 @@
   .offices-band{
     background:var(--navy);
     background-image:
-      radial-gradient(ellipse 50% 70% at 10% 20%, rgba(184,155,122,0.10), transparent 60%),
+      radial-gradient(ellipse 50% 70% at 10% 20%, rgba(168,212,0,0.10), transparent 60%),
       radial-gradient(ellipse 50% 70% at 95% 90%, rgba(255,255,255,0.05), transparent 55%);
     color:#fff;
   }
@@ -300,7 +401,7 @@
     padding:32px;
     transition:transform .4s var(--ease), background .4s var(--ease), border-color .4s var(--ease);
   }
-  .office-card:hover{ transform:translateY(-6px); background:rgba(255,255,255,0.08); border-color:rgba(184,155,122,0.4); }
+  .office-card:hover{ transform:translateY(-6px); background:rgba(255,255,255,0.08); border-color:rgba(168,212,0,0.4); }
   .office-tag{
     display:inline-flex; align-items:center; gap:8px;
     font-family:'Space Grotesk'; font-size:12.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
@@ -317,7 +418,7 @@
     background:rgba(255,255,255,0.06);
     transition:background .3s var(--ease), gap .3s var(--ease);
   }
-  .office-phones a:hover{ background:rgba(184,155,122,0.16); gap:14px; }
+  .office-phones a:hover{ background:rgba(168,212,0,0.16); gap:14px; }
   .office-phones a svg{ width:16px; height:16px; color:var(--lime); flex-shrink:0; }
   @media (max-width:760px){ .office-grid{ grid-template-columns:1fr; } }
 
@@ -330,7 +431,7 @@
   }
   .contact-card::before{
     content:""; position:absolute; inset:0;
-    background:radial-gradient(circle at 50% 0%, rgba(184,155,122,0.12), transparent 60%);
+    background:radial-gradient(circle at 50% 0%, rgba(168,212,0,0.12), transparent 60%);
     pointer-events:none;
   }
   .contact-card h2{ font-size:clamp(24px,3vw,32px); margin-bottom:14px; }
@@ -406,8 +507,8 @@
 <svg width="0" height="0" style="position:absolute">
   <defs>
     <symbol id="pin" viewBox="0 0 24 30">
-      <path d="M12 0C5.9 0 1 4.9 1 11c0 8.3 11 18.4 11 18.4S23 19.3 23 11c0-6.1-4.9-11-11-11z" fill="#B89B7A"/>
-      <circle cx="12" cy="11" r="4.6" fill="#28565A"/>
+      <path d="M12 0C5.9 0 1 4.9 1 11c0 8.3 11 18.4 11 18.4S23 19.3 23 11c0-6.1-4.9-11-11-11z" fill="#A8D400"/>
+      <circle cx="12" cy="11" r="4.6" fill="#0B4DA6"/>
     </symbol>
   </defs>
 </svg>
@@ -419,7 +520,14 @@
     <div class="reveal in">
       <span class="eyebrow">شريك تكنولوجي — مصر والإمارات</span>
       <h1>الأنظمة الرقمية التي تدير مؤسستك <span class="accent">بكل احترافية وسهولة</span></h1>
-      <p class="lead">Milestones Group شركة تقنية مقرها القاهرة ودبي، تصمم وتبني الأنظمة التي تعتمد عليها المدارس والمؤسسات في عملها اليومي — من الحضور والمدفوعات وحتى التواصل مع أولياء الأمور.</p>
+      <p class="lead">MilEX منصة تقنية متخصصة في تطوير وتنفيذ أنظمة الأتمتة المصممة وفقًا لاحتياجات كل عميل، لتبسيط العمليات اليومية وتنفيذها بسهولة وكفاءة.</p>
+      <p class="lead-sub">نبني حلولًا تناسب طبيعة العمل في مختلف القطاعات:</p>
+      <div class="sector-tags">
+        <span class="tag">مراكز وأكاديميات تعليمية</span>
+        <span class="tag">مطاعم</span>
+        <span class="tag">عيادات</span>
+        <span class="tag">أعمال إدارية أخرى</span>
+      </div>
       <div class="hero-cta cta-groups">
         <div class="cta-col">
           <a class="btn btn-lime" href="https://wa.me/201288818012" target="_blank" rel="noopener noreferrer">
@@ -450,53 +558,53 @@
         <!-- top bar -->
         <rect x="10" y="10" width="420" height="38" rx="18" fill="#F7F4EE"/>
         <rect x="10" y="30" width="420" height="18" fill="#F7F4EE"/>
-        <circle cx="32" cy="29" r="5" fill="#B89B7A"/>
-        <circle cx="50" cy="29" r="5" fill="#28565A" opacity="0.35"/>
-        <circle cx="68" cy="29" r="5" fill="#28565A" opacity="0.2"/>
+        <circle cx="32" cy="29" r="5" fill="#A8D400"/>
+        <circle cx="50" cy="29" r="5" fill="#0B4DA6" opacity="0.35"/>
+        <circle cx="68" cy="29" r="5" fill="#0B4DA6" opacity="0.2"/>
         <rect x="300" y="21" width="118" height="16" rx="8" fill="#FFFFFF" stroke="#DDD5C8"/>
 
         <!-- sidebar -->
-        <rect x="10" y="48" width="96" height="322" fill="#28565A"/>
-        <rect x="30" y="76" width="56" height="8" rx="4" fill="#B89B7A"/>
+        <rect x="10" y="48" width="96" height="322" fill="#0B4DA6"/>
+        <rect x="30" y="76" width="56" height="8" rx="4" fill="#A8D400"/>
         <rect x="30" y="108" width="56" height="8" rx="4" fill="#FFFFFF" opacity="0.7"/>
         <rect x="30" y="140" width="56" height="8" rx="4" fill="#FFFFFF" opacity="0.45"/>
         <rect x="30" y="172" width="56" height="8" rx="4" fill="#FFFFFF" opacity="0.45"/>
         <rect x="30" y="204" width="56" height="8" rx="4" fill="#FFFFFF" opacity="0.45"/>
 
         <!-- main content: title -->
-        <rect x="128" y="72" width="150" height="12" rx="6" fill="#28565A"/>
+        <rect x="128" y="72" width="150" height="12" rx="6" fill="#0B4DA6"/>
         <rect x="128" y="92" width="90" height="8" rx="4" fill="#77736B" opacity="0.6"/>
 
         <!-- summary cards -->
         <rect x="128" y="118" width="86" height="52" rx="10" fill="#F7F4EE" stroke="#DDD5C8"/>
-        <rect x="140" y="130" width="34" height="8" rx="4" fill="#967354"/>
-        <rect x="140" y="146" width="50" height="10" rx="5" fill="#28565A"/>
+        <rect x="140" y="130" width="34" height="8" rx="4" fill="#6E9B00"/>
+        <rect x="140" y="146" width="50" height="10" rx="5" fill="#0B4DA6"/>
 
         <rect x="224" y="118" width="86" height="52" rx="10" fill="#F7F4EE" stroke="#DDD5C8"/>
-        <rect x="236" y="130" width="34" height="8" rx="4" fill="#967354"/>
-        <rect x="236" y="146" width="50" height="10" rx="5" fill="#28565A"/>
+        <rect x="236" y="130" width="34" height="8" rx="4" fill="#6E9B00"/>
+        <rect x="236" y="146" width="50" height="10" rx="5" fill="#0B4DA6"/>
 
         <rect x="320" y="118" width="86" height="52" rx="10" fill="#F7F4EE" stroke="#DDD5C8"/>
-        <rect x="332" y="130" width="34" height="8" rx="4" fill="#967354"/>
-        <rect x="332" y="146" width="50" height="10" rx="5" fill="#28565A"/>
+        <rect x="332" y="130" width="34" height="8" rx="4" fill="#6E9B00"/>
+        <rect x="332" y="146" width="50" height="10" rx="5" fill="#0B4DA6"/>
 
         <!-- bar chart -->
         <g>
-          <rect class="mockup-bar b1" x="140" y="230" width="26" height="90" rx="5" fill="#28565A" opacity="0.85"/>
-          <rect class="mockup-bar b2" x="178" y="200" width="26" height="120" rx="5" fill="#B89B7A"/>
-          <rect class="mockup-bar b3" x="216" y="250" width="26" height="70" rx="5" fill="#28565A" opacity="0.85"/>
-          <rect class="mockup-bar b4" x="254" y="180" width="26" height="140" rx="5" fill="#B89B7A"/>
-          <rect class="mockup-bar b5" x="292" y="220" width="26" height="100" rx="5" fill="#28565A" opacity="0.55"/>
+          <rect class="mockup-bar b1" x="140" y="230" width="26" height="90" rx="5" fill="#0B4DA6" opacity="0.85"/>
+          <rect class="mockup-bar b2" x="178" y="200" width="26" height="120" rx="5" fill="#A8D400"/>
+          <rect class="mockup-bar b3" x="216" y="250" width="26" height="70" rx="5" fill="#0B4DA6" opacity="0.85"/>
+          <rect class="mockup-bar b4" x="254" y="180" width="26" height="140" rx="5" fill="#A8D400"/>
+          <rect class="mockup-bar b5" x="292" y="220" width="26" height="100" rx="5" fill="#0B4DA6" opacity="0.55"/>
           <line x1="128" y1="322" x2="330" y2="322" stroke="#DDD5C8" stroke-width="1.5"/>
         </g>
 
         <!-- small check list card -->
         <rect x="330" y="200" width="80" height="120" rx="10" fill="#F7F4EE" stroke="#DDD5C8"/>
-        <circle class="mockup-pulse" cx="345" cy="216" r="4" fill="#967354"/>
-        <rect x="356" y="212" width="42" height="8" rx="4" fill="#28565A" opacity="0.75"/>
-        <circle cx="345" cy="240" r="4" fill="#28565A" opacity="0.35"/>
+        <circle class="mockup-pulse" cx="345" cy="216" r="4" fill="#6E9B00"/>
+        <rect x="356" y="212" width="42" height="8" rx="4" fill="#0B4DA6" opacity="0.75"/>
+        <circle cx="345" cy="240" r="4" fill="#0B4DA6" opacity="0.35"/>
         <rect x="356" y="236" width="42" height="8" rx="4" fill="#77736B" opacity="0.5"/>
-        <circle cx="345" cy="264" r="4" fill="#28565A" opacity="0.35"/>
+        <circle cx="345" cy="264" r="4" fill="#0B4DA6" opacity="0.35"/>
         <rect x="356" y="260" width="30" height="8" rx="4" fill="#77736B" opacity="0.5"/>
       </svg>
 
@@ -518,14 +626,38 @@
         <span class="journey-pin"><svg viewBox="0 0 24 30"><use href="#pin"/></svg></span>
         <span class="eyebrow">من نحن</span>
         <h2 style="margin-top:14px; font-size:clamp(24px,3vw,32px);">فريق يقدّم أنظمة فعّالة، لا مجرد أفكار</h2>
-        <div class="about-body" style="margin-top:24px;">
-          <p>MilEX شركة تقنية تعمل مع المدارس والمؤسسات على بناء الأنظمة التي تدير من خلالها أعمالها اليومية — من تسجيل الحضور والمدفوعات وحتى متابعة أولياء الأمور وإعداد التقارير.</p>
-          <p>نرافق العميل منذ اللحظة الأولى للفكرة وحتى النظام الذي يستخدمه فريقه فعليًا، ونبقى إلى جانبه بعد التسليم لتقديم الدعم والتطوير المستمر.</p>
+
+        <!-- Parent brand: Milestones Group -->
+        <div class="parent-brand" style="margin-top:24px;">
+          <div class="parent-label">
+            <strong>Milestones Group</strong>
+            <span class="parent-badge">الشركة الأم</span>
+          </div>
+          <p>Milestones Group شركة متخصصة في تقديم وتوزيع الحلول التكنولوجية المتكاملة للشركات والمؤسسات، بخبرة تمتد لأكثر من 15 عامًا في السوقين المصري والخليجي. تقدّم الشركة حلولًا تشمل الاتصالات الموحدة، وحلول التخزين والنسخ الاحتياطي، والأتمتة، إلى جانب تطوير حلول مبتكرة تعتمد على أحدث التقنيات لتلبية احتياجات مختلف القطاعات.</p>
         </div>
-        <div class="stat-row">
-          <div><strong>فرعان</strong><span>القاهرة ودبي</span></div>
-          <div><strong>دعم مستمر</strong><span>بعد التسليم</span></div>
-          <div><strong>أنظمة مخصصة</strong><span>مبنية على رؤيتك</span></div>
+
+        <div class="about-body" style="margin-top:28px;">
+          <p>MilEX منصة تقنية تابعة لمجموعة Milestones Group، متخصصة في تطوير وتنفيذ أنظمة الأتمتة المصمَّمة وفقًا لاحتياجات كل عميل، بهدف تبسيط العمليات اليومية وتنفيذها بسهولة وكفاءة أكبر.</p>
+          <p>نطوّر حلولًا تناسب طبيعة العمل في مختلف القطاعات، مثل المدرّسين والمراكز والأكاديميات التعليمية، والمطاعم، والعيادات، وغيرها من الأنشطة والقطاعات المختلفة. مع MilEX، لا نقدّم نظامًا موحدًا يناسب الجميع، بل ننطلق من احتياجاتك وطريقة عملك، لنطوّر نظامًا يساعدك على تنظيم أعمالك، وأتمتة المهام المتكررة، وتوفير الوقت والجهد.</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <span class="label">المقر الرئيسي</span>
+            <strong>مصر</strong>
+          </div>
+          <div class="info-card">
+            <span class="label">المقر الإقليمي</span>
+            <strong>دبي</strong>
+          </div>
+          <div class="info-card">
+            <span class="label">نطاق الخدمات</span>
+            <strong>مصر وجميع دول الخليج</strong>
+          </div>
+          <div class="info-card">
+            <span class="label">الدعم الفني</span>
+            <strong>24 ساعة / 7 أيام</strong>
+          </div>
         </div>
       </div>
 
