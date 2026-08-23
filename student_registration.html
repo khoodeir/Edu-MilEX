@@ -604,33 +604,33 @@ const DEFAULT_REG_DATA = {
     }
   ],
   governorates: [
-    {
-      key: "gharbia", label: "الغربية",
-      cities: [
-        { value: "tanta", label: "طنطا" },
-        { value: "mahalla", label: "المحلة الكبرى" },
-        { value: "kafr-elzayat", label: "كفر الزيات" },
-        { value: "zefta", label: "زفتى" },
-        { value: "samannoud", label: "سمنود" },
-        { value: "qutur", label: "قطور" },
-        { value: "basyoun", label: "بسيون" },
-        { value: "santa", label: "السنطة" }
-      ]
-    },
-    {
-      key: "qalyubia", label: "القليوبية",
-      cities: [
-        { value: "banha", label: "بنها" },
-        { value: "qalyub", label: "قليوب" },
-        { value: "shubra-elkheima", label: "شبرا الخيمة" },
-        { value: "qanater", label: "القناطر الخيرية" },
-        { value: "tukh", label: "طوخ" },
-        { value: "kafr-shukr", label: "كفر شكر" },
-        { value: "khanka", label: "الخانكة" },
-        { value: "shibin-elqanater", label: "شبين القناطر" },
-        { value: "obour", label: "العبور" }
-      ]
-    }
+    { key: "cairo", label: "القاهرة", cities: ["مدينة نصر","المعادي","حلوان","مصر الجديدة","الزيتون","شبرا","عين شمس","المرج","البساتين","دار السلام","السيدة زينب","الدرب الأحمر","وسط البلد","الزمالك","المقطم","القاهرة الجديدة","بدر","الشروق","العاصمة الإدارية الجديدة"].map(l=>({value:l,label:l})) },
+    { key: "giza", label: "الجيزة", cities: ["الجيزة","الدقي","العجوزة","إمبابة","بولاق الدكرور","الهرم","فيصل","أوسيم","كرداسة","أبو النمرس","الصف","أطفيح","البدرشين","منشأة القناطر","6 أكتوبر","الشيخ زايد"].map(l=>({value:l,label:l})) },
+    { key: "alexandria", label: "الإسكندرية", cities: ["المنتزه","شرق","وسط","غرب","الجمرك","العامرية","برج العرب","العجمي","سيدي جابر","سموحة","ميامي","محرم بك","كرموز"].map(l=>({value:l,label:l})) },
+    { key: "dakahlia", label: "الدقهلية", cities: ["المنصورة","طلخا","ميت غمر","دكرنس","أجا","منية النصر","السنبلاوين","شربين","المنزلة","تمي الأمديد","الجمالية","بلقاس","نبروه","بني عبيد","المطرية","جمصة"].map(l=>({value:l,label:l})) },
+    { key: "sharqia", label: "الشرقية", cities: ["الزقازيق","بلبيس","منيا القمح","أبو حماد","أبو كبير","فاقوس","الحسينية","الإبراهيمية","ديرب نجم","كفر صقر","مشتول السوق","الصالحية الجديدة","ههيا","أولاد صقر","القرين","العاشر من رمضان"].map(l=>({value:l,label:l})) },
+    { key: "qalyubia", label: "القليوبية", cities: ["بنها","قليوب","شبرا الخيمة","القناطر الخيرية","طوخ","كفر شكر","الخانكة","شبين القناطر","العبور"].map(l=>({value:l,label:l})) },
+    { key: "gharbia", label: "الغربية", cities: ["طنطا","المحلة الكبرى","كفر الزيات","زفتى","سمنود","قطور","بسيون","السنطة"].map(l=>({value:l,label:l})) },
+    { key: "monufia", label: "المنوفية", cities: ["شبين الكوم","منوف","سرس الليان","أشمون","الباجور","قويسنا","بركة السبع","تلا","الشهداء","السادات"].map(l=>({value:l,label:l})) },
+    { key: "beheira", label: "البحيرة", cities: ["دمنهور","كفر الدوار","رشيد","إدكو","أبو حمص","أبو المطامير","إيتاي البارود","الدلنجات","المحمودية","الرحمانية","شبراخيت","كوم حمادة","بدر البحيرة","النوبارية","وادي النطرون","حوش عيسى"].map(l=>({value:l,label:l})) },
+    { key: "kafr-elsheikh", label: "كفر الشيخ", cities: ["كفر الشيخ","دسوق","فوه","مطوبس","بلطيم","الحامول","بيلا","الرياض","سيدي سالم","قلين","البرلس"].map(l=>({value:l,label:l})) },
+    { key: "damietta", label: "دمياط", cities: ["دمياط","رأس البر","فارسكور","الزرقا","كفر سعد","كفر البطيخ","ميت أبو غالب","السرو","الروضة"].map(l=>({value:l,label:l})) },
+    { key: "portsaid", label: "بورسعيد", cities: ["بورفؤاد","الشرق","الضواحي","المناخ","الزهور","الجنوب","حي العرب"].map(l=>({value:l,label:l})) },
+    { key: "ismailia", label: "الإسماعيلية", cities: ["الإسماعيلية","فايد","القنطرة شرق","القنطرة غرب","التل الكبير","أبو صوير","القصاصين"].map(l=>({value:l,label:l})) },
+    { key: "suez", label: "السويس", cities: ["السويس","عتاقة","الأربعين","الجناين","فيصل"].map(l=>({value:l,label:l})) },
+    { key: "north-sinai", label: "شمال سيناء", cities: ["العريش","الشيخ زويد","رفح","بئر العبد","الحسنة","نخل"].map(l=>({value:l,label:l})) },
+    { key: "south-sinai", label: "جنوب سيناء", cities: ["الطور","شرم الشيخ","دهب","نويبع","طابا","سانت كاترين","أبو رديس","رأس سدر"].map(l=>({value:l,label:l})) },
+    { key: "fayoum", label: "الفيوم", cities: ["الفيوم","سنورس","إطسا","إبشواي","طامية","يوسف الصديق"].map(l=>({value:l,label:l})) },
+    { key: "beni-suef", label: "بني سويف", cities: ["بني سويف","الواسطى","ناصر","إهناسيا","ببا","سمسطا","الفشن"].map(l=>({value:l,label:l})) },
+    { key: "minya", label: "المنيا", cities: ["المنيا","ملوي","سمالوط","مغاغة","بني مزار","مطاي","أبو قرقاص","ديرمواس","العدوة"].map(l=>({value:l,label:l})) },
+    { key: "assiut", label: "أسيوط", cities: ["أسيوط","ديروط","منفلوط","القوصية","أبنوب","أبوتيج","صدفا","البدارى","ساحل سليم","الفتح"].map(l=>({value:l,label:l})) },
+    { key: "sohag", label: "سوهاج", cities: ["سوهاج","أخميم","جرجا","طهطا","طما","المراغة","البلينا","دار السلام","ساقلته","جهينة","المنشاة"].map(l=>({value:l,label:l})) },
+    { key: "qena", label: "قنا", cities: ["قنا","نجع حمادي","دشنا","أبوتشت","فرشوط","قوص","نقادة","الوقف"].map(l=>({value:l,label:l})) },
+    { key: "luxor", label: "الأقصر", cities: ["الأقصر","الزينية","البياضية","القرنة","الطود","أرمنت","إسنا"].map(l=>({value:l,label:l})) },
+    { key: "aswan", label: "أسوان", cities: ["أسوان","إدفو","كوم أمبو","دراو","نصر النوبة","البصيلية","السباعية","الرديسية","أبو سمبل"].map(l=>({value:l,label:l})) },
+    { key: "new-valley", label: "الوادي الجديد", cities: ["الخارجة","الداخلة","الفرافرة","باريس","بلاط"].map(l=>({value:l,label:l})) },
+    { key: "matrouh", label: "مطروح", cities: ["مرسى مطروح","الحمام","العلمين","الضبعة","سيدي براني","السلوم","سيوة","النجيلة"].map(l=>({value:l,label:l})) },
+    { key: "red-sea", label: "البحر الأحمر", cities: ["الغردقة","سفاجا","القصير","مرسى علم","الشلاتين","حلايب","رأس غارب"].map(l=>({value:l,label:l})) }
   ]
 };
 
@@ -667,6 +667,22 @@ function getAdminPassword(){
 
 function makeSlug(prefix){
   return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+/* Normalize a time string typed by the admin: a bare number like "6"
+   becomes "6:00", "6:5" becomes "6:05", already-valid values pass through. */
+function normalizeTimeValue(raw){
+  let v = String(raw == null ? '' : raw).trim();
+  if (!v) return v;
+  if (!v.includes(':')){
+    return `${v}:00`;
+  }
+  const parts = v.split(':');
+  const hh = parts[0].trim();
+  let mm = (parts[1] || '').trim();
+  if (mm.length === 0) mm = '00';
+  if (mm.length === 1) mm = '0' + mm;
+  return `${hh}:${mm}`;
 }
 
 let regData = loadRegData();
@@ -1144,7 +1160,13 @@ function renderAdminPanel(){
           <button type="button" class="btn-x" title="حذف المجموعة">✕</button>
         `;
         row.querySelector('.g-dayar').addEventListener('input', e => { group.dayAr = e.target.value; group.dayEn = e.target.value; });
-        row.querySelector('.g-time').addEventListener('input', e => { group.time = e.target.value; });
+        const timeInput = row.querySelector('.g-time');
+        timeInput.addEventListener('input', e => { group.time = e.target.value; });
+        timeInput.addEventListener('blur', e => {
+          const normalized = normalizeTimeValue(e.target.value);
+          e.target.value = normalized;
+          group.time = normalized;
+        });
         row.querySelector('.btn-x').addEventListener('click', () => {
           grade.groups.splice(groupIdx, 1);
           renderAdminPanel();
