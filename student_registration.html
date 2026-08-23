@@ -308,6 +308,9 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 .admin-status{ margin-top:14px; text-align:center; font-size:13px; font-weight:600; padding:10px; border-radius:8px; display:none; }
 .admin-status.show-success{ display:block; color:var(--success); background:rgba(91,140,110,0.1); border:1px solid rgba(91,140,110,0.28); }
 .admin-status.show-error{ display:block; color:var(--error); background:rgba(181,85,90,0.08); border:1px solid rgba(181,85,90,0.28); }
+.admin-section-title{ font-family:'Cormorant Garamond','Poppins',serif; color:var(--gold-light); font-size:19px; font-weight:700; margin:26px 0 14px; padding-top:18px; border-top:1px solid var(--border); }
+.city-row{ display:flex; align-items:center; gap:6px; margin-bottom:7px; flex-wrap:wrap; }
+.city-row input{ flex:1; min-width:140px; padding:8px 10px; border:1.5px solid var(--border); border-radius:7px; font-family:inherit; font-size:13px; background:rgba(255,255,255,0.85); }
 </style>
 </head>
 <body>
@@ -347,11 +350,18 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
       <div class="error-msg" data-i18n="errPhone">Enter a valid 11-digit number starting with 01</div>
     </div>
 
+    <div class="field" id="governorateField">
+      <label for="governorate" data-i18n="labelGovernorate">Governorate</label>
+      <select id="governorate" name="governorate" required>
+        <option value="" disabled selected data-i18n="selectPlaceholder">Select an option ...</option>
+      </select>
+    </div>
+
     <div class="field" id="cityField">
       <label for="city" data-i18n="labelCity">City</label>
-      <input type="text" id="city" name="city" data-i18n-ph="phCity" placeholder="Enter your city" required>
-      <div class="hint" data-i18n="hintCity">Letters only, no numbers or symbols</div>
-      <div class="error-msg" data-i18n="errCity">City must contain letters only</div>
+      <select id="city" name="city" required>
+        <option value="" disabled selected data-i18n="selectPlaceholder">Select an option ...</option>
+      </select>
     </div>
 
     <div class="field">
@@ -424,6 +434,12 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 
       <button type="button" class="btn-add-inline" id="addStageBtn">+ إضافة مرحلة دراسية</button>
 
+      <div class="admin-section-title">المحافظات والمدن</div>
+
+      <div id="govsContainer"></div>
+
+      <button type="button" class="btn-add-inline" id="addGovBtn">+ إضافة محافظة</button>
+
       <div class="admin-actions">
         <button type="button" class="submit" id="saveDataBtn">حفظ التعديلات</button>
         <button type="button" class="btn-secondary" id="resetDataBtn">استرجاع الإعدادات الافتراضية</button>
@@ -459,10 +475,8 @@ const I18N = {
     hintPhone: "11 digits, starting with 01 (e.g. 01012345678)",
     errPhone: "Enter a valid 11-digit number starting with 01",
     labelParentPhone: "Parent Phone",
+    labelGovernorate: "Governorate",
     labelCity: "City",
-    phCity: "Enter your city",
-    hintCity: "Letters only, no numbers or symbols",
-    errCity: "City must contain letters only",
     labelStage: "Educational Stage",
     labelGrade: "Grade",
     labelGroup: "Group",
@@ -509,10 +523,8 @@ const I18N = {
     hintPhone: "11 رقم، تبدأ بـ 01 (مثال: 01012345678)",
     errPhone: "اكتب رقم صحيح مكوّن من 11 رقم يبدأ بـ 01",
     labelParentPhone: "رقم هاتف ولي الأمر",
+    labelGovernorate: "المحافظة",
     labelCity: "المدينة",
-    phCity: "اكتب اسم مدينتك",
-    hintCity: "حروف فقط، من غير أرقام أو رموز",
-    errCity: "المدينة لازم تكون حروف فقط",
     labelStage: "المرحلة الدراسية",
     labelGrade: "الصف",
     labelGroup: "المجموعة",
@@ -590,6 +602,26 @@ const DEFAULT_REG_DATA = {
           ] }
       ]
     }
+  ],
+  governorates: [
+    {
+      key: "gharbia", label: "الغربية",
+      cities: [
+        { value: "tanta", label: "طنطا" },
+        { value: "mahalla", label: "المحلة الكبرى" },
+        { value: "zefta", label: "زفتى" },
+        { value: "kafr-elzayat", label: "كفر الزيات" }
+      ]
+    },
+    {
+      key: "qalyubia", label: "القليوبية",
+      cities: [
+        { value: "banha", label: "بنها" },
+        { value: "shubra-elkheima", label: "شبرا الخيمة" },
+        { value: "qanater", label: "القناطر الخيرية" },
+        { value: "tukh", label: "طوخ" }
+      ]
+    }
   ]
 };
 
@@ -602,7 +634,13 @@ function loadRegData(){
     const raw = localStorage.getItem(REG_DATA_KEY);
     if (raw){
       const parsed = JSON.parse(raw);
-      if (parsed && Array.isArray(parsed.stages)) return parsed;
+      if (parsed && Array.isArray(parsed.stages)){
+        if (!Array.isArray(parsed.governorates)){
+          parsed.governorates = JSON.parse(JSON.stringify(DEFAULT_REG_DATA.governorates));
+          localStorage.setItem(REG_DATA_KEY, JSON.stringify(parsed));
+        }
+        return parsed;
+      }
     }
   } catch(e){ /* fall through to defaults */ }
   const fresh = JSON.parse(JSON.stringify(DEFAULT_REG_DATA));
@@ -645,9 +683,81 @@ function getGroupLabel(groupValue){
   return groupValue;
 }
 
+function findGovernorate(govKey){
+  return regData.governorates.find(g => g.key === govKey);
+}
+function getGovernorateLabel(govKey){
+  const gov = findGovernorate(govKey);
+  return gov ? gov.label : govKey;
+}
+function getCityLabel(govKey, cityValue){
+  const gov = findGovernorate(govKey);
+  if (!gov) return cityValue;
+  const city = gov.cities.find(c => c.value === cityValue);
+  return city ? city.label : cityValue;
+}
+
 const stageSelect = document.getElementById('stage');
 const gradeSelect = document.getElementById('grade');
 const groupSelect = document.getElementById('group');
+const govSelect = document.getElementById('governorate');
+const citySelect = document.getElementById('city');
+
+function populateGovernorateOptions(preserveSelection){
+  const previousGov = preserveSelection ? govSelect.value : "";
+  govSelect.innerHTML = "";
+
+  const placeholder = document.createElement('option');
+  placeholder.value = "";
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  placeholder.textContent = t('selectPlaceholder');
+  placeholder.setAttribute('data-i18n', 'selectPlaceholder');
+  govSelect.appendChild(placeholder);
+
+  regData.governorates.forEach(gov => {
+    const el = document.createElement('option');
+    el.value = gov.key;
+    el.textContent = gov.label;
+    if (preserveSelection && gov.key === previousGov){
+      el.selected = true;
+      placeholder.selected = false;
+    }
+    govSelect.appendChild(el);
+  });
+}
+
+function populateCityOptions(preserveSelection){
+  const govKey = govSelect.value;
+  const previousCity = preserveSelection ? citySelect.value : "";
+  const gov = findGovernorate(govKey);
+  const options = gov ? gov.cities : [];
+
+  citySelect.innerHTML = "";
+
+  const placeholder = document.createElement('option');
+  placeholder.value = "";
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  placeholder.textContent = t('selectPlaceholder');
+  placeholder.setAttribute('data-i18n', 'selectPlaceholder');
+  citySelect.appendChild(placeholder);
+
+  options.forEach(opt => {
+    const el = document.createElement('option');
+    el.value = opt.value;
+    el.textContent = opt.label;
+    if (preserveSelection && opt.value === previousCity){
+      el.selected = true;
+      placeholder.selected = false;
+    }
+    citySelect.appendChild(el);
+  });
+
+  citySelect.disabled = options.length === 0;
+}
+
+govSelect.addEventListener('change', () => populateCityOptions(false));
 
 function populateStageOptions(preserveSelection){
   const previousStage = preserveSelection ? stageSelect.value : "";
@@ -752,6 +862,8 @@ function applyTranslations(){
   populateStageOptions(true);
   populateGradeOptions(true);
   populateGroupOptions(true);
+  populateGovernorateOptions(true);
+  populateCityOptions(true);
 }
 
 function setLanguage(lang){
@@ -773,6 +885,8 @@ setLanguage(currentLang);
 populateStageOptions(false);
 populateGradeOptions(false);
 populateGroupOptions(false);
+populateGovernorateOptions(false);
+populateCityOptions(false);
 
 /* ============================================================
    FORM VALIDATION + SUBMISSION (n8n integration)
@@ -829,22 +943,6 @@ function validateFullName(){
 }
 nameInput.addEventListener('blur', validateFullName);
 
-const cityRegex = /^[A-Za-z\u0600-\u06FF\s]+$/; // English or Arabic letters and spaces only
-const cityInput = document.getElementById('city');
-const cityField = document.getElementById('cityField');
-
-cityInput.addEventListener('input', () => {
-  cityInput.value = cityInput.value.replace(/[^A-Za-z\u0600-\u06FF\s]/g, '');
-});
-
-function validateCity(){
-  const valid = cityRegex.test(cityInput.value.trim()) && cityInput.value.trim().length > 0;
-  cityField.classList.toggle('has-error', !valid);
-  cityInput.classList.toggle('invalid', !valid);
-  return valid;
-}
-cityInput.addEventListener('blur', validateCity);
-
 async function extractErrorMessage(res){
   let rawText = '';
   try{
@@ -896,9 +994,8 @@ form.addEventListener('submit', async (e) => {
   const nameOk = validateFullName();
   const studentOk = validateStudentPhone();
   const parentOk = validateParentPhone();
-  const cityOk = validateCity();
 
-  if (!form.checkValidity() || !nameOk || !studentOk || !parentOk || !cityOk){
+  if (!form.checkValidity() || !nameOk || !studentOk || !parentOk){
     form.reportValidity();
     return;
   }
@@ -907,7 +1004,8 @@ form.addEventListener('submit', async (e) => {
     fullName: document.getElementById('fullName').value.trim(),
     studentPhone: document.getElementById('studentPhone').value.trim(),
     parentPhone: document.getElementById('parentPhone').value.trim(),
-    city: document.getElementById('city').value.trim(),
+    governorate: getGovernorateLabel(govSelect.value),
+    city: getCityLabel(govSelect.value, citySelect.value),
     educationalStage: document.getElementById('stage').value,
     grade: document.getElementById('grade').value,
     group: getGroupLabel(document.getElementById('group').value)
@@ -975,6 +1073,7 @@ const adminPanel = document.getElementById('adminPanel');
 const adminPasswordInput = document.getElementById('adminPasswordInput');
 const adminGateError = document.getElementById('adminGateError');
 const stagesContainer = document.getElementById('stagesContainer');
+const govsContainer = document.getElementById('govsContainer');
 const adminStatus = document.getElementById('adminStatus');
 
 let adminDraft = null; // working copy edited in the panel, only persisted on Save
@@ -1069,6 +1168,55 @@ function renderAdminPanel(){
 
     stagesContainer.appendChild(stageBlock);
   });
+
+  govsContainer.innerHTML = '';
+
+  adminDraft.governorates.forEach((gov, govIdx) => {
+    const govBlock = document.createElement('div');
+    govBlock.className = 'stage-block';
+
+    const gHead = document.createElement('div');
+    gHead.className = 'stage-block-head';
+    gHead.innerHTML = `
+      <input type="text" class="gov-label" value="${escapeAttr(gov.label)}" placeholder="اسم المحافظة">
+      <button type="button" class="btn-x" title="حذف المحافظة">✕</button>
+    `;
+    gHead.querySelector('.gov-label').addEventListener('input', e => { gov.label = e.target.value; });
+    gHead.querySelector('.btn-x').addEventListener('click', () => {
+      if (confirm('تحذف المحافظة دي وكل المدن اللي جواها؟')){
+        adminDraft.governorates.splice(govIdx, 1);
+        renderAdminPanel();
+      }
+    });
+    govBlock.appendChild(gHead);
+
+    gov.cities.forEach((city, cityIdx) => {
+      const row = document.createElement('div');
+      row.className = 'city-row';
+      row.innerHTML = `
+        <input type="text" class="city-label" value="${escapeAttr(city.label)}" placeholder="اسم المدينة أو المركز">
+        <button type="button" class="btn-x" title="حذف المدينة">✕</button>
+      `;
+      row.querySelector('.city-label').addEventListener('input', e => { city.label = e.target.value; });
+      row.querySelector('.btn-x').addEventListener('click', () => {
+        gov.cities.splice(cityIdx, 1);
+        renderAdminPanel();
+      });
+      govBlock.appendChild(row);
+    });
+
+    const addCityBtn = document.createElement('button');
+    addCityBtn.type = 'button';
+    addCityBtn.className = 'btn-add-inline';
+    addCityBtn.textContent = '+ إضافة مدينة';
+    addCityBtn.addEventListener('click', () => {
+      gov.cities.push({ value: makeSlug('city'), label: '' });
+      renderAdminPanel();
+    });
+    govBlock.appendChild(addCityBtn);
+
+    govsContainer.appendChild(govBlock);
+  });
 }
 
 function escapeAttr(str){
@@ -1100,6 +1248,11 @@ document.getElementById('addStageBtn').addEventListener('click', () => {
   renderAdminPanel();
 });
 
+document.getElementById('addGovBtn').addEventListener('click', () => {
+  adminDraft.governorates.push({ key: makeSlug('gov'), label: '', cities: [] });
+  renderAdminPanel();
+});
+
 document.getElementById('saveDataBtn').addEventListener('click', () => {
   // basic validation: no empty grade/group values
   for (const stage of adminDraft.stages){
@@ -1110,6 +1263,18 @@ document.getElementById('saveDataBtn').addEventListener('click', () => {
     for (const grade of stage.grades){
       if (!grade.labelEn.trim() && !grade.labelAr.trim()){
         showAdminStatus('لازم كل سنة دراسية يكون ليها اسم', true);
+        return;
+      }
+    }
+  }
+  for (const gov of adminDraft.governorates){
+    if (!gov.label.trim()){
+      showAdminStatus('لازم كل محافظة يكون ليها اسم', true);
+      return;
+    }
+    for (const city of gov.cities){
+      if (!city.label.trim()){
+        showAdminStatus('لازم كل مدينة يكون ليها اسم', true);
         return;
       }
     }
@@ -1167,6 +1332,8 @@ function routeByHash(){
     populateStageOptions(true);
     populateGradeOptions(true);
     populateGroupOptions(true);
+    populateGovernorateOptions(true);
+    populateCityOptions(true);
   }
 }
 
