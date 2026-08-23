@@ -436,9 +436,13 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 
       <div class="admin-section-title">المحافظات والمدن</div>
 
+      <div class="field" style="margin-bottom:14px;">
+        <select id="adminGovSelect" style="width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:9px; font-family:inherit; font-size:14.5px; font-weight:600; color:var(--gold-deep); background:rgba(255,255,255,0.75); cursor:pointer;"></select>
+      </div>
+
       <div id="govsContainer"></div>
 
-      <button type="button" class="btn-add-inline" id="addGovBtn">+ إضافة محافظة</button>
+      <button type="button" class="btn-add-inline" id="addGovBtn">+ إضافة محافظة جديدة</button>
 
       <div class="admin-actions">
         <button type="button" class="submit" id="saveDataBtn">حفظ التعديلات</button>
@@ -1099,10 +1103,12 @@ const adminPasswordInput = document.getElementById('adminPasswordInput');
 const adminGateError = document.getElementById('adminGateError');
 const stagesContainer = document.getElementById('stagesContainer');
 const govsContainer = document.getElementById('govsContainer');
+const adminGovSelect = document.getElementById('adminGovSelect');
 const adminStatus = document.getElementById('adminStatus');
 
 let adminDraft = null; // working copy edited in the panel, only persisted on Save
 let adminUnlocked = false;
+let selectedGovKey = null; // which governorate's cities are shown in the editor below the dropdown
 
 function showAdminStatus(msg, isError){
   adminStatus.textContent = msg;
@@ -1200,55 +1206,96 @@ function renderAdminPanel(){
     stagesContainer.appendChild(stageBlock);
   });
 
+  renderGovSection();
+}
+
+/* Governorate picker: choose a governorate from the dropdown, then edit
+   only its cities below — avoids dumping all 27 governorates on screen. */
+function renderGovSection(){
+  adminGovSelect.innerHTML = '';
+
+  if (adminDraft.governorates.length === 0){
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = 'لا توجد محافظات مضافة';
+    adminGovSelect.appendChild(opt);
+    govsContainer.innerHTML = '';
+    return;
+  }
+
+  if (!selectedGovKey || !adminDraft.governorates.some(g => g.key === selectedGovKey)){
+    selectedGovKey = adminDraft.governorates[0].key;
+  }
+
+  adminDraft.governorates.forEach(gov => {
+    const opt = document.createElement('option');
+    opt.value = gov.key;
+    opt.textContent = gov.label || '(بدون اسم)';
+    if (gov.key === selectedGovKey) opt.selected = true;
+    adminGovSelect.appendChild(opt);
+  });
+
   govsContainer.innerHTML = '';
 
-  adminDraft.governorates.forEach((gov, govIdx) => {
-    const govBlock = document.createElement('div');
-    govBlock.className = 'stage-block';
+  const govIdx = adminDraft.governorates.findIndex(g => g.key === selectedGovKey);
+  const gov = adminDraft.governorates[govIdx];
+  if (!gov) return;
 
-    const gHead = document.createElement('div');
-    gHead.className = 'stage-block-head';
-    gHead.innerHTML = `
-      <input type="text" class="gov-label" value="${escapeAttr(gov.label)}" placeholder="اسم المحافظة">
-      <button type="button" class="btn-x" title="حذف المحافظة">✕</button>
-    `;
-    gHead.querySelector('.gov-label').addEventListener('input', e => { gov.label = e.target.value; });
-    gHead.querySelector('.btn-x').addEventListener('click', () => {
-      if (confirm('تحذف المحافظة دي وكل المدن اللي جواها؟')){
-        adminDraft.governorates.splice(govIdx, 1);
-        renderAdminPanel();
-      }
-    });
-    govBlock.appendChild(gHead);
+  const govBlock = document.createElement('div');
+  govBlock.className = 'stage-block';
 
-    gov.cities.forEach((city, cityIdx) => {
-      const row = document.createElement('div');
-      row.className = 'city-row';
-      row.innerHTML = `
-        <input type="text" class="city-label" value="${escapeAttr(city.label)}" placeholder="اسم المدينة أو المركز">
-        <button type="button" class="btn-x" title="حذف المدينة">✕</button>
-      `;
-      row.querySelector('.city-label').addEventListener('input', e => { city.label = e.target.value; });
-      row.querySelector('.btn-x').addEventListener('click', () => {
-        gov.cities.splice(cityIdx, 1);
-        renderAdminPanel();
-      });
-      govBlock.appendChild(row);
-    });
-
-    const addCityBtn = document.createElement('button');
-    addCityBtn.type = 'button';
-    addCityBtn.className = 'btn-add-inline';
-    addCityBtn.textContent = '+ إضافة مدينة';
-    addCityBtn.addEventListener('click', () => {
-      gov.cities.push({ value: makeSlug('city'), label: '' });
-      renderAdminPanel();
-    });
-    govBlock.appendChild(addCityBtn);
-
-    govsContainer.appendChild(govBlock);
+  const gHead = document.createElement('div');
+  gHead.className = 'stage-block-head';
+  gHead.innerHTML = `
+    <input type="text" class="gov-label" value="${escapeAttr(gov.label)}" placeholder="اسم المحافظة">
+    <button type="button" class="btn-x" title="حذف المحافظة">✕</button>
+  `;
+  gHead.querySelector('.gov-label').addEventListener('input', e => {
+    gov.label = e.target.value;
+    const opt = Array.from(adminGovSelect.options).find(o => o.value === gov.key);
+    if (opt) opt.textContent = gov.label || '(بدون اسم)';
   });
+  gHead.querySelector('.btn-x').addEventListener('click', () => {
+    if (confirm('تحذف المحافظة دي وكل المدن اللي جواها؟')){
+      adminDraft.governorates.splice(govIdx, 1);
+      selectedGovKey = null;
+      renderGovSection();
+    }
+  });
+  govBlock.appendChild(gHead);
+
+  gov.cities.forEach((city, cityIdx) => {
+    const row = document.createElement('div');
+    row.className = 'city-row';
+    row.innerHTML = `
+      <input type="text" class="city-label" value="${escapeAttr(city.label)}" placeholder="اسم المدينة أو المركز أو القرية">
+      <button type="button" class="btn-x" title="حذف المدينة">✕</button>
+    `;
+    row.querySelector('.city-label').addEventListener('input', e => { city.label = e.target.value; });
+    row.querySelector('.btn-x').addEventListener('click', () => {
+      gov.cities.splice(cityIdx, 1);
+      renderGovSection();
+    });
+    govBlock.appendChild(row);
+  });
+
+  const addCityBtn = document.createElement('button');
+  addCityBtn.type = 'button';
+  addCityBtn.className = 'btn-add-inline';
+  addCityBtn.textContent = '+ إضافة مدينة أو قرية';
+  addCityBtn.addEventListener('click', () => {
+    gov.cities.push({ value: makeSlug('city'), label: '' });
+    renderGovSection();
+  });
+  govBlock.appendChild(addCityBtn);
+
+  govsContainer.appendChild(govBlock);
 }
+
+adminGovSelect.addEventListener('change', () => {
+  selectedGovKey = adminGovSelect.value;
+  renderGovSection();
+});
 
 function escapeAttr(str){
   return String(str == null ? '' : str).replace(/"/g, '&quot;');
@@ -1280,7 +1327,9 @@ document.getElementById('addStageBtn').addEventListener('click', () => {
 });
 
 document.getElementById('addGovBtn').addEventListener('click', () => {
-  adminDraft.governorates.push({ key: makeSlug('gov'), label: '', cities: [] });
+  const newGov = { key: makeSlug('gov'), label: '', cities: [] };
+  adminDraft.governorates.push(newGov);
+  selectedGovKey = newGov.key;
   renderAdminPanel();
 });
 
