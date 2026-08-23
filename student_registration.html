@@ -1284,7 +1284,7 @@ function renderGovSection(){
   addCityBtn.className = 'btn-add-inline';
   addCityBtn.textContent = '+ إضافة مدينة أو قرية';
   addCityBtn.addEventListener('click', () => {
-    gov.cities.push({ value: makeSlug('city'), label: '' });
+    gov.cities.push({ value: makeSlug('city'), label: 'مدينة جديدة' });
     renderGovSection();
   });
   govBlock.appendChild(addCityBtn);
@@ -1327,55 +1327,50 @@ document.getElementById('addStageBtn').addEventListener('click', () => {
 });
 
 document.getElementById('addGovBtn').addEventListener('click', () => {
-  const existingEmpty = adminDraft.governorates.find(g => !g.label.trim());
-  if (existingEmpty){
-    selectedGovKey = existingEmpty.key;
-    renderAdminPanel();
-    govsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    showAdminStatus('في محافظة من غير اسم لسه — اكتب اسمها الأول قبل ما تضيف واحدة جديدة', true);
-    return;
-  }
-  const newGov = { key: makeSlug('gov'), label: '', cities: [] };
+  const newGov = { key: makeSlug('gov'), label: 'محافظة جديدة', cities: [] };
   adminDraft.governorates.push(newGov);
   selectedGovKey = newGov.key;
   renderAdminPanel();
+  govsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
 
 document.getElementById('saveDataBtn').addEventListener('click', () => {
-  // basic validation: no empty grade/group values
-  for (const stage of adminDraft.stages){
-    if (!stage.labelEn.trim() && !stage.labelAr.trim()){
-      showAdminStatus('لازم كل مرحلة يكون ليها اسم', true);
-      return;
-    }
-    for (const grade of stage.grades){
-      if (!grade.labelEn.trim() && !grade.labelAr.trim()){
-        showAdminStatus('لازم كل سنة دراسية يكون ليها اسم', true);
-        return;
-      }
-    }
+  // Clean up any rows the admin added but left completely empty, instead of
+  // blocking the whole save over one stray blank row (that used to wipe out
+  // every other edit and made it look like data had been deleted).
+  let removedCount = 0;
+
+  adminDraft.stages.forEach(stage => {
+    stage.grades.forEach(grade => {
+      const before = grade.groups.length;
+      grade.groups = grade.groups.filter(g => g.dayAr.trim() || g.dayEn.trim() || g.time.trim());
+      removedCount += before - grade.groups.length;
+    });
+    const beforeGrades = stage.grades.length;
+    stage.grades = stage.grades.filter(g => g.labelEn.trim() || g.labelAr.trim());
+    removedCount += beforeGrades - stage.grades.length;
+  });
+  const beforeStages = adminDraft.stages.length;
+  adminDraft.stages = adminDraft.stages.filter(s => s.labelEn.trim() || s.labelAr.trim());
+  removedCount += beforeStages - adminDraft.stages.length;
+
+  adminDraft.governorates.forEach(gov => {
+    const before = gov.cities.length;
+    gov.cities = gov.cities.filter(c => c.label.trim());
+    removedCount += before - gov.cities.length;
+  });
+  const beforeGovs = adminDraft.governorates.length;
+  adminDraft.governorates = adminDraft.governorates.filter(g => g.label.trim());
+  removedCount += beforeGovs - adminDraft.governorates.length;
+
+  if (!adminDraft.governorates.some(g => g.key === selectedGovKey)){
+    selectedGovKey = adminDraft.governorates.length ? adminDraft.governorates[0].key : null;
   }
-  for (const gov of adminDraft.governorates){
-    if (!gov.label.trim()){
-      selectedGovKey = gov.key;
-      renderGovSection();
-      govsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      showAdminStatus('في محافظة من غير اسم — اكتب اسمها فوق أو احذفها', true);
-      return;
-    }
-    for (const city of gov.cities){
-      if (!city.label.trim()){
-        selectedGovKey = gov.key;
-        renderGovSection();
-        govsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        showAdminStatus(`في مدينة من غير اسم في محافظة "${gov.label}" — اكتب اسمها أو احذفها`, true);
-        return;
-      }
-    }
-  }
+
   regData = adminDraft;
   saveRegData(regData);
-  showAdminStatus('اتحفظ بنجاح ✓', false);
+  renderAdminPanel();
+  showAdminStatus(removedCount > 0 ? 'اتحفظ بنجاح ✓ (اتمسحت عناصر فاضية ماكانتش متسماة)' : 'اتحفظ بنجاح ✓', false);
 });
 
 document.getElementById('resetDataBtn').addEventListener('click', () => {
