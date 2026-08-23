@@ -723,11 +723,42 @@
     .settings-grid{ grid-template-columns:1fr; }
 
     .modal-box{ padding:16px; max-width:100%; }
+
+    /* ---- List rows (Top Attendance / Unpaid / Top Exam / etc.) ----
+       On narrow screens these were cramming rank + name + several chips + value
+       into one line, causing overlap and squeezed text. Let the row wrap onto
+       two clean lines instead: name+chips on top, value/action on its own line. */
+    .list-row{
+      flex-wrap:wrap;
+      row-gap:8px;
+      padding:12px 2px;
+    }
+    .list-name{
+      flex-wrap:wrap;
+      row-gap:6px;
+      width:100%;
+      min-width:0;
+    }
+    .list-name .name{
+      max-width:none;
+      white-space:normal;
+      overflow:visible;
+      text-overflow:unset;
+      flex:1 1 auto;
+    }
+    .list-row > .val,
+    .list-row > .phone-link,
+    .list-row > .unpaid-link{
+      margin-inline-start:auto;
+    }
   }
   @media (max-width:480px){
     .kpi-grid{ grid-template-columns:1fr; }
     .delta-cards{ grid-template-columns:1fr; }
     .brand h1{ font-size:18px; }
+
+    .list-name{ gap:6px; }
+    .list-name .grade-chip{ font-size:9px; padding:2px 6px; }
   }
 </style>
 </head>
