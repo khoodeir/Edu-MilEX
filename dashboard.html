@@ -178,6 +178,7 @@
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--gold) transparent;
+    background: var(--paper);
   }
   .tab-row::-webkit-scrollbar { width: 5px; }
   .tab-row::-webkit-scrollbar-track { background: transparent; }
@@ -186,11 +187,12 @@
     position:fixed; left:0; top:0; width:240px; height:140px; z-index:11;
     display:flex; align-items:center; justify-content:center; padding:14px 22px;
     transition: transform 0.3s ease, opacity 0.3s ease;
+    background: var(--paper);
   }
   .sidebar-logo img{ max-width:100%; max-height:100%; object-fit:contain; }
   .sidebar-logo .logo-dark{ display:none; }
-  [data-theme="dark"] .sidebar-logo .logo-light{ display:none; }
   [data-theme="dark"] .sidebar-logo .logo-dark{ display:block; }
+  [data-theme="dark"] .sidebar-logo .logo-light{ display:none; }
   [dir="rtl"] .sidebar-logo{ left:auto; right:0; }
   body.sidebar-collapsed .sidebar-logo{ transform:translateX(-260px); opacity:0; pointer-events:none; }
   [dir="rtl"] body.sidebar-collapsed .sidebar-logo{ transform:translateX(260px); }
@@ -408,7 +410,7 @@
   .pay-filter button.active{ background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#ffffff; border-color:var(--gold); }
   .table-scroll-top{ overflow-x:auto; overflow-y:hidden; height:16px; margin-bottom:2px; }
   .table-scroll-top-inner{ height:1px; }
-  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:16px; }
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:16px; -webkit-overflow-scrolling:touch; }
   table{ width:100%; border-collapse:collapse; font-size:12.5px; min-width:760px; }
   thead th{
     text-align:left; padding:12px 14px; background:var(--paper); color:var(--gold-2);
@@ -646,9 +648,92 @@
   @media (prefers-reduced-motion: reduce){
     .refresh-btn .spin, .state-msg .spinner, .kpi-card, .kpi-card::before{ animation:none !important; transition:none !important; }
   }
+
+  /* ============================================================
+     MOBILE RESPONSIVENESS
+     ============================================================ */
+  .sidebar-backdrop{
+    display:none; position:fixed; inset:0; background:rgba(30,29,26,0.45);
+    z-index:9; opacity:0; transition:opacity .25s ease;
+  }
+  @media (max-width:860px){
+    body{ padding:16px 12px 48px; }
+
+    /* Sidebar becomes an off-canvas drawer, closed by default */
+    .sidebar-logo{ transform:translateX(-260px); opacity:0; pointer-events:none; }
+    [dir="rtl"] .sidebar-logo{ transform:translateX(260px); }
+    .tab-row{
+      transform:translateX(-260px); opacity:0; pointer-events:none;
+      top:0; bottom:0; padding-top:84px; box-shadow:var(--shadow-lg);
+    }
+    [dir="rtl"] .tab-row{ transform:translateX(260px); }
+
+    body.sidebar-collapsed .sidebar-logo,
+    body.sidebar-collapsed .tab-row{
+      transform:translateX(0); opacity:1; pointer-events:auto;
+    }
+    body.sidebar-collapsed .sidebar-backdrop{
+      display:block; opacity:1;
+    }
+
+    /* On mobile "collapsed" class means "drawer open" — content never shifts */
+    .topbar, .wrap,
+    body.sidebar-collapsed .topbar,
+    body.sidebar-collapsed .wrap{
+      margin-left:auto !important; margin-right:auto !important;
+    }
+    [dir="rtl"] .topbar, [dir="rtl"] .wrap{ margin-left:auto; margin-right:auto; }
+
+    .topbar{ gap:10px; margin-bottom:16px; }
+    .brand{ gap:10px; }
+    .brand h1{ font-size:20px; }
+    .brand p{ font-size:11px; }
+    .brand-eyebrow{ font-size:9.5px; }
+    .top-actions{ gap:8px; width:100%; justify-content:space-between; }
+    .updated-note{ display:none; }
+    .scanner-btn span, .refresh-btn span{ display:none; }
+    .scanner-btn, .refresh-btn{ padding:10px; }
+
+    .tab-panel{ padding:16px; border-radius:14px; }
+
+    .kpi-grid{ grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:18px; }
+    .kpi-card{ padding:14px; border-radius:12px; }
+    .kpi-value{ font-size:20px; }
+    .kpi-card.seal{ grid-column:1 / -1; }
+
+    .two-col, .list-grid{ grid-template-columns:1fr; gap:12px; margin-bottom:18px; }
+    .delta-cards{ grid-template-columns:repeat(2,1fr); gap:10px; }
+    .chart-card, .list-card{ padding:14px; border-radius:12px; }
+    .chart-box{ height:200px; }
+
+    .section-title{ font-size:15.5px; }
+
+    .roster-head{ flex-direction:column; align-items:stretch; }
+    .search-box{ min-width:0; }
+    .pay-filter{ justify-content:stretch; }
+    .pay-filter button{ flex:1; }
+    .excel-btn{ justify-content:center; }
+
+    .hist-toolbar{ flex-direction:column; align-items:stretch; }
+    .hist-toolbar .left{ flex-direction:column; align-items:stretch; }
+    .hist-select{ width:100%; }
+
+    #settingsView{ margin:-16px; padding:16px; border-radius:0 14px 14px 14px; }
+    .sv-hero{ padding:18px; }
+    .settings-grid{ grid-template-columns:1fr; }
+
+    .modal-box{ padding:16px; max-width:100%; }
+  }
+  @media (max-width:480px){
+    .kpi-grid{ grid-template-columns:1fr; }
+    .delta-cards{ grid-template-columns:1fr; }
+    .brand h1{ font-size:18px; }
+  }
 </style>
 </head>
 <body>
+
+<div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
 <div class="sidebar-logo">
 <img src="logo.png" alt="Logo"></div>
@@ -1484,9 +1569,16 @@ function goBack(){
   }
 
   function applySidebarState() {
+    if(window.innerWidth <= 860) return; // start closed on mobile regardless of saved state
     const isCollapsed = localStorage.getItem("dashSidebarCollapsed") === "true";
     if (isCollapsed) {
       document.body.classList.add('sidebar-collapsed');
+    }
+  }
+
+  function closeSidebarOnMobileNav(){
+    if(window.innerWidth <= 860 && document.body.classList.contains('sidebar-collapsed')){
+      document.body.classList.remove('sidebar-collapsed');
     }
   }
 
@@ -1517,6 +1609,7 @@ function goBack(){
     document.getElementById("historyView").style.display = "none";
     document.getElementById("examsView").style.display = "none";
     document.getElementById("settingsView").style.display = "";
+    closeSidebarOnMobileNav();
   });
 
   document.querySelectorAll("#gradeTabs .tab[data-grade]").forEach(tab => {
@@ -1529,6 +1622,7 @@ function goBack(){
       document.getElementById("examsView").style.display = "none";
       document.getElementById("settingsView").style.display = "none";
       loadDashboard();
+      closeSidebarOnMobileNav();
     });
   });
 
@@ -1541,6 +1635,7 @@ function goBack(){
     document.getElementById("settingsView").style.display = "none";
     document.getElementById("histGradeSelect").value = historyGradeFilter;
     loadHistory();
+    closeSidebarOnMobileNav();
   });
 
   document.getElementById("examsTab").addEventListener("click", () => {
@@ -1552,6 +1647,7 @@ function goBack(){
     document.getElementById("settingsView").style.display = "none";
     document.getElementById("examGradeSelect").value = examGrade;
     loadExamGrades();
+    closeSidebarOnMobileNav();
   });
 
   function refreshCurrentView(){
