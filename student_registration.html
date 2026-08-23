@@ -649,7 +649,22 @@ function loadRegData(){
       const parsed = JSON.parse(raw);
       if (parsed && Array.isArray(parsed.stages)){
         if (!Array.isArray(parsed.governorates)){
-          parsed.governorates = JSON.parse(JSON.stringify(DEFAULT_REG_DATA.governorates));
+          parsed.governorates = [];
+        }
+        // Repair pass: make sure every default governorate (Cairo included)
+        // is present, even if a previous save left the list empty or
+        // missing an entry. Any governorate the admin added themselves is
+        // left untouched — this only ADDS back missing defaults, it never
+        // removes or overwrites existing entries.
+        const existingKeys = new Set(parsed.governorates.map(g => g.key));
+        let repaired = false;
+        DEFAULT_REG_DATA.governorates.forEach(defGov => {
+          if (!existingKeys.has(defGov.key)){
+            parsed.governorates.push(JSON.parse(JSON.stringify(defGov)));
+            repaired = true;
+          }
+        });
+        if (repaired){
           localStorage.setItem(REG_DATA_KEY, JSON.stringify(parsed));
         }
         return parsed;
