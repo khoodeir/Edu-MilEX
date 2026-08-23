@@ -274,15 +274,14 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 .admin-link:hover, .btn-mini:hover{ background:rgba(40,86,90,0.14); }
 .stage-block{ border:1.5px solid var(--border); border-radius:14px; padding:16px 16px 18px; margin-bottom:16px; background:rgba(255,255,255,0.4); }
 .stage-block-head{ display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
-.stage-block-head input{ flex:1; min-width:110px; padding:9px 11px; border:1.5px solid var(--border); border-radius:8px; font-family:inherit; font-size:13.5px; background:rgba(255,255,255,0.7); }
+.stage-block-head input{ flex:1; min-width:160px; padding:10px 12px; border:1.5px solid var(--border); border-radius:8px; font-family:inherit; font-size:14.5px; font-weight:700; color:var(--gold-deep); background:rgba(255,255,255,0.7); }
 .grade-block{ border:1px dashed var(--border); border-radius:10px; padding:12px; margin:10px 0; background:rgba(255,255,255,0.5); }
 .grade-block-head{ display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
-.grade-block-head input{ flex:1; min-width:100px; padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-family:inherit; font-size:13px; background:rgba(255,255,255,0.75); }
+.grade-block-head input{ flex:1; min-width:140px; padding:9px 11px; border:1.5px solid var(--border); border-radius:8px; font-family:inherit; font-size:13.5px; font-weight:600; background:rgba(255,255,255,0.75); }
 .group-row{ display:flex; align-items:center; gap:6px; margin-bottom:7px; flex-wrap:wrap; }
-.group-row input{ padding:7px 9px; border:1.5px solid var(--border); border-radius:7px; font-family:inherit; font-size:12.5px; background:rgba(255,255,255,0.85); }
-.group-row input.g-day{ width:100px; }
-.group-row input.g-dayar{ width:90px; }
-.group-row input.g-time{ width:64px; }
+.group-row input{ padding:8px 10px; border:1.5px solid var(--border); border-radius:7px; font-family:inherit; font-size:13px; background:rgba(255,255,255,0.85); }
+.group-row input.g-dayar{ width:130px; }
+.group-row input.g-time{ width:80px; }
 .field-tag{ font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; margin-right:2px; }
 [dir="rtl"] .field-tag{ margin-right:0; margin-left:2px; }
 .btn-x{
@@ -409,7 +408,7 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 
     <div id="adminGate" class="admin-gate">
       <h2>لوحة التحكم</h2>
-      <input type="password" id="adminPasswordInput" placeholder="ادخل الباسورد" autocomplete="off">
+      <input type="password" id="adminPasswordInput" name="adminPassField_noauto" placeholder="ادخل الباسورد" autocomplete="new-password">
       <div class="error-msg" id="adminGateError">باسورد غلط، حاول تاني</div>
       <button type="button" class="submit" id="adminGateBtn" style="margin-top:14px;">دخول</button>
       <div style="margin-top:16px;"><a href="#" class="admin-link" id="adminBackFromGate">رجوع للصفحة الرئيسية</a></div>
@@ -997,12 +996,10 @@ function renderAdminPanel(){
     const head = document.createElement('div');
     head.className = 'stage-block-head';
     head.innerHTML = `
-      <span class="field-tag">EN</span><input type="text" class="stage-en" value="${escapeAttr(stage.labelEn)}" placeholder="Stage name (EN)">
-      <span class="field-tag">AR</span><input type="text" class="stage-ar" value="${escapeAttr(stage.labelAr)}" placeholder="اسم المرحلة">
+      <input type="text" class="stage-ar" value="${escapeAttr(stage.labelAr)}" placeholder="اسم المرحلة الدراسية">
       <button type="button" class="btn-x" title="حذف المرحلة">✕</button>
     `;
-    head.querySelector('.stage-en').addEventListener('input', e => { stage.labelEn = e.target.value; });
-    head.querySelector('.stage-ar').addEventListener('input', e => { stage.labelAr = e.target.value; });
+    head.querySelector('.stage-ar').addEventListener('input', e => { stage.labelAr = e.target.value; stage.labelEn = e.target.value; });
     head.querySelector('.btn-x').addEventListener('click', () => {
       if (confirm('تحذف المرحلة دي وكل السنين والمجاميع اللي جواها؟')){
         adminDraft.stages.splice(stageIdx, 1);
@@ -1018,12 +1015,10 @@ function renderAdminPanel(){
       const gHead = document.createElement('div');
       gHead.className = 'grade-block-head';
       gHead.innerHTML = `
-        <span class="field-tag">EN</span><input type="text" class="grade-en" value="${escapeAttr(grade.labelEn)}" placeholder="Grade name (EN)">
-        <span class="field-tag">AR</span><input type="text" class="grade-ar" value="${escapeAttr(grade.labelAr)}" placeholder="اسم السنة الدراسية">
+        <input type="text" class="grade-ar" value="${escapeAttr(grade.labelAr)}" placeholder="اسم السنة الدراسية">
         <button type="button" class="btn-x" title="حذف السنة الدراسية">✕</button>
       `;
-      gHead.querySelector('.grade-en').addEventListener('input', e => { grade.labelEn = e.target.value; });
-      gHead.querySelector('.grade-ar').addEventListener('input', e => { grade.labelAr = e.target.value; });
+      gHead.querySelector('.grade-ar').addEventListener('input', e => { grade.labelAr = e.target.value; grade.labelEn = e.target.value; });
       gHead.querySelector('.btn-x').addEventListener('click', () => {
         if (confirm('تحذف السنة الدراسية دي وكل المجاميع اللي جواها؟')){
           stage.grades.splice(gradeIdx, 1);
@@ -1036,13 +1031,11 @@ function renderAdminPanel(){
         const row = document.createElement('div');
         row.className = 'group-row';
         row.innerHTML = `
-          <span class="field-tag">Day</span><input type="text" class="g-day" value="${escapeAttr(group.dayEn)}" placeholder="Sat & Tue">
-          <span class="field-tag">يوم</span><input type="text" class="g-dayar" value="${escapeAttr(group.dayAr)}" placeholder="سبت وتلات">
-          <span class="field-tag">وقت</span><input type="text" class="g-time" value="${escapeAttr(group.time)}" placeholder="5:00">
+          <span class="field-tag">اليوم</span><input type="text" class="g-dayar" value="${escapeAttr(group.dayAr)}" placeholder="سبت وتلات">
+          <span class="field-tag">الوقت</span><input type="text" class="g-time" value="${escapeAttr(group.time)}" placeholder="5:00">
           <button type="button" class="btn-x" title="حذف المجموعة">✕</button>
         `;
-        row.querySelector('.g-day').addEventListener('input', e => { group.dayEn = e.target.value; });
-        row.querySelector('.g-dayar').addEventListener('input', e => { group.dayAr = e.target.value; });
+        row.querySelector('.g-dayar').addEventListener('input', e => { group.dayAr = e.target.value; group.dayEn = e.target.value; });
         row.querySelector('.g-time').addEventListener('input', e => { group.time = e.target.value; });
         row.querySelector('.btn-x').addEventListener('click', () => {
           grade.groups.splice(groupIdx, 1);
@@ -1164,7 +1157,7 @@ function routeByHash(){
       adminGate.style.display = 'block';
       adminPanel.style.display = 'none';
       adminGateError.style.display = 'none';
-      setTimeout(() => adminPasswordInput.focus(), 50);
+      setTimeout(() => { adminPasswordInput.value = ''; adminPasswordInput.focus(); }, 50);
     }
   } else {
     adminOverlay.style.display = 'none';
