@@ -262,14 +262,28 @@
     transition: margin 0.3s ease;
   }
   [dir="rtl"] .wrap { margin-left: auto; margin-right: 260px; }
-  body.sidebar-collapsed .tab-row {
-    transform: translateX(-260px);
-    opacity: 0;
-    pointer-events: none;
+
+  /* ---- Desktop-only sidebar-collapse behaviour ----
+     Scoped to min-width:861px so it can NEVER fight with the
+     mobile "open the drawer" rules further down (see MOBILE
+     RESPONSIVENESS section). Previously these were unscoped and
+     relied on source-order to be overridden on mobile, which is
+     fragile and was causing the hamburger button to not visibly
+     open the drawer on some mobile browsers. */
+  @media (min-width:861px){
+    body.sidebar-collapsed .sidebar-logo{ transform:translateX(-260px); opacity:0; pointer-events:none; }
+    [dir="rtl"] body.sidebar-collapsed .sidebar-logo{ transform:translateX(260px); }
+
+    body.sidebar-collapsed .tab-row {
+      transform: translateX(-260px);
+      opacity: 0;
+      pointer-events: none;
+    }
+    [dir="rtl"] body.sidebar-collapsed .tab-row {
+      transform: translateX(260px);
+    }
   }
-  [dir="rtl"] body.sidebar-collapsed .tab-row {
-    transform: translateX(260px);
-  }
+
   body.sidebar-collapsed .topbar,
   body.sidebar-collapsed .wrap {
     margin-left: auto;
@@ -670,7 +684,7 @@
 
     body.sidebar-collapsed .sidebar-logo,
     body.sidebar-collapsed .tab-row{
-      transform:translateX(0); opacity:1; pointer-events:auto;
+      transform:translateX(0) !important; opacity:1 !important; pointer-events:auto !important;
     }
     body.sidebar-collapsed .sidebar-backdrop{
       display:block; opacity:1;
