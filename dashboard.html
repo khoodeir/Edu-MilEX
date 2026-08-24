@@ -1611,6 +1611,17 @@ function goBack(){
   function toggleSidebar() {
     const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
     localStorage.setItem("dashSidebarCollapsed", isCollapsed);
+
+    // On mobile the sidebar is an off-canvas drawer that keeps its old
+    // scroll position between opens. Without this, opening the drawer
+    // again could leave it scrolled down from last time, hiding the
+    // first tabs ("All Grades" / "First Preparatory") above the visible
+    // area — which looked like those options had disappeared. Always
+    // reset it to the top whenever the drawer is opened on mobile.
+    if (window.innerWidth <= 860 && isCollapsed) {
+      const tabRow = document.getElementById('gradeTabs');
+      if (tabRow) tabRow.scrollTop = 0;
+    }
   }
 
   function applySidebarState() {
