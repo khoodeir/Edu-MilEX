@@ -842,6 +842,17 @@
 
     <div class="content" id="dashContent">
 
+      <div class="hist-toolbar" id="groupFilterToolbar" style="margin-bottom:20px;">
+        <div class="left">
+          <span style="font-size:12.5px; font-weight:700; color:var(--gold-2); display:flex; align-items:center; gap:6px;">
+            🧩 <span data-i18n="colGroup">Group</span>:
+          </span>
+          <select class="hist-select" id="groupFilterSelect" onchange="onGroupFilterChange()">
+            <option value="all">All Groups</option>
+          </select>
+        </div>
+      </div>
+
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-label" data-i18n="kpiTotalStudents">Total Students</div>
@@ -1425,7 +1436,7 @@
       secTopAttendance: "Top Attendance", secUnpaidStudents: "Unpaid Students",
       secTopExam: "Top Exam Performers", secNeedsImprovement: "Needs Improvement",
       searchNamePhone: "Search by name or phone…",
-      filterAll: "All", filterPaid: "Paid", filterUnpaid: "Unpaid", exportExcel: "Export Excel",
+      filterAll: "All", filterPaid: "Paid", filterUnpaid: "Unpaid", filterAllGroups: "All Groups", exportExcel: "Export Excel",
       colName: "Name", colCity: "City", colGroup: "Group", colGrade: "Grade", colPresent: "Present", colAbsent: "Absent",
       colAttendanceRate: "Attendance Rate", colStudentPhone: "Student Phone", colParentPhone: "Parent Phone",
       colPayment: "Payment", colMonthsPaid: "Months Paid", colLastAttendance: "Last Attendance",
@@ -1502,7 +1513,7 @@
       secTopAttendance: "الأعلى حضورًا", secUnpaidStudents: "طلاب لم يدفعوا بعد",
       secTopExam: "الأعلى تحصيلًا للدرجات", secNeedsImprovement: "بحاجة إلى تحسين المستوى",
       searchNamePhone: "ابحث بالاسم أو رقم الهاتف…",
-      filterAll: "الكل", filterPaid: "مدفوع", filterUnpaid: "غير مدفوع", exportExcel: "تصدير إكسل",
+      filterAll: "الكل", filterPaid: "مدفوع", filterUnpaid: "غير مدفوع", filterAllGroups: "كل المجموعات", exportExcel: "تصدير إكسل",
       colName: "الاسم", colCity: "المدينة", colGroup: "المجموعة", colGrade: "الصف", colPresent: "حضور", colAbsent: "غياب",
       colAttendanceRate: "نسبة الحضور", colStudentPhone: "هاتف الطالب", colParentPhone: "هاتف ولي الأمر",
       colPayment: "الدفع", colMonthsPaid: "الشهور المدفوعة", colLastAttendance: "آخر حضور",
