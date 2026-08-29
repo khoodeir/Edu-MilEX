@@ -1736,34 +1736,6 @@ function goBack(){
     renderRoster();
   }
 
-  function getGroupFilteredStudents(list){
-    return currentGroupFilter === "all" ? list : list.filter(s => (s.groupName || "").trim() === currentGroupFilter);
-  }
-
-  function populateGroupFilterOptions(students){
-    const select = document.getElementById("groupFilterSelect");
-    if(!select) return;
-    const groups = Array.from(new Set(students.map(s => (s.groupName || "").trim()).filter(Boolean)))
-      .sort((a,b) => a.localeCompare(b, currentLang === "ar" ? "ar" : "en"));
-
-    const previousValue = currentGroupFilter;
-    select.innerHTML = `<option value="all">${t('filterAllGroups')}</option>` +
-      groups.map(g => `<option value="${g.replace(/"/g, '&quot;')}">${g}</option>`).join("");
-
-    if(previousValue !== "all" && groups.includes(previousValue)){
-      select.value = previousValue;
-      currentGroupFilter = previousValue;
-    } else {
-      select.value = "all";
-      currentGroupFilter = "all";
-    }
-  }
-
-  function onGroupFilterChange(){
-    currentGroupFilter = document.getElementById("groupFilterSelect").value;
-    renderAll();
-  }
-
   function wireTopScrollbar(topId, innerId, wrapId){
     const top = document.getElementById(topId);
     const inner = document.getElementById(innerId);
@@ -1830,10 +1802,9 @@ function goBack(){
   }
 
   function exportRosterExcel(){
-    const filtered = getGroupFilteredStudents(combined.students);
-    if(!filtered.length){ alert("No student data loaded yet — try refreshing the dashboard first."); return; }
+    if(!combined.students.length){ alert("No student data loaded yet — try refreshing the dashboard first."); return; }
     const header = [t("colName"), t("colCity"), t("colGroup"), t("colGrade"), t("colPresent"), t("colAbsent"), t("colAttendanceRate"), t("colStudentPhone"), t("colParentPhone"), t("colPayment"), t("colAmountPaid"), t("colLastAttendance")];
-    const rows = filtered.map(s => {
+    const rows = combined.students.map(s => {
       const p = pct(s.attendanceCount, s.absenceCount);
       const paymentLabel = s.paymentStatus !== "" ? (isPaid(s.paymentStatus) ? t("colPaid") : t("colUnpaid")) : "—";
       return [
@@ -2060,8 +2031,7 @@ function goBack(){
   }
 
   function renderAll(){
-    populateGroupFilterOptions(combined.students);
-    const students = getGroupFilteredStudents(combined.students);
+    const students = combined.students;
 
     const studentsCount = students.length;
     const pcts = students.map(s => pct(s.attendanceCount, s.absenceCount)).filter(v => v != null);
@@ -2800,7 +2770,7 @@ function goBack(){
   /* ---------- Roster table ---------- */
   function renderRoster(){
     const q = document.getElementById("rosterSearch").value.trim().toLowerCase();
-    let rows = getGroupFilteredStudents(combined.students);
+    let rows = combined.students;
 
     if(payFilterState === "paid") rows = rows.filter(s => isPaid(s.paymentStatus));
     if(payFilterState === "unpaid") rows = rows.filter(s => !isPaid(s.paymentStatus));
