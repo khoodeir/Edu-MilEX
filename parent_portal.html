@@ -209,6 +209,15 @@
   .chip.unpaid{ background:var(--error-soft); color:var(--error); }
   .empty-note{ text-align:center; color:var(--muted); font-size:12.5px; padding:18px 0; }
 
+  .month-history-card{ background:var(--paper); border:1px solid var(--line); border-radius:15px; padding:20px; margin-bottom:20px; }
+  .month-chip-list{ display:flex; flex-wrap:wrap; gap:10px; }
+  .month-chip{
+    display:flex; align-items:center; gap:8px; background:var(--success-soft); color:var(--success);
+    border-radius:11px; padding:9px 14px; font-size:12.5px; font-weight:700;
+  }
+  .month-chip .m-amt{ color:var(--muted); font-weight:600; font-size:11px; }
+  .month-chip .m-icon{ font-size:13px; }
+
   .footer-note{
     text-align:center; font-size:11.5px; color:var(--muted); margin-top:26px;
     display:flex; align-items:center; justify-content:center; gap:7px; opacity:0.65;
@@ -352,6 +361,12 @@
       </div>
     </div>
 
+    <div class="month-history-card">
+      <div class="section-title" data-i18n="paymentHistoryTitle">الشهور المدفوعة</div>
+      <div class="month-chip-list" id="monthChipList"></div>
+      <div class="empty-note" id="monthHistoryEmpty" style="display:none;" data-i18n="noPaymentHistory">لا يوجد سجل مدفوعات شهرية بعد</div>
+    </div>
+
     <div class="contact-grid">
       <div class="contact-card">
         <div class="lbl" data-i18n="studentPhoneLabel">هاتف الطالب</div>
@@ -432,6 +447,7 @@
   };
   const EXAMS_SCHEMA = { table: "الامتحانات", col: { id: "id", name: "exam_name", maxScore: "max_score", grade: "grade", createdAt: "created_at" } };
   const SCORES_SCHEMA = { table: "نتائج_الامتحانات", col: { id: "id", examId: "exam_id", studentCode: "student_code", score: "score" } };
+  const PAYMENT_HISTORY_SCHEMA = { table: "payment_history", col: { qrCode: "qr_code", month: "month", year: "year", amountPaid: "amount_paid", createdAt: "created_at" } };
 
   const GRADES = ["first_prep","second_prep","third_prep","first_secondary","second_secondary","third_secondary"];
   const GRADE_LABELS = {
@@ -442,6 +458,11 @@
     second_secondary: { ar: "الصف الثاني الثانوي",  en: "Second Secondary" },
     third_secondary:  { ar: "الصف الثالث الثانوي",  en: "Third Secondary" }
   };
+  const MONTH_NAMES = {
+    ar: ["", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
+    en: ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  };
+  function monthName(m){ return MONTH_NAMES[currentLang][Number(m)] || m; }
 
   /* ============================================================
      I18N (Arabic / English)
@@ -461,6 +482,7 @@
       kPayLabel: "حالة الدفع", kExamLabel: "متوسط الامتحانات",
       attChartTitle: "الحضور والغياب", examChartTitle: "تطور درجات الامتحانات",
       attChartEmpty: "لا توجد بيانات حضور بعد", examChartEmpty: "لا توجد درجات امتحانات مسجّلة بعد",
+      paymentHistoryTitle: "الشهور المدفوعة", noPaymentHistory: "لا يوجد سجل مدفوعات شهرية بعد",
       studentPhoneLabel: "هاتف الطالب", parentPhoneLabel: "هاتف ولي الأمر",
       cityLabel: "المدينة", groupLabel: "المجموعة",
       examTableTitle: "درجات الامتحانات بالتفصيل",
@@ -488,6 +510,7 @@
       kPayLabel: "Payment Status", kExamLabel: "Exam Average",
       attChartTitle: "Attendance vs. Absence", examChartTitle: "Exam Score Trend",
       attChartEmpty: "No attendance data yet", examChartEmpty: "No exam scores recorded yet",
+      paymentHistoryTitle: "Paid Months", noPaymentHistory: "No monthly payment history yet",
       studentPhoneLabel: "Student Phone", parentPhoneLabel: "Parent Phone",
       cityLabel: "City", groupLabel: "Group",
       examTableTitle: "Detailed Exam Scores",
@@ -537,6 +560,7 @@
 
   let currentStudent = null;
   let currentExamRows = []; // [{name, maxScore, score}]
+  let currentPaymentHistory = []; // [{month, year, amountPaid}]
   let reportCharts = { att: null, exam: null };
 
   function isPaid(status){
@@ -661,6 +685,9 @@
       // Exam scores for this student's grade
       currentExamRows = await fetchStudentExamScores(grade, attRow[col.qrCode]);
 
+      // Monthly payment history for this student
+      currentPaymentHistory = await fetchPaymentHistory(attRow[col.qrCode]);
+
       renderReport();
       setState("report");
     }catch(err){
@@ -691,6 +718,27 @@
         return { name: e[ecol.name], maxScore: Number(e[ecol.maxScore]) || 100, score: row ? Number(row[scol.score]) : null };
       });
     }catch(err){
+      return [];
+    }
+  }
+
+  async function fetchPaymentHistory(qrCode){
+    const pcol = PAYMENT_HISTORY_SCHEMA.col;
+    try{
+      const { data, error } = await supa
+        .from(PAYMENT_HISTORY_SCHEMA.table)
+        .select("*")
+        .eq(pcol.qrCode, qrCode)
+        .order(pcol.year, { ascending: true })
+        .order(pcol.month, { ascending: true });
+      if(error) throw error;
+      return (data || []).map(r => ({
+        month: Number(r[pcol.month]),
+        year: Number(r[pcol.year]),
+        amountPaid: Number(r[pcol.amountPaid] || 0)
+      }));
+    }catch(err){
+      console.error(err);
       return [];
     }
   }
@@ -731,6 +779,25 @@
     renderExamTable();
     renderAttChart(attRate);
     renderExamTrendChart();
+    renderPaymentHistory();
+  }
+
+  function renderPaymentHistory(){
+    const listEl = document.getElementById("monthChipList");
+    const emptyEl = document.getElementById("monthHistoryEmpty");
+    if(!currentPaymentHistory.length){
+      listEl.innerHTML = "";
+      emptyEl.style.display = "block";
+      return;
+    }
+    emptyEl.style.display = "none";
+    listEl.innerHTML = currentPaymentHistory.map(p => `
+      <div class="month-chip">
+        <span class="m-icon">✅</span>
+        <span>${monthName(p.month)} ${p.year}</span>
+        <span class="m-amt">· ${fmtEGP(p.amountPaid)}</span>
+      </div>
+    `).join("");
   }
 
   function renderExamTable(){
