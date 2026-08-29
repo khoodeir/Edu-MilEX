@@ -2409,10 +2409,10 @@ function goBack(){
     const groups = Object.keys(groupMap).filter(k => k !== "—");
 
     document.getElementById("kpiCities").textContent = cities.length;
-    document.getElementById("kpiCitiesSub").textContent = cities.length ? `${cities.length} ${t('studentsCount')}` : t('emptyCityData');
+    document.getElementById("kpiCitiesSub").textContent = "";
 
     document.getElementById("kpiGroups").textContent = groups.length;
-    document.getElementById("kpiGroupsSub").textContent = groups.length ? `${groups.length} ${t('studentsCount')}` : t('emptyGroupData');
+    document.getElementById("kpiGroupsSub").textContent = "";
 
     const topCity = cities.length ? cities.reduce((a,b) => cityMap[a].students > cityMap[b].students ? a : b) : "—";
     document.getElementById("kpiTopCity").textContent = topCity;
