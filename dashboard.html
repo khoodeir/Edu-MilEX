@@ -1630,9 +1630,27 @@ function goBack(){
     window.location.href = "index.html";
   }
 }
+  function syncMobileDrawerOffset(){
+    const tabRow = document.getElementById('gradeTabs');
+    const logo = document.querySelector('.sidebar-logo');
+    if(!tabRow || !logo) return;
+    if(window.innerWidth <= 860){
+      // Measure the logo's real rendered height (instead of guessing a
+      // fixed pixel value) so the tab list always starts right below it,
+      // no matter the screen size or how the logo itself is styled.
+      const h = logo.getBoundingClientRect().height;
+      tabRow.style.paddingTop = (h + 12) + "px";
+    } else {
+      tabRow.style.paddingTop = "";
+    }
+  }
+  window.addEventListener("resize", syncMobileDrawerOffset);
+  window.addEventListener("orientationchange", syncMobileDrawerOffset);
+
   function toggleSidebar() {
     const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
     localStorage.setItem("dashSidebarCollapsed", isCollapsed);
+    syncMobileDrawerOffset();
 
     // On mobile the sidebar is an off-canvas drawer that keeps its old
     // scroll position between opens. Without this, opening the drawer
@@ -3445,6 +3463,7 @@ function deltaBadge(curr, prev, suffix = ""){
   setTheme(currentTheme);
   setLanguage(currentLang);
   applySidebarState();
+  syncMobileDrawerOffset();
 
   loadDashboard();
   loadSidebarCounts();
