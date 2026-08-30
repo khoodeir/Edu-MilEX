@@ -674,16 +674,23 @@
     body{ padding:16px 12px 48px; }
 
     /* Sidebar becomes an off-canvas drawer, closed by default */
-    .sidebar-logo{ transform:translateX(-260px); opacity:0; pointer-events:none; }
+    .sidebar-logo{ transform:translateX(-260px); opacity:0; pointer-events:none; height:100px; padding:8px 20px; }
     [dir="rtl"] .sidebar-logo{ transform:translateX(260px); }
     .tab-row{
       transform:translateX(-260px); opacity:0; pointer-events:none;
-      top:0; bottom:0; padding-top:156px; box-shadow:var(--shadow-lg);
+      top:0; bottom:0; padding-top:116px; box-shadow:var(--shadow-lg);
     }
     [dir="rtl"] .tab-row{ transform:translateX(260px); }
     @media (max-height:760px){
-      .tab-row{ padding-top:134px; }
+      .sidebar-logo{ height:84px; }
+      .tab-row{ padding-top:100px; }
     }
+
+    /* Tighter vertical rhythm so all grade/other/settings tabs fit on one
+       screen without scrolling on typical phones */
+    .tab-group-label{ margin-top:8px; min-height:20px; }
+    .tab-group{ gap:4px; margin-bottom:4px; }
+    .tab{ min-height:34px; padding:6px 12px; font-size:12px; }
 
     body.sidebar-collapsed .sidebar-logo,
     body.sidebar-collapsed .tab-row{
