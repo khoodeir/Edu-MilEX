@@ -678,9 +678,12 @@
     [dir="rtl"] .sidebar-logo{ transform:translateX(260px); }
     .tab-row{
       transform:translateX(-260px); opacity:0; pointer-events:none;
-      top:0; bottom:0; padding-top:84px; box-shadow:var(--shadow-lg);
+      top:0; bottom:0; padding-top:156px; box-shadow:var(--shadow-lg);
     }
     [dir="rtl"] .tab-row{ transform:translateX(260px); }
+    @media (max-height:760px){
+      .tab-row{ padding-top:134px; }
+    }
 
     body.sidebar-collapsed .sidebar-logo,
     body.sidebar-collapsed .tab-row{
