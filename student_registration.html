@@ -311,6 +311,17 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 .admin-section-title{ font-family:'Cormorant Garamond','Poppins',serif; color:var(--gold-light); font-size:19px; font-weight:700; margin:26px 0 14px; padding-top:18px; border-top:1px solid var(--border); }
 .city-row{ display:flex; align-items:center; gap:6px; margin-bottom:7px; flex-wrap:wrap; }
 .city-row input{ flex:1; min-width:140px; padding:8px 10px; border:1.5px solid var(--border); border-radius:7px; font-family:inherit; font-size:13px; background:rgba(255,255,255,0.85); }
+
+/* Governorate visibility checklist */
+.gov-visibility-box{ border:1.5px solid var(--border); border-radius:14px; padding:14px 16px; margin-bottom:16px; background:rgba(255,255,255,0.4); max-height:260px; overflow-y:auto; }
+.gov-visibility-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:8px; }
+.gov-visibility-head span{ font-size:13px; font-weight:700; color:var(--gold-deep); }
+.gov-visibility-quick{ display:flex; gap:6px; }
+.gov-toggle-row{ display:flex; align-items:center; gap:9px; padding:6px 2px; border-bottom:1px dashed var(--border); }
+.gov-toggle-row:last-child{ border-bottom:none; }
+.gov-toggle-row input[type="checkbox"]{ width:17px; height:17px; accent-color:var(--gold); cursor:pointer; flex-shrink:0; }
+.gov-toggle-row label{ margin:0; text-transform:none; letter-spacing:0; font-weight:500; font-size:13.5px; color:var(--text); cursor:pointer; flex:1; }
+.gov-toggle-row.is-hidden label{ color:var(--muted); text-decoration:line-through; }
 </style>
 </head>
 <body>
@@ -435,6 +446,17 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
       <button type="button" class="btn-add-inline" id="addStageBtn">+ إضافة مرحلة دراسية</button>
 
       <div class="admin-section-title">المحافظات والمدن</div>
+
+      <div class="gov-visibility-box">
+        <div class="gov-visibility-head">
+          <span>المحافظات اللي هتظهر في نموذج التسجيل</span>
+          <div class="gov-visibility-quick">
+            <button type="button" class="btn-mini" id="govShowAllBtn">إظهار الكل</button>
+            <button type="button" class="btn-mini" id="govHideAllBtn">إخفاء الكل</button>
+          </div>
+        </div>
+        <div id="govVisibilityList"></div>
+      </div>
 
       <div class="field" style="margin-bottom:14px;">
         <select id="adminGovSelect" style="width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:9px; font-family:inherit; font-size:14.5px; font-weight:600; color:var(--gold-deep); background:rgba(255,255,255,0.75); cursor:pointer;"></select>
@@ -759,7 +781,9 @@ function populateGovernorateOptions(preserveSelection){
   placeholder.setAttribute('data-i18n', 'selectPlaceholder');
   govSelect.appendChild(placeholder);
 
-  regData.governorates.forEach(gov => {
+  // Only governorates the admin has left visible (active !== false) show up
+  // on the public registration form.
+  regData.governorates.filter(gov => gov.active !== false).forEach(gov => {
     const el = document.createElement('option');
     el.value = gov.key;
     el.textContent = gov.label;
@@ -1119,6 +1143,7 @@ const adminGateError = document.getElementById('adminGateError');
 const stagesContainer = document.getElementById('stagesContainer');
 const govsContainer = document.getElementById('govsContainer');
 const adminGovSelect = document.getElementById('adminGovSelect');
+const govVisibilityList = document.getElementById('govVisibilityList');
 const adminStatus = document.getElementById('adminStatus');
 
 let adminDraft = null; // working copy edited in the panel, only persisted on Save
@@ -1130,6 +1155,40 @@ function showAdminStatus(msg, isError){
   adminStatus.className = 'admin-status ' + (isError ? 'show-error' : 'show-success');
   setTimeout(() => { adminStatus.className = 'admin-status'; }, 3000);
 }
+
+/* Checklist of every governorate with a checkbox that controls whether it
+   shows up on the public registration form (gov.active). A governorate
+   with no `active` field yet (older saved data) is treated as visible. */
+function renderGovVisibilityList(){
+  govVisibilityList.innerHTML = '';
+
+  adminDraft.governorates.forEach(gov => {
+    const isVisible = gov.active !== false;
+    const row = document.createElement('div');
+    row.className = 'gov-toggle-row' + (isVisible ? '' : ' is-hidden');
+
+    const checkboxId = 'govvis-' + gov.key;
+    row.innerHTML = `
+      <input type="checkbox" id="${checkboxId}" ${isVisible ? 'checked' : ''}>
+      <label for="${checkboxId}">${escapeAttr(gov.label || '(بدون اسم)')}</label>
+    `;
+    row.querySelector('input').addEventListener('change', e => {
+      gov.active = e.target.checked;
+      row.classList.toggle('is-hidden', !e.target.checked);
+    });
+
+    govVisibilityList.appendChild(row);
+  });
+}
+
+document.getElementById('govShowAllBtn').addEventListener('click', () => {
+  adminDraft.governorates.forEach(gov => { gov.active = true; });
+  renderGovVisibilityList();
+});
+document.getElementById('govHideAllBtn').addEventListener('click', () => {
+  adminDraft.governorates.forEach(gov => { gov.active = false; });
+  renderGovVisibilityList();
+});
 
 function renderAdminPanel(){
   stagesContainer.innerHTML = '';
@@ -1221,6 +1280,7 @@ function renderAdminPanel(){
     stagesContainer.appendChild(stageBlock);
   });
 
+  renderGovVisibilityList();
   renderGovSection();
 }
 
@@ -1269,11 +1329,13 @@ function renderGovSection(){
     gov.label = e.target.value;
     const opt = Array.from(adminGovSelect.options).find(o => o.value === gov.key);
     if (opt) opt.textContent = gov.label || '(بدون اسم)';
+    renderGovVisibilityList();
   });
   gHead.querySelector('.btn-x').addEventListener('click', () => {
     if (confirm('تحذف المحافظة دي وكل المدن اللي جواها؟')){
       adminDraft.governorates.splice(govIdx, 1);
       selectedGovKey = null;
+      renderGovVisibilityList();
       renderGovSection();
     }
   });
@@ -1342,7 +1404,7 @@ document.getElementById('addStageBtn').addEventListener('click', () => {
 });
 
 document.getElementById('addGovBtn').addEventListener('click', () => {
-  const newGov = { key: makeSlug('gov'), label: 'محافظة جديدة', cities: [] };
+  const newGov = { key: makeSlug('gov'), label: 'محافظة جديدة', cities: [], active: true };
   adminDraft.governorates.push(newGov);
   selectedGovKey = newGov.key;
   renderAdminPanel();
