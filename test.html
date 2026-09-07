@@ -625,6 +625,68 @@
   }
   .modal-close{ border:none; background:none; font-size:22px; cursor:pointer; color:var(--muted); line-height:1; }
   .modal-close:hover{ color:var(--ink); }
+  /* Mobile layout: keep the desktop layout unchanged above 700px. */
+  @media (max-width:700px){
+    body{ padding:16px 12px 32px; overflow-x:hidden; }
+    .sidebar-logo{ display:none; }
+    .topbar, [dir="rtl"] .topbar{
+      margin:0 auto 16px; max-width:none; gap:14px; align-items:flex-start;
+    }
+    .brand{ min-width:0; flex:1 1 100%; gap:10px; }
+    .brand h1{ font-size:23px; line-height:1.1; }
+    .brand p{ font-size:11px; }
+    .top-actions{ width:100%; gap:8px; align-items:stretch; }
+    .updated-note{ flex:1 1 100%; order:3; font-size:10.5px; }
+    .scanner-btn, .refresh-btn{ flex:1 1 0; justify-content:center; min-width:0; padding:10px 11px; font-size:12px; }
+    .wrap, [dir="rtl"] .wrap{ margin:0; max-width:none; }
+    .tab-row, [dir="rtl"] .tab-row{
+      position:static; width:calc(100vw - 24px); height:auto; max-height:none;
+      display:flex; flex-direction:row; align-items:stretch; gap:7px;
+      padding:0 0 10px; margin:0 0 12px; border:0; overflow-x:auto; overflow-y:hidden;
+      scrollbar-width:none; transform:none; opacity:1; pointer-events:auto;
+    }
+    .tab-row::-webkit-scrollbar{ display:none; }
+    .tab-group, .tab-group.collapsed{
+      display:flex; flex:0 0 auto; flex-direction:row; gap:7px; max-height:none;
+      overflow:visible; margin:0;
+    }
+    .tab-group-label{ display:none; }
+    .tab{ width:auto; min-height:40px; padding:9px 12px; font-size:12px; }
+    .tab.active::after{ display:none; }
+    .tab-panel{ padding:16px 12px; border-radius:13px; }
+    .section-title{ font-size:17px; line-height:1.25; flex-wrap:wrap; }
+    .more-analytics summary{ padding:12px 13px; font-size:13px; }
+    .kpi-grid{ gap:9px; margin-bottom:20px; }
+    .kpi-card{ padding:14px 12px; border-radius:12px; }
+    .kpi-label{ font-size:9px; margin-bottom:8px; }
+    .kpi-value{ font-size:22px; }
+    .kpi-sub{ font-size:10px; }
+    .kpi-card.seal{ gap:8px; }
+    .seal-ring{ width:48px; height:48px; }
+    .seal-ring svg{ width:48px; height:48px; }
+    .seal-pct{ font-size:11px; }
+    .two-col, .list-grid, .settings-grid{ grid-template-columns:1fr; }
+    .chart-card{ padding:14px 12px; }
+    .chart-box{ max-width:100%; overflow:hidden; }
+    .hist-banner, .hist-toolbar{ gap:9px; }
+    .hist-banner{ padding:12px 13px; }
+    .hist-toolbar .left{ width:100%; }
+    .hist-toolbar button, .hist-toolbar select, .excel-btn, .save-snapshot-btn, .ghost-btn{ width:100%; justify-content:center; }
+    .table-wrap, .table-scroll-top{ max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .table-wrap table{ min-width:640px; }
+    .hist-table-note{ line-height:1.5; }
+    .settings-card{ padding:15px 12px; }
+    .settings-row{ padding:10px 11px; gap:10px; }
+    .modal-overlay{ padding:12px; }
+    .modal-box{ max-height:88vh; padding:16px; border-radius:13px; }
+  }
+  @media (max-width:420px){
+    .kpi-grid, .delta-cards{ grid-template-columns:1fr; }
+    .brand h1{ font-size:21px; }
+    .top-actions{ flex-wrap:wrap; }
+    .scanner-btn, .refresh-btn{ flex-basis:calc(50% - 4px); }
+    .updated-note{ flex-basis:100%; }
+  }
   @media (max-width:900px){
     .kpi-grid{ grid-template-columns:repeat(2,1fr); }
     .two-col, .list-grid{ grid-template-columns:1fr; }
