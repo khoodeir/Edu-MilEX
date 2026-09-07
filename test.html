@@ -666,8 +666,10 @@
     .seal-ring svg{ width:48px; height:48px; }
     .seal-pct{ font-size:11px; }
     .two-col, .list-grid, .settings-grid{ grid-template-columns:1fr; }
+    .two-col{ grid-template-columns:1fr !important; }
     .chart-card{ padding:14px 12px; }
-    .chart-box{ max-width:100%; overflow:hidden; }
+    .two-col .chart-card{ height:320px; display:flex; flex-direction:column; }
+    .two-col .chart-box{ flex:1; height:auto !important; min-height:220px; max-width:100%; overflow:hidden; }
     .hist-banner, .hist-toolbar{ gap:9px; }
     .hist-banner{ padding:12px 13px; }
     .hist-toolbar .left{ width:100%; }
