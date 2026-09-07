@@ -258,7 +258,7 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 .admin-card{background:var(--card);-webkit-backdrop-filter:blur(16px) saturate(110%);backdrop-filter:blur(16px) saturate(110%);border-radius:20px;padding:32px;box-shadow:0 18px 40px rgba(60,30,30,.14);border:1px solid var(--card-border)}
 .admin-gate{max-width:360px;margin:0 auto;text-align:center}.admin-gate h2,.admin-top h2{font-family:'Cormorant Garamond','Poppins',serif;color:var(--gold-light);font-size:23px;margin:0 0 18px}.admin-gate input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:15px;background:rgba(255,255,255,.6);outline:none;text-align:center;letter-spacing:2px}.admin-gate button{margin-top:14px}.admin-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:10px;flex-wrap:wrap}.admin-link,.btn-mini{font-size:12.5px;font-weight:700;color:var(--gold-light);text-decoration:none;cursor:pointer;background:rgba(139,30,30,.08);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-family:inherit}.stage-block{border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;background:rgba(255,255,255,.4)}.stage-head,.grade-head,.group-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.stage-head{margin-bottom:12px}.stage-head input,.grade-head input,.group-row input{padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;background:rgba(255,255,255,.8)}.stage-head input{flex:1;min-width:130px;font-weight:700;color:var(--gold-deep)}.grade-block{border:1px dashed var(--border);border-radius:10px;padding:12px;margin:10px 0;background:rgba(255,255,255,.5)}.grade-head input{flex:1;min-width:120px}.group-row{margin:7px 0}.group-row input.day{flex:1;min-width:110px}.group-row input.time{width:78px}.btn-x{border:none;background:rgba(196,72,90,.12);color:var(--error);width:25px;height:25px;border-radius:50%;cursor:pointer;font-weight:700}.btn-add-inline{border:1px dashed var(--gold-light);background:transparent;color:var(--gold-light);font-weight:700;font-size:12px;border-radius:8px;padding:6px 11px;cursor:pointer;margin-top:4px}.admin-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}.admin-actions button{flex:1;min-width:140px}.btn-secondary{background:transparent;color:var(--gold-light);border:1.5px solid var(--gold-light);padding:12px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}.pw-change{margin-top:26px;padding-top:18px;border-top:1px solid var(--border)}.pw-change h3{font-size:13.5px;color:var(--gold-deep);margin:0 0 10px}.pw-change-row{display:flex;gap:8px;flex-wrap:wrap}.pw-change-row input{flex:1;min-width:130px;padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:rgba(255,255,255,.7)}.admin-status{margin-top:14px;text-align:center;font-size:13px;font-weight:600;padding:10px;border-radius:8px;display:none}.admin-status.show-success{display:block;color:var(--success);background:rgba(47,158,115,.1);border:1px solid rgba(47,158,115,.28)}.admin-status.show-error{display:block;color:var(--error);background:rgba(196,72,90,.08);border:1px solid rgba(196,72,90,.28)}
 @media(max-width:480px){.admin-card{padding:24px 18px}.group-row input.day{min-width:90px}}
-.gov-editor{border-top:1px solid var(--border);margin-top:24px;padding-top:18px}.gov-editor h3{font-family:'Cormorant Garamond','Poppins',serif;color:var(--gold-light);font-size:20px;margin:0 0 12px}.gov-select{width:100%;padding:10px;border:1.5px solid var(--border);border-radius:8px;background:rgba(255,255,255,.8);font-family:inherit;margin-bottom:12px}.gov-row,.city-row{display:flex;gap:7px;align-items:center;margin:7px 0;flex-wrap:wrap}.gov-row input,.city-row input{flex:1;min-width:130px;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:inherit;background:rgba(255,255,255,.85)}
+.gov-editor{border-top:1px solid var(--border);margin-top:24px;padding-top:18px}.gov-editor h3{font-family:'Cormorant Garamond','Poppins',serif;color:var(--gold-light);font-size:20px;margin:0 0 12px}.gov-select{width:100%;padding:10px;border:1.5px solid var(--border);border-radius:8px;background:rgba(255,255,255,.8);font-family:inherit;margin-bottom:12px}.gov-active{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gold-deep);font-weight:700;white-space:nowrap}.gov-active input{width:auto;flex:0 0 auto}.gov-row,.city-row{display:flex;gap:7px;align-items:center;margin:7px 0;flex-wrap:wrap}.gov-row input,.city-row input{flex:1;min-width:130px;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:inherit;background:rgba(255,255,255,.85)}
 
 </style>
 </head>
@@ -367,22 +367,22 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 </div>
 
 
-<div id="adminOverlay">
+<div id="adminOverlay" dir="rtl">
   <div class="admin-card">
     <div id="adminGate" class="admin-gate">
-      <h2>Admin Panel</h2>
-      <input id="adminPasswordInput" type="password" placeholder="Password" autocomplete="current-password">
-      <div id="adminGateError" class="error-msg" style="display:none">Wrong password</div>
-      <button type="button" class="submit" id="adminGateBtn">Enter</button>
-      <a href="#" class="admin-link" id="adminBackFromGate" style="display:inline-block;margin-top:14px">Back</a>
+      <h2>لوحة التحكم</h2>
+      <input id="adminPasswordInput" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+      <div id="adminGateError" class="error-msg" style="display:none">كلمة المرور غير صحيحة</div>
+      <button type="button" class="submit" id="adminGateBtn">دخول</button>
+      <a href="#" class="admin-link" id="adminBackFromGate" style="display:inline-block;margin-top:14px">رجوع</a>
     </div>
     <div id="adminPanel" style="display:none">
-      <div class="admin-top"><h2>Registration Settings</h2><a href="#" class="admin-link" id="adminBackTop">Back</a></div>
+      <div class="admin-top"><h2>إعدادات التسجيل</h2><a href="#" class="admin-link" id="adminBackTop">رجوع</a></div>
       <div id="stagesContainer"></div>
-      <button type="button" class="btn-add-inline" id="addStageBtn">+ Add stage</button>
-      <div class="gov-editor"><h3>Governorates and cities</h3><select id="adminGovSelect" class="gov-select"></select><div id="govsContainer"></div><button type="button" class="btn-add-inline" id="addGovBtn">+ Add governorate</button></div>
-      <div class="admin-actions"><button type="button" class="submit" id="saveDataBtn">Save changes</button><button type="button" class="btn-secondary" id="resetDataBtn">Reset defaults</button></div>
-      <div class="pw-change"><h3>Change admin password</h3><div class="pw-change-row"><input id="newPasswordInput" type="password" placeholder="New password"><button type="button" class="btn-mini" id="changePasswordBtn">Change</button></div></div>
+      <button type="button" class="btn-add-inline" id="addStageBtn">+ إضافة مرحلة</button>
+      <div class="gov-editor"><h3>التحكم في المحافظات والمدن</h3><select id="adminGovSelect" class="gov-select"></select><div id="govsContainer"></div><button type="button" class="btn-add-inline" id="addGovBtn">+ إضافة محافظة</button></div>
+      <div class="admin-actions"><button type="button" class="submit" id="saveDataBtn">حفظ التغييرات</button><button type="button" class="btn-secondary" id="resetDataBtn">استعادة الإعدادات الافتراضية</button></div>
+      <div class="pw-change"><h3>تغيير كلمة مرور الأدمن</h3><div class="pw-change-row"><input id="newPasswordInput" type="password" placeholder="كلمة المرور الجديدة"><button type="button" class="btn-mini" id="changePasswordBtn">تغيير</button></div></div>
       <div id="adminStatus" class="admin-status"></div>
     </div>
   </div>
@@ -499,7 +499,7 @@ const I18N = {
   }
 };
 
-let currentLang = localStorage.getItem("regLang") || "en";
+let currentLang = localStorage.getItem("regLang") || "ar";
 
 function t(key){
   return (I18N[currentLang] && I18N[currentLang][key] != null) ? I18N[currentLang][key] : (I18N.en[key] || key);
@@ -880,7 +880,7 @@ let adminDraft = null;
 
 function adminSlug(prefix){ return prefix + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,7); }
 const DEFAULT_GOVERNORATES = [
-    { key: "cairo", label: "القاهرة", cities: ["مدينة نصر","المعادي","حلوان","مصر الجديدة","الزيتون","شبرا","عين شمس","المرج","البساتين","دار السلام","السيدة زينب","الدرب الأحمر","وسط البلد","الزمالك","المقطم","القاهرة الجديدة","بدر","الشروق","العاصمة الإدارية الجديدة"].map(l=>({value:l,label:l})) },
+    { key: "cairo", label: "القاهرة", active: true, cities: ["مدينة نصر","المعادي","حلوان","مصر الجديدة","الزيتون","شبرا","عين شمس","المرج","البساتين","دار السلام","السيدة زينب","الدرب الأحمر","وسط البلد","الزمالك","المقطم","القاهرة الجديدة","بدر","الشروق","العاصمة الإدارية الجديدة"].map(l=>({value:l,label:l})) },
     { key: "giza", label: "الجيزة", cities: ["الجيزة","الدقي","العجوزة","إمبابة","بولاق الدكرور","الهرم","فيصل","أوسيم","كرداسة","أبو النمرس","الصف","أطفيح","البدرشين","منشأة القناطر","6 أكتوبر","الشيخ زايد","نزلة السمان","أبو رواش","منشأة دهشور","ساقية مكي","كفر طهرمس","الحوامدية","الطرانة","أبو غالب","إسطبل عنتر","البرجاية"].map(l=>({value:l,label:l})) },
     { key: "alexandria", label: "الإسكندرية", cities: ["المنتزه","شرق","وسط","غرب","الجمرك","العامرية","برج العرب","العجمي","سيدي جابر","سموحة","ميامي","محرم بك","كرموز"].map(l=>({value:l,label:l})) },
     { key: "dakahlia", label: "الدقهلية", cities: ["المنصورة","طلخا","ميت غمر","دكرنس","أجا","منية النصر","السنبلاوين","شربين","المنزلة","تمي الأمديد","الجمالية","بلقاس","نبروه","بني عبيد","المطرية","جمصة","دميرة","أبو الغيط","ميت الخولي","محلة دياي","شبراباص","ميت بدر حلاوة","كفر البيطاش","ميت الشرقي","جزيرة بني نصر","منية سمنود"].map(l=>({value:l,label:l})) },
@@ -911,6 +911,7 @@ const DEFAULT_GOVERNORATES = [
 const ADMIN_GOV_KEY = 'regAdminGovernorates';
 function loadAdminGovernorates(){try{const raw=localStorage.getItem(ADMIN_GOV_KEY);if(raw){const d=JSON.parse(raw);if(Array.isArray(d)&&d.length)return d}}catch(e){}const d=JSON.parse(JSON.stringify(DEFAULT_GOVERNORATES));localStorage.setItem(ADMIN_GOV_KEY,JSON.stringify(d));return d}
 let adminGovernorates = loadAdminGovernorates();
+adminGovernorates.forEach(g => { if (g.active === undefined) g.active = true; });
 function adminDefaultData(){
   return Object.keys(GRADE_OPTIONS).map((stageKey, si) => ({
     key: stageKey, labelEn: stageKey, labelAr: t(si === 0 ? 'stagePreparatory' : 'stageSecondary'),
@@ -959,20 +960,20 @@ function renderGovEditor(){
   adminGovernorates.forEach((g,i)=>{const o=document.createElement('option');o.value=i;o.textContent=g.label||'(unnamed)';sel.appendChild(o)});
   if(!adminGovernorates.length){box.innerHTML='';return;}
   const i=Math.min(Number(sel.dataset.selected||0),adminGovernorates.length-1);sel.value=i;sel.dataset.selected=i;const g=adminGovernorates[i];box.innerHTML='';
-  const head=document.createElement('div');head.className='gov-row';head.innerHTML=`<input value="${esc(g.label)}" placeholder="Governorate name"><button type="button" class="btn-x">×</button>`;head.querySelector('input').oninput=e=>{g.label=e.target.value;sel.options[i].textContent=g.label||'(unnamed)'};head.querySelector('button').onclick=()=>{if(confirm('Delete this governorate and all its cities?')){adminGovernorates.splice(i,1);sel.dataset.selected=0;renderGovEditor()}};box.appendChild(head);
-  g.cities.forEach((c,ci)=>{const row=document.createElement('div');row.className='city-row';row.innerHTML=`<input value="${esc(c.label)}" placeholder="City or village"><button type="button" class="btn-x">×</button>`;row.querySelector('input').oninput=e=>c.label=e.target.value;row.querySelector('button').onclick=()=>{g.cities.splice(ci,1);renderGovEditor()};box.appendChild(row)});
-  const add=document.createElement('button');add.type='button';add.className='btn-add-inline';add.textContent='+ Add city or village';add.onclick=()=>{g.cities.push({value:adminSlug('city'),label:'New city'});renderGovEditor()};box.appendChild(add);
+  const head=document.createElement('div');head.className='gov-row';head.innerHTML=`<label class="gov-active"><input type="checkbox" ${g.active!==false?'checked':''}> <span>إظهار المحافظة في نموذج التسجيل</span></label><input value="${esc(g.label)}" placeholder="اسم المحافظة"><button type="button" class="btn-x" title="حذف المحافظة">×</button>`;head.querySelector('input[type="text"]').oninput=e=>{g.label=e.target.value;sel.options[i].textContent=g.label||'(بدون اسم)'};head.querySelector('input[type="checkbox"]').onchange=e=>{g.active=e.target.checked};head.querySelector('button').onclick=()=>{if(confirm('هل تريد حذف المحافظة وكل المدن التابعة لها؟')){adminGovernorates.splice(i,1);sel.dataset.selected=0;renderGovEditor()}};box.appendChild(head);
+  g.cities.forEach((c,ci)=>{const row=document.createElement('div');row.className='city-row';row.innerHTML=`<input value="${esc(c.label)}" placeholder="اسم المدينة أو القرية"><button type="button" class="btn-x">×</button>`;row.querySelector('input').oninput=e=>c.label=e.target.value;row.querySelector('button').onclick=()=>{g.cities.splice(ci,1);renderGovEditor()};box.appendChild(row)});
+  const add=document.createElement('button');add.type='button';add.className='btn-add-inline';add.textContent='+ إضافة مدينة أو قرية';add.onclick=()=>{g.cities.push({value:adminSlug('city'),label:'New city'});renderGovEditor()};box.appendChild(add);
 }
 document.getElementById('adminGovSelect').addEventListener('change',e=>{e.target.dataset.selected=e.target.value;renderGovEditor()});
-document.getElementById('addGovBtn').addEventListener('click',()=>{adminGovernorates.push({key:adminSlug('gov'),label:'New governorate',cities:[]});document.getElementById('adminGovSelect').dataset.selected=adminGovernorates.length-1;renderGovEditor()});
+document.getElementById('addGovBtn').addEventListener('click',()=>{adminGovernorates.push({key:adminSlug('gov'),label:'محافظة جديدة',active:true,cities:[]});document.getElementById('adminGovSelect').dataset.selected=adminGovernorates.length-1;renderGovEditor()});
 function openAdmin(){adminDraft=JSON.parse(JSON.stringify(loadAdminData()));adminGovernorates=JSON.parse(JSON.stringify(loadAdminGovernorates()));renderAdmin();renderGovEditor();adminGate.style.display='none';adminPanel.style.display='block';}
 document.getElementById('adminGateBtn').addEventListener('click',()=>{if(adminPasswordInput.value===(localStorage.getItem(ADMIN_PASSWORD_KEY)||DEFAULT_ADMIN_PASSWORD)){adminUnlocked=true;adminGateError.style.display='none';openAdmin()}else adminGateError.style.display='block'});
 adminPasswordInput.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('adminGateBtn').click()});
 stagesContainer.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;readAdminInputs();const si=+b.dataset.si,gi=b.dataset.gi==null?null:+b.dataset.gi,xi=b.dataset.xi==null?null:+b.dataset.xi;const a=b.dataset.action;if(a==='remove-stage')adminDraft.splice(si,1);if(a==='remove-grade')adminDraft[si].grades.splice(gi,1);if(a==='remove-group')adminDraft[si].grades[gi].groups.splice(xi,1);if(a==='add-grade')adminDraft[si].grades.push({value:adminSlug('grade'),labelEn:'New grade',labelAr:'صف جديد',groups:[]});if(a==='add-group')adminDraft[si].grades[gi].groups.push({value:adminSlug('group'),dayEn:'',dayAr:'',time:''});renderAdmin()});
 document.getElementById('addStageBtn').addEventListener('click',()=>{readAdminInputs();adminDraft.push({key:adminSlug('stage'),labelEn:'New stage',labelAr:'مرحلة جديدة',grades:[]});renderAdmin()});
-document.getElementById('saveDataBtn').addEventListener('click',()=>{readAdminInputs();adminDraft=adminDraft.filter(s=>s.labelEn.trim()||s.labelAr.trim());adminDraft.forEach(s=>{s.grades=s.grades.filter(g=>g.labelEn.trim()||g.labelAr.trim());s.grades.forEach(g=>g.groups=g.groups.filter(x=>x.dayAr.trim()||x.dayEn.trim()||x.time.trim()))});localStorage.setItem(ADMIN_DATA_KEY,JSON.stringify(adminDraft));localStorage.setItem(ADMIN_GOV_KEY,JSON.stringify(adminGovernorates));syncPublicOptions();showAdminStatus('Saved successfully ✓',false)});
-document.getElementById('resetDataBtn').addEventListener('click',()=>{if(confirm('Restore default registration settings?')){adminDraft=adminDefaultData();adminGovernorates=JSON.parse(JSON.stringify(DEFAULT_GOVERNORATES));localStorage.setItem(ADMIN_DATA_KEY,JSON.stringify(adminDraft));localStorage.setItem(ADMIN_GOV_KEY,JSON.stringify(adminGovernorates));syncPublicOptions();renderAdmin();renderGovEditor();showAdminStatus('Defaults restored',false)}});
-document.getElementById('changePasswordBtn').addEventListener('click',()=>{const p=document.getElementById('newPasswordInput').value.trim();if(!p)return showAdminStatus('Enter a new password first',true);localStorage.setItem(ADMIN_PASSWORD_KEY,p);document.getElementById('newPasswordInput').value='';showAdminStatus('Password changed ✓',false)});
+document.getElementById('saveDataBtn').addEventListener('click',()=>{readAdminInputs();adminDraft=adminDraft.filter(s=>s.labelEn.trim()||s.labelAr.trim());adminDraft.forEach(s=>{s.grades=s.grades.filter(g=>g.labelEn.trim()||g.labelAr.trim());s.grades.forEach(g=>g.groups=g.groups.filter(x=>x.dayAr.trim()||x.dayEn.trim()||x.time.trim()))});localStorage.setItem(ADMIN_DATA_KEY,JSON.stringify(adminDraft));localStorage.setItem(ADMIN_GOV_KEY,JSON.stringify(adminGovernorates));syncPublicOptions();showAdminStatus('تم حفظ التغييرات بنجاح ✓',false)});
+document.getElementById('resetDataBtn').addEventListener('click',()=>{if(confirm('هل تريد استعادة إعدادات التسجيل الافتراضية؟')){adminDraft=adminDefaultData();adminGovernorates=JSON.parse(JSON.stringify(DEFAULT_GOVERNORATES));localStorage.setItem(ADMIN_DATA_KEY,JSON.stringify(adminDraft));localStorage.setItem(ADMIN_GOV_KEY,JSON.stringify(adminGovernorates));syncPublicOptions();renderAdmin();renderGovEditor();showAdminStatus('تمت استعادة الإعدادات الافتراضية',false)}});
+document.getElementById('changePasswordBtn').addEventListener('click',()=>{const p=document.getElementById('newPasswordInput').value.trim();if(!p)return showAdminStatus('اكتب كلمة المرور الجديدة أولاً',true);localStorage.setItem(ADMIN_PASSWORD_KEY,p);document.getElementById('newPasswordInput').value='';showAdminStatus('تم تغيير كلمة المرور ✓',false)});
 function adminHome(){location.hash=''}
 document.getElementById('adminBackFromGate').addEventListener('click',e=>{e.preventDefault();adminHome()});document.getElementById('adminBackTop').addEventListener('click',e=>{e.preventDefault();adminHome()});
 function routeAdmin(){if(location.hash==='#admin'){adminCard.style.display='none';adminOverlay.style.display='block';adminPasswordInput.value='';if(adminUnlocked)openAdmin();else{adminGate.style.display='block';adminPanel.style.display='none';adminGateError.style.display='none';setTimeout(()=>adminPasswordInput.focus(),50)}}else{adminOverlay.style.display='none';adminCard.style.display='block';syncPublicOptions()}}
