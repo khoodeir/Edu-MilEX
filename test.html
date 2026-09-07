@@ -258,6 +258,7 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 .admin-card{background:var(--card);-webkit-backdrop-filter:blur(16px) saturate(110%);backdrop-filter:blur(16px) saturate(110%);border-radius:20px;padding:32px;box-shadow:0 18px 40px rgba(60,30,30,.14);border:1px solid var(--card-border)}
 .admin-gate{max-width:360px;margin:0 auto;text-align:center}.admin-gate h2,.admin-top h2{font-family:'Cormorant Garamond','Poppins',serif;color:var(--gold-light);font-size:23px;margin:0 0 18px}.admin-gate input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:15px;background:rgba(255,255,255,.6);outline:none;text-align:center;letter-spacing:2px}.admin-gate button{margin-top:14px}.admin-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:10px;flex-wrap:wrap}.admin-link,.btn-mini{font-size:12.5px;font-weight:700;color:var(--gold-light);text-decoration:none;cursor:pointer;background:rgba(139,30,30,.08);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-family:inherit}.stage-block{border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;background:rgba(255,255,255,.4)}.stage-head,.grade-head,.group-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.stage-head{margin-bottom:12px}.stage-head input,.grade-head input,.group-row input{padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;background:rgba(255,255,255,.8)}.stage-head input{flex:1;min-width:130px;font-weight:700;color:var(--gold-deep)}.grade-block{border:1px dashed var(--border);border-radius:10px;padding:12px;margin:10px 0;background:rgba(255,255,255,.5)}.grade-head input{flex:1;min-width:120px}.group-row{margin:7px 0}.group-row input.day{flex:1;min-width:110px}.group-row input.time{width:78px}.btn-x{border:none;background:rgba(196,72,90,.12);color:var(--error);width:25px;height:25px;border-radius:50%;cursor:pointer;font-weight:700}.btn-add-inline{border:1px dashed var(--gold-light);background:transparent;color:var(--gold-light);font-weight:700;font-size:12px;border-radius:8px;padding:6px 11px;cursor:pointer;margin-top:4px}.admin-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}.admin-actions button{flex:1;min-width:140px}.btn-secondary{background:transparent;color:var(--gold-light);border:1.5px solid var(--gold-light);padding:12px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}.pw-change{margin-top:26px;padding-top:18px;border-top:1px solid var(--border)}.pw-change h3{font-size:13.5px;color:var(--gold-deep);margin:0 0 10px}.pw-change-row{display:flex;gap:8px;flex-wrap:wrap}.pw-change-row input{flex:1;min-width:130px;padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:rgba(255,255,255,.7)}.admin-status{margin-top:14px;text-align:center;font-size:13px;font-weight:600;padding:10px;border-radius:8px;display:none}.admin-status.show-success{display:block;color:var(--success);background:rgba(47,158,115,.1);border:1px solid rgba(47,158,115,.28)}.admin-status.show-error{display:block;color:var(--error);background:rgba(196,72,90,.08);border:1px solid rgba(196,72,90,.28)}
 @media(max-width:480px){.admin-card{padding:24px 18px}.group-row input.day{min-width:90px}}
+.gov-editor{border-top:1px solid var(--border);margin-top:24px;padding-top:18px}.gov-editor h3{font-family:'Cormorant Garamond','Poppins',serif;color:var(--gold-light);font-size:20px;margin:0 0 12px}.gov-select{width:100%;padding:10px;border:1.5px solid var(--border);border-radius:8px;background:rgba(255,255,255,.8);font-family:inherit;margin-bottom:12px}.gov-row,.city-row{display:flex;gap:7px;align-items:center;margin:7px 0;flex-wrap:wrap}.gov-row input,.city-row input{flex:1;min-width:130px;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:inherit;background:rgba(255,255,255,.85)}
 
 </style>
 </head>
@@ -300,11 +301,20 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
       <div class="error-msg" data-i18n="errPhone">Enter a valid 11-digit number starting with 01</div>
     </div>
 
+    <div class="field" id="governorateField">
+      <label for="governorate" data-i18n="labelGovernorate">Governorate</label>
+      <select id="governorate" name="governorate" required>
+        <option value="" disabled selected data-i18n="selectPlaceholder">Select an option ...</option>
+      </select>
+    </div>
+
     <div class="field" id="cityField">
       <label for="city" data-i18n="labelCity">City</label>
-      <input type="text" id="city" name="city" data-i18n-ph="phCity" placeholder="Enter your city" required>
-      <div class="hint" data-i18n="hintCity">Letters only, no numbers or symbols</div>
-      <div class="error-msg" data-i18n="errCity">City must contain letters only</div>
+      <select id="city" name="city" required>
+        <option value="" disabled selected data-i18n="selectPlaceholder">Select an option ...</option>
+      </select>
+      <div class="hint" data-i18n="hintCity">Choose your city</div>
+      <div class="error-msg" data-i18n="errCity">Please choose a city</div>
     </div>
 
     <div class="field">
@@ -370,6 +380,7 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
       <div class="admin-top"><h2>Registration Settings</h2><a href="#" class="admin-link" id="adminBackTop">Back</a></div>
       <div id="stagesContainer"></div>
       <button type="button" class="btn-add-inline" id="addStageBtn">+ Add stage</button>
+      <div class="gov-editor"><h3>Governorates and cities</h3><select id="adminGovSelect" class="gov-select"></select><div id="govsContainer"></div><button type="button" class="btn-add-inline" id="addGovBtn">+ Add governorate</button></div>
       <div class="admin-actions"><button type="button" class="submit" id="saveDataBtn">Save changes</button><button type="button" class="btn-secondary" id="resetDataBtn">Reset defaults</button></div>
       <div class="pw-change"><h3>Change admin password</h3><div class="pw-change-row"><input id="newPasswordInput" type="password" placeholder="New password"><button type="button" class="btn-mini" id="changePasswordBtn">Change</button></div></div>
       <div id="adminStatus" class="admin-status"></div>
@@ -395,6 +406,7 @@ const I18N = {
     hintPhone: "11 digits, starting with 01 (e.g. 01012345678)",
     errPhone: "Enter a valid 11-digit number starting with 01",
     labelParentPhone: "Parent Phone",
+    labelGovernorate: "Governorate",
     labelCity: "City",
     phCity: "Enter your city",
     hintCity: "Letters only, no numbers or symbols",
@@ -446,6 +458,7 @@ const I18N = {
     hintPhone: "11 رقم، تبدأ بـ 01 (مثال: 01012345678)",
     errPhone: "اكتب رقم صحيح مكوّن من 11 رقم يبدأ بـ 01",
     labelParentPhone: "رقم هاتف ولي الأمر",
+    labelGovernorate: "المحافظة",
     labelCity: "المدينة",
     phCity: "اكتب اسم مدينتك",
     hintCity: "حروف فقط، من غير أرقام أو رموز",
@@ -773,6 +786,7 @@ form.addEventListener('submit', async (e) => {
     fullName: document.getElementById('fullName').value.trim(),
     studentPhone: document.getElementById('studentPhone').value.trim(),
     parentPhone: document.getElementById('parentPhone').value.trim(),
+    governorate: document.getElementById('governorate').value,
     city: document.getElementById('city').value.trim(),
     educationalStage: document.getElementById('stage').value,
     grade: document.getElementById('grade').value,
@@ -832,6 +846,20 @@ form.addEventListener('submit', async (e) => {
 });
 
 
+function syncPublicGovernorates(){
+  const gov=document.getElementById('governorate'), city=document.getElementById('city');
+  if(!gov || !city || typeof adminGovernorates==='undefined') return;
+  const oldGov=gov.value, oldCity=city.value;
+  gov.innerHTML=''; const ph=document.createElement('option'); ph.value=''; ph.disabled=true; ph.textContent=t('selectPlaceholder'); gov.appendChild(ph);
+  adminGovernorates.filter(g=>g.active!==false).forEach(g=>{const o=document.createElement('option');o.value=g.key;o.textContent=g.label;gov.appendChild(o)});
+  gov.value=adminGovernorates.some(g=>g.key===oldGov&&g.active!==false)?oldGov:'';
+  const selected=adminGovernorates.find(g=>g.key===gov.value); city.innerHTML=''; const cph=document.createElement('option');cph.value='';cph.disabled=true;cph.textContent=t('selectPlaceholder');city.appendChild(cph);
+  (selected?selected.cities:[]).forEach(c=>{const o=document.createElement('option');o.value=c.value;o.textContent=c.label;city.appendChild(o)});
+  city.value=selected && selected.cities.some(c=>c.value===oldCity)?oldCity:'';
+}
+
+document.getElementById('governorate').addEventListener('change',syncPublicGovernorates);
+
 /* ============================================================
    ADMIN PANEL — added without changing the existing form layout
    Open with: page-url#admin
@@ -851,6 +879,38 @@ let adminUnlocked = false;
 let adminDraft = null;
 
 function adminSlug(prefix){ return prefix + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,7); }
+const DEFAULT_GOVERNORATES = [
+    { key: "cairo", label: "القاهرة", cities: ["مدينة نصر","المعادي","حلوان","مصر الجديدة","الزيتون","شبرا","عين شمس","المرج","البساتين","دار السلام","السيدة زينب","الدرب الأحمر","وسط البلد","الزمالك","المقطم","القاهرة الجديدة","بدر","الشروق","العاصمة الإدارية الجديدة"].map(l=>({value:l,label:l})) },
+    { key: "giza", label: "الجيزة", cities: ["الجيزة","الدقي","العجوزة","إمبابة","بولاق الدكرور","الهرم","فيصل","أوسيم","كرداسة","أبو النمرس","الصف","أطفيح","البدرشين","منشأة القناطر","6 أكتوبر","الشيخ زايد","نزلة السمان","أبو رواش","منشأة دهشور","ساقية مكي","كفر طهرمس","الحوامدية","الطرانة","أبو غالب","إسطبل عنتر","البرجاية"].map(l=>({value:l,label:l})) },
+    { key: "alexandria", label: "الإسكندرية", cities: ["المنتزه","شرق","وسط","غرب","الجمرك","العامرية","برج العرب","العجمي","سيدي جابر","سموحة","ميامي","محرم بك","كرموز"].map(l=>({value:l,label:l})) },
+    { key: "dakahlia", label: "الدقهلية", cities: ["المنصورة","طلخا","ميت غمر","دكرنس","أجا","منية النصر","السنبلاوين","شربين","المنزلة","تمي الأمديد","الجمالية","بلقاس","نبروه","بني عبيد","المطرية","جمصة","دميرة","أبو الغيط","ميت الخولي","محلة دياي","شبراباص","ميت بدر حلاوة","كفر البيطاش","ميت الشرقي","جزيرة بني نصر","منية سمنود"].map(l=>({value:l,label:l})) },
+    { key: "sharqia", label: "الشرقية", cities: ["الزقازيق","بلبيس","منيا القمح","أبو حماد","أبو كبير","فاقوس","الحسينية","الإبراهيمية","ديرب نجم","كفر صقر","مشتول السوق","الصالحية الجديدة","ههيا","أولاد صقر","القرين","العاشر من رمضان","تل بسطة","كفر شبين","عرب غنيم","الصوالحة","ميت يعيش","كفر عبده","أولاد رزق","منشأة أبو عمر","كفر الحصر","أبو حجر"].map(l=>({value:l,label:l})) },
+    { key: "qalyubia", label: "القليوبية", cities: ["بنها","قليوب","شبرا الخيمة","القناطر الخيرية","طوخ","كفر شكر","الخانكة","شبين القناطر","العبور","الخصوص","مسطرد","سرياقوس","أبو زعبل","كفر العرب","أم دينار","بهتيم","شبرا النملة","كفر الجزار","ميت نما"].map(l=>({value:l,label:l})) },
+    { key: "gharbia", label: "الغربية", cities: ["طنطا","المحلة الكبرى","كفر الزيات","زفتى","سمنود","قطور","بسيون","السنطة","ميت حبيش","محلة مرحوم","سرسنا","منشأة سلطان","بشلا","كفر الشيخ إبراهيم","ميت النمر","ديروط الشريف","شبرا ملس","محلة أبو علي"].map(l=>({value:l,label:l})) },
+    { key: "monufia", label: "المنوفية", cities: ["شبين الكوم","منوف","سرس الليان","أشمون","الباجور","قويسنا","بركة السبع","تلا","الشهداء","السادات","شبرا بخوم","ميت حلفا","برهيم","كفر داود","منية عبيد","تتا","بجلة","ميت خلف","السبع آبار","شنشور"].map(l=>({value:l,label:l})) },
+    { key: "beheira", label: "البحيرة", cities: ["دمنهور","كفر الدوار","رشيد","إدكو","أبو حمص","أبو المطامير","إيتاي البارود","الدلنجات","المحمودية","الرحمانية","شبراخيت","كوم حمادة","بدر البحيرة","النوبارية","وادي النطرون","حوش عيسى","كفر جرجس","نقرها","الشونة","كوم الفرج","أبو خليل","الطواحن","صنهور","بولين","دهشتيت","كوم أشقر"].map(l=>({value:l,label:l})) },
+    { key: "kafr-elsheikh", label: "كفر الشيخ", cities: ["كفر الشيخ","دسوق","فوه","مطوبس","بلطيم","الحامول","بيلا","الرياض","سيدي سالم","قلين","البرلس","سيدي غازي","أبو الأسود","الغزيلة","الحدادي","تيدا","كفر الأشراف","منشأة كتخدا","بسنديلة","بلقطر"].map(l=>({value:l,label:l})) },
+    { key: "damietta", label: "دمياط", cities: ["دمياط","رأس البر","فارسكور","الزرقا","كفر سعد","كفر البطيخ","ميت أبو غالب","السرو","الروضة","عزبة البرج","شطا","جزيرة الوسطاني","الروضة الجديدة","كفر الرجال","الرمل","النخل الرمل","محلة روح"].map(l=>({value:l,label:l})) },
+    { key: "portsaid", label: "بورسعيد", cities: ["بورفؤاد","الشرق","الضواحي","المناخ","الزهور","الجنوب","حي العرب"].map(l=>({value:l,label:l})) },
+    { key: "ismailia", label: "الإسماعيلية", cities: ["الإسماعيلية","فايد","القنطرة شرق","القنطرة غرب","التل الكبير","أبو صوير","القصاصين","نفيشة","القصاصين الشرق","كوبري القديم","المحسمة","الفردان","الديفرسوار","تل المسخوطة","ساقية عبد الله"].map(l=>({value:l,label:l})) },
+    { key: "suez", label: "السويس", cities: ["السويس","عتاقة","الأربعين","الجناين","فيصل"].map(l=>({value:l,label:l})) },
+    { key: "north-sinai", label: "شمال سيناء", cities: ["العريش","الشيخ زويد","رفح","بئر العبد","الحسنة","نخل","الفلوسية","المهدية","الجورة","مسعيد","وادي العريش","أبو صياد","بئر لحفن","الريسة"].map(l=>({value:l,label:l})) },
+    { key: "south-sinai", label: "جنوب سيناء", cities: ["الطور","شرم الشيخ","دهب","نويبع","طابا","سانت كاترين","أبو رديس","رأس سدر","عيون موسى","أبو زنيمة","وادي فيران","نبق","وادي الشيخ","رأس محمد","الطرفة","وادي الغزالة","مويلح"].map(l=>({value:l,label:l})) },
+    { key: "fayoum", label: "الفيوم", cities: ["الفيوم","سنورس","إطسا","إبشواي","طامية","يوسف الصديق","قصر قارون","تونس","كوم أوشيم","سنهور","الديمة","الشوبك","عزبة الديمة","منشأة الكرام","جزيرة الذهب"].map(l=>({value:l,label:l})) },
+    { key: "beni-suef", label: "بني سويف", cities: ["بني سويف","الواسطى","ناصر","إهناسيا","ببا","سمسطا","الفشن","بياض العرب","الفنت","منقطين","النزلة","دميان","البهنسا","سدمنت الجبل","قلا الصمعان","الزرابي","بشواي"].map(l=>({value:l,label:l})) },
+    { key: "minya", label: "المنيا", cities: ["المنيا","ملوي","سمالوط","مغاغة","بني مزار","مطاي","أبو قرقاص","ديرمواس","العدوة","تونا الجبل","بني حسن","صنبو","نزلة الشيخ زيد","الشيخ عبادة","دير أبو حنس","كوم النجوم","بني خالد","عزبة الجزيرة"].map(l=>({value:l,label:l})) },
+    { key: "assiut", label: "أسيوط", cities: ["أسيوط","ديروط","منفلوط","القوصية","أبنوب","أبوتيج","صدفا","البدارى","ساحل سليم","الفتح","بني عدي","الحمراء","شطب","درنكة","الصوامعة","الوليدية","منقباد","البياضة","عرب المطاعنة"].map(l=>({value:l,label:l})) },
+    { key: "sohag", label: "سوهاج", cities: ["سوهاج","أخميم","جرجا","طهطا","طما","المراغة","البلينا","دار السلام","ساقلته","جهينة","المنشاة","العوامية","كوم الأحمر","الكولة","سمهود","شندويل","أولاد يحيى","الشيخ متولي","هو"].map(l=>({value:l,label:l})) },
+    { key: "qena", label: "قنا", cities: ["قنا","نجع حمادي","دشنا","أبوتشت","فرشوط","قوص","نقادة","الوقف","القلعة","أبو المنجا","أبو شوشة","فاو قبلي","دندرة","قفط","الدير","بهجورة","الطويرات"].map(l=>({value:l,label:l})) },
+    { key: "luxor", label: "الأقصر", cities: ["الأقصر","الزينية","البياضية","القرنة","الطود","أرمنت","إسنا","مدينة هابو","الكرنك","دير المدينة","الرزيقات","الرمادي","النجوع","القرنة الجديدة","مسعرة","جزيرة الموز"].map(l=>({value:l,label:l})) },
+    { key: "aswan", label: "أسوان", cities: ["أسوان","إدفو","كوم أمبو","دراو","نصر النوبة","البصيلية","السباعية","الرديسية","أبو سمبل","نجع الحصايه","غرب سهيل","جزيرة سهيل","النوبة الجديدة","الدكة","كلابشة","وادي السبوع","التوفيكية"].map(l=>({value:l,label:l})) },
+    { key: "new-valley", label: "الوادي الجديد", cities: ["الخارجة","الداخلة","الفرافرة","باريس","بلاط","القصر","بشندي","الماصرة","تنيدة","الشيخ واريد","عين أمور","الرشدة","موط","غرب المعصرة"].map(l=>({value:l,label:l})) },
+    { key: "matrouh", label: "مطروح", cities: ["مرسى مطروح","الحمام","العلمين","الضبعة","سيدي براني","السلوم","سيوة","النجيلة","الجارة","أغرمي","الظهر","مارينا","الساحل الشمالي","الزوايد","أبو منقار"].map(l=>({value:l,label:l})) },
+    { key: "red-sea", label: "البحر الأحمر", cities: ["الغردقة","سفاجا","القصير","مرسى علم","الشلاتين","حلايب","رأس غارب","الجونة","سهل حشيش","مرسى شاكر","وادي الجمال","رأس بناس","الكريمات","أم الحويطات","دهار"].map(l=>({value:l,label:l})) }
+  ];
+const ADMIN_GOV_KEY = 'regAdminGovernorates';
+function loadAdminGovernorates(){try{const raw=localStorage.getItem(ADMIN_GOV_KEY);if(raw){const d=JSON.parse(raw);if(Array.isArray(d)&&d.length)return d}}catch(e){}const d=JSON.parse(JSON.stringify(DEFAULT_GOVERNORATES));localStorage.setItem(ADMIN_GOV_KEY,JSON.stringify(d));return d}
+let adminGovernorates = loadAdminGovernorates();
 function adminDefaultData(){
   return Object.keys(GRADE_OPTIONS).map((stageKey, si) => ({
     key: stageKey, labelEn: stageKey, labelAr: t(si === 0 ? 'stagePreparatory' : 'stageSecondary'),
@@ -894,18 +954,29 @@ function syncPublicOptions(){
   adminDraft.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=currentLang==='ar'?s.labelAr:s.labelEn;stageSelect.appendChild(o)});
   stageSelect.value=adminDraft.some(s=>s.key===oldStage)?oldStage:''; populateGradeOptions(true); if(oldGrade)gradeSelect.value=oldGrade; populateGroupOptions(true); if(oldGroup)groupSelect.value=oldGroup;
 }
-function openAdmin(){adminDraft=JSON.parse(JSON.stringify(loadAdminData()));renderAdmin();adminGate.style.display='none';adminPanel.style.display='block';}
+function renderGovEditor(){
+  const sel=document.getElementById('adminGovSelect'), box=document.getElementById('govsContainer'); sel.innerHTML='';
+  adminGovernorates.forEach((g,i)=>{const o=document.createElement('option');o.value=i;o.textContent=g.label||'(unnamed)';sel.appendChild(o)});
+  if(!adminGovernorates.length){box.innerHTML='';return;}
+  const i=Math.min(Number(sel.dataset.selected||0),adminGovernorates.length-1);sel.value=i;sel.dataset.selected=i;const g=adminGovernorates[i];box.innerHTML='';
+  const head=document.createElement('div');head.className='gov-row';head.innerHTML=`<input value="${esc(g.label)}" placeholder="Governorate name"><button type="button" class="btn-x">×</button>`;head.querySelector('input').oninput=e=>{g.label=e.target.value;sel.options[i].textContent=g.label||'(unnamed)'};head.querySelector('button').onclick=()=>{if(confirm('Delete this governorate and all its cities?')){adminGovernorates.splice(i,1);sel.dataset.selected=0;renderGovEditor()}};box.appendChild(head);
+  g.cities.forEach((c,ci)=>{const row=document.createElement('div');row.className='city-row';row.innerHTML=`<input value="${esc(c.label)}" placeholder="City or village"><button type="button" class="btn-x">×</button>`;row.querySelector('input').oninput=e=>c.label=e.target.value;row.querySelector('button').onclick=()=>{g.cities.splice(ci,1);renderGovEditor()};box.appendChild(row)});
+  const add=document.createElement('button');add.type='button';add.className='btn-add-inline';add.textContent='+ Add city or village';add.onclick=()=>{g.cities.push({value:adminSlug('city'),label:'New city'});renderGovEditor()};box.appendChild(add);
+}
+document.getElementById('adminGovSelect').addEventListener('change',e=>{e.target.dataset.selected=e.target.value;renderGovEditor()});
+document.getElementById('addGovBtn').addEventListener('click',()=>{adminGovernorates.push({key:adminSlug('gov'),label:'New governorate',cities:[]});document.getElementById('adminGovSelect').dataset.selected=adminGovernorates.length-1;renderGovEditor()});
+function openAdmin(){adminDraft=JSON.parse(JSON.stringify(loadAdminData()));adminGovernorates=JSON.parse(JSON.stringify(loadAdminGovernorates()));renderAdmin();renderGovEditor();adminGate.style.display='none';adminPanel.style.display='block';}
 document.getElementById('adminGateBtn').addEventListener('click',()=>{if(adminPasswordInput.value===(localStorage.getItem(ADMIN_PASSWORD_KEY)||DEFAULT_ADMIN_PASSWORD)){adminUnlocked=true;adminGateError.style.display='none';openAdmin()}else adminGateError.style.display='block'});
 adminPasswordInput.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('adminGateBtn').click()});
 stagesContainer.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;readAdminInputs();const si=+b.dataset.si,gi=b.dataset.gi==null?null:+b.dataset.gi,xi=b.dataset.xi==null?null:+b.dataset.xi;const a=b.dataset.action;if(a==='remove-stage')adminDraft.splice(si,1);if(a==='remove-grade')adminDraft[si].grades.splice(gi,1);if(a==='remove-group')adminDraft[si].grades[gi].groups.splice(xi,1);if(a==='add-grade')adminDraft[si].grades.push({value:adminSlug('grade'),labelEn:'New grade',labelAr:'صف جديد',groups:[]});if(a==='add-group')adminDraft[si].grades[gi].groups.push({value:adminSlug('group'),dayEn:'',dayAr:'',time:''});renderAdmin()});
 document.getElementById('addStageBtn').addEventListener('click',()=>{readAdminInputs();adminDraft.push({key:adminSlug('stage'),labelEn:'New stage',labelAr:'مرحلة جديدة',grades:[]});renderAdmin()});
-document.getElementById('saveDataBtn').addEventListener('click',()=>{readAdminInputs();adminDraft=adminDraft.filter(s=>s.labelEn.trim()||s.labelAr.trim());adminDraft.forEach(s=>{s.grades=s.grades.filter(g=>g.labelEn.trim()||g.labelAr.trim());s.grades.forEach(g=>g.groups=g.groups.filter(x=>x.dayAr.trim()||x.dayEn.trim()||x.time.trim()))});localStorage.setItem(ADMIN_DATA_KEY,JSON.stringify(adminDraft));syncPublicOptions();showAdminStatus('Saved successfully ✓',false)});
-document.getElementById('resetDataBtn').addEventListener('click',()=>{if(confirm('Restore default registration settings?')){adminDraft=adminDefaultData();localStorage.setItem(ADMIN_DATA_KEY,JSON.stringify(adminDraft));syncPublicOptions();renderAdmin();showAdminStatus('Defaults restored',false)}});
+document.getElementById('saveDataBtn').addEventListener('click',()=>{readAdminInputs();adminDraft=adminDraft.filter(s=>s.labelEn.trim()||s.labelAr.trim());adminDraft.forEach(s=>{s.grades=s.grades.filter(g=>g.labelEn.trim()||g.labelAr.trim());s.grades.forEach(g=>g.groups=g.groups.filter(x=>x.dayAr.trim()||x.dayEn.trim()||x.time.trim()))});localStorage.setItem(ADMIN_DATA_KEY,JSON.stringify(adminDraft));localStorage.setItem(ADMIN_GOV_KEY,JSON.stringify(adminGovernorates));syncPublicOptions();showAdminStatus('Saved successfully ✓',false)});
+document.getElementById('resetDataBtn').addEventListener('click',()=>{if(confirm('Restore default registration settings?')){adminDraft=adminDefaultData();adminGovernorates=JSON.parse(JSON.stringify(DEFAULT_GOVERNORATES));localStorage.setItem(ADMIN_DATA_KEY,JSON.stringify(adminDraft));localStorage.setItem(ADMIN_GOV_KEY,JSON.stringify(adminGovernorates));syncPublicOptions();renderAdmin();renderGovEditor();showAdminStatus('Defaults restored',false)}});
 document.getElementById('changePasswordBtn').addEventListener('click',()=>{const p=document.getElementById('newPasswordInput').value.trim();if(!p)return showAdminStatus('Enter a new password first',true);localStorage.setItem(ADMIN_PASSWORD_KEY,p);document.getElementById('newPasswordInput').value='';showAdminStatus('Password changed ✓',false)});
 function adminHome(){location.hash=''}
 document.getElementById('adminBackFromGate').addEventListener('click',e=>{e.preventDefault();adminHome()});document.getElementById('adminBackTop').addEventListener('click',e=>{e.preventDefault();adminHome()});
 function routeAdmin(){if(location.hash==='#admin'){adminCard.style.display='none';adminOverlay.style.display='block';adminPasswordInput.value='';if(adminUnlocked)openAdmin();else{adminGate.style.display='block';adminPanel.style.display='none';adminGateError.style.display='none';setTimeout(()=>adminPasswordInput.focus(),50)}}else{adminOverlay.style.display='none';adminCard.style.display='block';syncPublicOptions()}}
- adminDraft=loadAdminData(); window.addEventListener('hashchange',routeAdmin); syncPublicOptions(); routeAdmin();
+ adminDraft=loadAdminData(); window.addEventListener('hashchange',routeAdmin); syncPublicOptions(); syncPublicGovernorates(); routeAdmin();
 
 </script>
 </body>
