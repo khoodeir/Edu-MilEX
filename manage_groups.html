@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<script>
+// ---- MilEX access guard: teacher only ----
+(function(){
+  try{
+    var raw = (sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession'));
+    var ok = false;
+    if(raw){ var d = JSON.parse(raw); ok = !!(d && d.exp && Date.now() < d.exp); }
+    if(!ok) window.location.replace('index.html');
+  }catch(e){ window.location.replace('index.html'); }
+})();
+</script>
+<title>تعديل المجاميع والمواعيد</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#F5F8FC; --paper2:#DEE8F7; --card:#FFFFFF; --ink:#101B33; --muted:#5C6A80;
+    --brand:#0B4DA6; --brand-d:#072A5E; --brand-soft:rgba(11,77,166,.10);
+    --line:#DCE3ED; --ok:#2E7D5B; --ok-soft:rgba(46,125,91,.12); --err:#B5424A; --err-soft:rgba(181,66,74,.12);
+    --warn:#B7791F; --warn-soft:rgba(183,121,31,.12);
+    --shadow:0 12px 32px rgba(16,27,51,.10);
+  }
+  body.dark{
+    --paper:#08162F; --paper2:#0A1C3C; --card:#0D2146; --ink:#DEE8F7; --muted:#8CA0BA;
+    --brand:#4A86DE; --brand-d:#9DBBEA; --brand-soft:rgba(59,130,246,.18);
+    --line:rgba(220,232,251,.14); --ok:#6FA98A; --ok-soft:rgba(111,169,138,.18); --err:#D8808A; --err-soft:rgba(216,128,138,.18);
+    --warn:#E0B060; --warn-soft:rgba(224,176,96,.16);
+    --shadow:0 12px 32px rgba(0,0,0,.45);
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    font-family:'Cairo','Inter',sans-serif; color:var(--ink); min-height:100vh; padding:24px 16px 60px;
+    background:linear-gradient(160deg,var(--paper),var(--paper2)); transition:background .2s,color .2s;
+  }
+  .wrap{ max-width:880px; margin:0 auto; }
+  .topbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:20px; }
+  .topbar h1{ font-size:22px; font-weight:700; color:var(--brand-d); }
+  .topbar p{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:10px 18px; border-radius:10px;
+    border:1px solid var(--line); background:var(--card); color:var(--ink); font-family:inherit; font-size:13.5px; font-weight:600;
+    cursor:pointer; text-decoration:none; transition:all .15s;
+  }
+  .btn:hover{ border-color:var(--brand); color:var(--brand-d); }
+  .btn.primary{ background:linear-gradient(135deg,var(--brand-d),var(--brand)); color:#fff; border-color:transparent; box-shadow:0 6px 16px rgba(11,77,166,.28); }
+  .btn.primary:hover{ color:#fff; transform:translateY(-1px); }
+  .btn.danger{ color:var(--err); }
+  .btn.danger:hover{ border-color:var(--err); color:var(--err); }
+  .btn:disabled{ opacity:.55; cursor:default; transform:none; }
+  .btn.sm{ padding:6px 12px; font-size:12.5px; border-radius:8px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:var(--shadow); margin-bottom:16px; }
+  .card h2{ font-size:16px; font-weight:700; color:var(--brand-d); margin-bottom:12px; }
+  input[type=text],input[type=number],input[type=datetime-local],select,textarea{
+    width:100%; padding:10px 12px; border-radius:9px; border:1px solid var(--line); background:var(--paper); color:var(--ink);
+    font-family:inherit; font-size:14px; outline:none; transition:border-color .15s, box-shadow .15s;
+  }
+  input:focus,select:focus,textarea:focus{ border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
+  label.lbl{ display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:5px; }
+  .msg{ display:none; padding:10px 14px; border-radius:10px; font-size:13px; margin-bottom:14px; font-weight:600; }
+  .msg.show{ display:block; }
+  .msg.ok{ background:var(--ok-soft); color:var(--ok); }
+  .msg.err{ background:var(--err-soft); color:var(--err); }
+  .msg.warn{ background:var(--warn-soft); color:var(--warn); }
+  .footer{ text-align:center; font-size:11.5px; color:var(--muted); margin-top:30px; }
+  .footer a{ color:inherit; }
+
+  .grade-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .grade-head .name{ font-weight:700; font-size:15px; }
+  .stage-tag{ font-size:11.5px; color:var(--muted); font-weight:600; }
+  .g-row{ display:grid; grid-template-columns:1.4fr 1fr auto auto; gap:8px; align-items:center; margin-bottom:8px; }
+  .g-row .preview{ font-size:12px; color:var(--muted); white-space:nowrap; background:var(--brand-soft); padding:6px 10px; border-radius:8px; }
+  .g-row .x{ width:36px; height:36px; padding:0; }
+  .empty{ font-size:13px; color:var(--muted); padding:8px 0 12px; }
+  .row-actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:4px; }
+  .savebar{ position:sticky; bottom:12px; z-index:5; display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 16px; box-shadow:var(--shadow); }
+  .savebar .hint{ font-size:12.5px; color:var(--muted); }
+  .dirty .hint{ color:var(--warn); font-weight:700; }
+  .note{ font-size:12.5px; color:var(--muted); line-height:1.8; }
+  .note b{ color:var(--ink); }
+  .chk{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; cursor:pointer; }
+  .chk input{ width:18px; height:18px; accent-color:var(--brand); }
+  @media (max-width:640px){
+    .g-row{ grid-template-columns:1fr 1fr auto; }
+    .g-row .preview{ grid-column:1 / -1; order:5; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <h1>🗓️ تعديل المجاميع والمواعيد</h1>
+      <p>التعديل هنا بيظهر تلقائيًا في صفحة التسجيل وفي الاسكانر (مصدر واحد للمجاميع)</p>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn" id="themeBtn" type="button">🌓</button>
+      <a class="btn primary" href="index.html" id="backBtn">رجوع ←</a>
+    </div>
+  </div>
+
+  <div class="msg" id="msg"></div>
+
+  <div class="card">
+    <div class="note">
+      <b>إزاي تشتغل:</b> اختار اليوم والميعاد لكل مجموعة، وتقدر تضيف أو تمسح مجموعات. الاسم اللي بيظهر في خانة
+      <b>"هيتسجل باسم"</b> هو نفسه اللي بيتكتب للطالب وقت التسجيل وبيظهر في الاسكانر.<br>
+      لو غيّرت يوم أو ميعاد مجموعة موجودة، تقدر تفعّل خيار نقل الطلاب المسجلين فيها للاسم الجديد.
+    </div>
+    <div style="margin-top:12px;">
+      <label class="chk"><input type="checkbox" id="migrateChk" checked> انقل الطلاب المسجلين في المجموعة القديمة للاسم الجديد عند الحفظ</label>
+    </div>
+  </div>
+
+  <div id="loading" class="card note">جاري تحميل المجاميع…</div>
+  <div id="gradesBox"></div>
+
+  <div class="savebar" id="savebar" style="display:none;">
+    <span class="hint" id="saveHint">مفيش تعديلات غير محفوظة</span>
+    <div style="display:flex; gap:8px;">
+      <button class="btn" type="button" id="reloadBtn">↺ تحميل من السيرفر</button>
+      <button class="btn primary" type="button" id="saveBtn">💾 حفظ المجاميع</button>
+    </div>
+  </div>
+
+  <div class="footer">Powered by <a href="milex.html" target="_blank" rel="noopener noreferrer">MilEX</a></div>
+</div>
+
+<script src="milex-common.js"></script>
+<script>
+const SUPABASE_URL = "https://evbjulsahncllewwvlxp.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2Ymp1bHNhaG5jbGxld3d2bHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NzE5MjUsImV4cCI6MjA5OTI0NzkyNX0.Xg9sU6ZenUU3kC2RNIbvZmK19KvE28MM2oyGcKNn8UA";
+const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const CONFIG_KEY = 'reg_form_data';
+const LS_KEY = 'regFormData';
+
+/* Same defaults the registration page ships with (only used if the server has no config yet). */
+const DEFAULT_STAGES = [
+  { key:"Preparatory", labelEn:"Preparatory", labelAr:"المرحلة الإعدادية", grades:[
+    { value:"First Prep", labelEn:"First Grade", labelAr:"الصف الأول الإعدادي", groups:[{value:"prep1-sattue-3",dayEn:"Sat & Tue",dayAr:"سبت وتلات",time:"3:00"}] },
+    { value:"Second Prep", labelEn:"Second Grade", labelAr:"الصف الثاني الإعدادي", groups:[{value:"prep2-sattue-4",dayEn:"Sat & Tue",dayAr:"سبت وتلات",time:"4:00"}] },
+    { value:"Third Prep", labelEn:"Third Grade", labelAr:"الصف الثالث الإعدادي", groups:[{value:"prep3-sattue-2",dayEn:"Sat & Tue",dayAr:"سبت وتلات",time:"2:00"}] } ] },
+  { key:"Secondary", labelEn:"Secondary", labelAr:"المرحلة الثانوية", grades:[
+    { value:"First Grade", labelEn:"First Grade", labelAr:"الصف الأول الثانوي", groups:[{value:"sec1-sunwed-2",dayEn:"Sun & Wed",dayAr:"حد واربع",time:"2:00"}] },
+    { value:"Second Grade", labelEn:"Second Grade", labelAr:"الصف الثاني الثانوي", groups:[{value:"sec2-sunwed-3",dayEn:"Sun & Wed",dayAr:"حد واربع",time:"3:00"},{value:"sec2-sunwed-6",dayEn:"Sun & Wed",dayAr:"حد واربع",time:"6:00"}] },
+    { value:"Third Grade", labelEn:"Third Grade", labelAr:"الصف الثالث الثانوي", groups:[{value:"sec3-sunwed-12",dayEn:"Sun & Wed",dayAr:"حد واربع",time:"12:00"},{value:"sec3-sunwed-5",dayEn:"Sun & Wed",dayAr:"حد واربع",time:"5:00"}] } ] }
+];
+
+/* Quick day presets (type anything else if you need it). English label is kept in sync for the English UI. */
+const DAY_PRESETS = [
+  ["سبت وتلات","Sat & Tue"], ["حد واربع","Sun & Wed"], ["حد وتلات","Sun & Tue"], ["اتنين وخميس","Mon & Thu"],
+  ["سبت وتلات وخميس","Sat, Tue & Thu"], ["الجمعة","Friday"], ["السبت","Saturday"], ["الأحد","Sunday"],
+  ["الاتنين","Monday"], ["التلات","Tuesday"], ["الأربع","Wednesday"], ["الخميس","Thursday"]
+];
+const dayEnFor = ar => { const p = DAY_PRESETS.find(x => x[0] === ar); return p ? p[1] : ar; };
+
+let cfg = null;          // full server config (we only ever touch stages[].grades[].groups)
+let original = null;     // snapshot at load, to detect renames
+let dirty = false;
+
+const $ = id => document.getElementById(id);
+function showMsg(text, type){
+  const m = $('msg'); m.textContent = text; m.className = 'msg show ' + type;
+  if(type !== 'err') setTimeout(() => { if(m.textContent === text) m.className = 'msg'; }, 6000);
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const mkSlug = () => `grp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,6)}`;
+
+function normTime(raw){
+  let v = String(raw == null ? '' : raw).trim().replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+  if(!v) return v;
+  if(!v.includes(':')) return `${v}:00`;
+  const [hh, mm=''] = v.split(':');
+  return `${hh.trim()}:${(mm.trim() || '00').padStart(2,'0')}`;
+}
+/* What the registration page writes into group_name for a group. */
+const groupName = g => `${(g.dayAr||'').trim()} ${String(g.time||'').replace(':00','')}`.trim();
+
+function setDirty(v){
+  dirty = v;
+  $('savebar').classList.toggle('dirty', v);
+  $('saveHint').textContent = v ? 'فيه تعديلات لسه ماتحفظتش ⚠️' : 'مفيش تعديلات غير محفوظة';
+}
+
+async function loadConfig(){
+  $('loading').style.display = 'block'; $('gradesBox').innerHTML = '';
+  let value = null;
+  try{
+    const { data, error } = await supa.from('app_config').select('value').eq('key', CONFIG_KEY).maybeSingle();
+    if(error) throw error;
+    if(data && data.value && Array.isArray(data.value.stages)) value = data.value;
+  }catch(e){
+    console.error(e);
+    showMsg('تعذّر التحميل من السيرفر (' + (e.message || e) + ') — هنعرض النسخة المحلية/الافتراضية.', 'warn');
+    try{ const l = JSON.parse(localStorage.getItem(LS_KEY)); if(l && Array.isArray(l.stages)) value = l; }catch(_){}
+  }
+  cfg = value || { stages: JSON.parse(JSON.stringify(DEFAULT_STAGES)), governorates: [] };
+  // make sure every group has a stable id
+  cfg.stages.forEach(st => (st.grades||[]).forEach(gr => { gr.groups = gr.groups || []; gr.groups.forEach(g => { if(!g.value) g.value = mkSlug(); }); }));
+  original = JSON.parse(JSON.stringify(cfg.stages));
+  $('loading').style.display = 'none'; $('savebar').style.display = 'flex';
+  setDirty(false); render();
+}
+
+function render(){
+  const box = $('gradesBox'); box.innerHTML = '';
+  let flatIdx = -1;
+  cfg.stages.forEach((st, si) => (st.grades||[]).forEach((gr, gi) => {
+    flatIdx++; const myIdx = flatIdx;
+    const card = document.createElement('div'); card.className = 'card';
+    card.innerHTML = `
+      <div class="grade-head">
+        <div><div class="name">${esc(gr.labelAr || gr.labelEn || gr.value)}</div><div class="stage-tag">${esc(st.labelAr || st.labelEn || '')}</div></div>
+        <button class="btn sm" type="button" data-add>+ مجموعة</button>
+      </div>
+      <div data-rows></div>`;
+    const rows = card.querySelector('[data-rows]');
+    if(!gr.groups.length){ rows.innerHTML = '<div class="empty">مفيش مجموعات للسنة دي — دوس "+ مجموعة"</div>'; }
+    gr.groups.forEach((g, idx) => {
+      const r = document.createElement('div'); r.className = 'g-row';
+      const listId = `days-${si}-${gi}-${idx}`;
+      r.innerHTML = `
+        <div><input type="text" list="${listId}" value="${esc(g.dayAr)}" placeholder="اليوم (مثال: سبت وتلات)" data-day>
+          <datalist id="${listId}">${DAY_PRESETS.map(p => `<option value="${esc(p[0])}">`).join('')}</datalist></div>
+        <input type="text" inputmode="numeric" value="${esc(g.time)}" placeholder="الميعاد (مثال: 5:00)" data-time>
+        <span class="preview" data-prev></span>
+        <button class="btn sm danger x" type="button" title="حذف المجموعة" data-del>✕</button>`;
+      const prev = r.querySelector('[data-prev]');
+      const upd = () => { prev.textContent = g.dayAr || g.time ? 'هيتسجل باسم: ' + groupName(g) : 'اكمل اليوم والميعاد'; };
+      r.querySelector('[data-day]').addEventListener('input', e => { g.dayAr = e.target.value; g.dayEn = dayEnFor(e.target.value); upd(); setDirty(true); });
+      const tm = r.querySelector('[data-time]');
+      tm.addEventListener('input', e => { g.time = e.target.value; upd(); setDirty(true); });
+      tm.addEventListener('blur', e => { const n = normTime(e.target.value); e.target.value = n; g.time = n; upd(); });
+      r.querySelector('[data-del]').addEventListener('click', () => {
+        if(!confirm('تمسح المجموعة دي؟ (الطلاب المسجلين فيها مش هيتمسحوا)')) return;
+        gr.groups.splice(idx, 1); setDirty(true); render();
+      });
+      upd(); rows.appendChild(r);
+    });
+    card.querySelector('[data-add]').addEventListener('click', () => {
+      gr.groups.push({ value: mkSlug(), dayAr:'', dayEn:'', time:'' }); setDirty(true);
+      const pos = myIdx; render();
+      const days = $('gradesBox').children[pos].querySelectorAll('[data-day]');   // focus the new row
+      if(days.length) days[days.length - 1].focus();
+    });
+    box.appendChild(card);
+  }));
+}
+
+function validate(){
+  const problems = [];
+  cfg.stages.forEach(st => (st.grades||[]).forEach(gr => {
+    const seen = new Set();
+    gr.groups = gr.groups.filter(g => (g.dayAr||'').trim() || (g.time||'').trim());   // drop fully empty rows
+    gr.groups.forEach(g => {
+      g.dayAr = (g.dayAr||'').trim(); g.dayEn = g.dayEn || dayEnFor(g.dayAr); g.time = normTime(g.time);
+      if(!g.dayAr || !g.time) problems.push(`${gr.labelAr}: مجموعة ناقصة (اليوم أو الميعاد)`);
+      else if(!/^\d{1,2}:\d{2}$/.test(g.time)) problems.push(`${gr.labelAr}: الميعاد "${g.time}" مش مكتوب صح (مثال: 5:00)`);
+      const k = groupName(g);
+      if(seen.has(k)) problems.push(`${gr.labelAr}: المجموعة "${k}" مكررة`);
+      seen.add(k);
+    });
+  }));
+  return problems;
+}
+
+/* Students already registered under the OLD name are moved to the NEW one (only for groups whose id is unchanged). */
+async function migrateStudents(){
+  const byValue = {};
+  original.forEach(st => (st.grades||[]).forEach(gr => (gr.groups||[]).forEach(g => { byValue[gr.value + '|' + g.value] = { old: groupName(g) }; })));
+  const gradeKeyByReg = {};
+  Object.entries(MILEX.GRADES).forEach(([k, g]) => gradeKeyByReg[g.reg] = k);
+  let moved = 0; const fails = [];
+  for(const st of cfg.stages){
+    for(const gr of (st.grades||[])){
+      const gk = gradeKeyByReg[gr.value]; if(!gk) continue;
+      const table = MILEX.GRADES[gk].att;
+      for(const g of gr.groups){
+        const was = byValue[gr.value + '|' + g.value]; if(!was) continue;
+        const now = groupName(g);
+        if(!was.old || was.old === now) continue;
+        const { data, error } = await supa.from(table).update({ group_name: now }).eq('group_name', was.old).select('id');
+        if(error) fails.push(`${gr.labelAr}: ${error.message}`); else moved += (data||[]).length;
+      }
+    }
+  }
+  return { moved, fails };
+}
+
+async function save(){
+  const problems = validate();
+  if(problems.length){ showMsg('صحّح الأول:\n• ' + problems.join('\n• '), 'err'); $('msg').style.whiteSpace = 'pre-line'; render(); return; }
+  $('msg').style.whiteSpace = '';
+  const btn = $('saveBtn'); btn.disabled = true; btn.textContent = 'جاري الحفظ…';
+  try{
+    // merge into the LATEST server copy so governorates / cities edited elsewhere are never overwritten
+    let latest = null;
+    try{ const { data } = await supa.from('app_config').select('value').eq('key', CONFIG_KEY).maybeSingle(); if(data && data.value) latest = data.value; }catch(_){}
+    const out = latest && Array.isArray(latest.stages) ? latest : { stages: [], governorates: (cfg.governorates || []) };
+    if(!Array.isArray(out.governorates)) out.governorates = cfg.governorates || [];
+    // replace each grade's groups (matched by stage key + grade value); add stages/grades only if missing on server
+    cfg.stages.forEach(st => {
+      let os = out.stages.find(x => x.key === st.key);
+      if(!os){ out.stages.push(JSON.parse(JSON.stringify(st))); return; }
+      (st.grades||[]).forEach(gr => {
+        const og = (os.grades = os.grades || []).find(x => x.value === gr.value);
+        if(og) og.groups = JSON.parse(JSON.stringify(gr.groups)); else os.grades.push(JSON.parse(JSON.stringify(gr)));
+      });
+    });
+    const { error } = await supa.from('app_config').upsert({ key: CONFIG_KEY, value: out, updated_at: new Date().toISOString() });
+    if(error) throw error;
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(out)); }catch(_){}
+
+    let extra = '';
+    if($('migrateChk').checked){
+      const r = await migrateStudents();
+      if(r.moved) extra += ` — اتنقل ${r.moved} طالب للاسم الجديد`;
+      if(r.fails.length) extra += ` — (تعذّر نقل بعض الطلاب: ${r.fails.join(' | ')})`;
+    }
+    try{
+      const groups = []; out.stages.forEach(st => (st.grades||[]).forEach(gr => (gr.groups||[]).forEach(g => groups.push(`${gr.labelAr}: ${g.dayAr} ${g.time}`))));
+      await MILEX.audit(supa, { action:'config_save', details:{ groups, source:'manage_groups' } });
+    }catch(_){}
+
+    cfg = out; original = JSON.parse(JSON.stringify(out.stages)); setDirty(false); render();
+    showMsg('اتحفظت ✓ — ظاهرة دلوقتي في التسجيل والاسكانر' + extra, 'ok');
+  }catch(e){
+    console.error(e);
+    showMsg('فشل الحفظ على السيرفر: ' + (e.message || e) + ' (اتأكد من جدول app_config وصلاحيات الكتابة)', 'err');
+  }finally{
+    btn.disabled = false; btn.textContent = '💾 حفظ المجاميع';
+  }
+}
+
+$('saveBtn').addEventListener('click', save);
+$('reloadBtn').addEventListener('click', () => { if(!dirty || confirm('هتفقد التعديلات اللي ماتحفظتش. تكمل؟')) loadConfig(); });
+window.addEventListener('beforeunload', e => { if(dirty){ e.preventDefault(); e.returnValue = ''; } });
+$('backBtn').addEventListener('click', e => {
+  e.preventDefault();
+  if(dirty && !confirm('فيه تعديلات ماتحفظتش. تخرج برضو؟')) return;
+  dirty = false;
+  if(document.referrer && document.referrer !== location.href) history.back(); else location.href = 'index.html';
+});
+$('themeBtn').addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  try{ localStorage.setItem('eduTrackTheme', document.body.classList.contains('dark') ? 'dark' : 'light'); }catch(_){}
+});
+try{ if(localStorage.getItem('eduTrackTheme') === 'dark') document.body.classList.add('dark'); }catch(_){}
+
+loadConfig();
+</script>
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>

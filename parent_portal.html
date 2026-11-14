@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تقرير الطالب | بوابة ولي الأمر</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="milex-download.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,25 +13,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Cairo:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-main:#F7F4EE; --bg-secondary:#EDE5D8; --bg-dark-beige:#D8CBB8;
-    --card-bg:#FFFFFF; --text-main:#302F2C; --text-secondary:#77736B;
-    --petrol:#28565A; --petrol-dark:#1D4145; --wood:#967354; --wood-light:#B89B7A;
-    --border:#DDD5C8;
+    --bg-main:#F5F8FC; --bg-secondary:#DEE8F7; --bg-dark-beige:#D2E1F4;
+    --card-bg:#FFFFFF; --text-main:#101B33; --text-secondary:#5C6A80;
+    --petrol:#0B4DA6; --petrol-dark:#072A5E; --wood:#4A80D6; --wood-light:#9DBBEA;
+    --border:#DCE3ED;
     --ink:var(--text-main); --ink-2:var(--petrol-dark); --paper:var(--bg-main); --card:var(--card-bg); --line:var(--border);
-    --gold:var(--petrol); --gold-2:var(--petrol-dark); --gold-soft:rgba(40,86,90,0.09);
+    --gold:var(--petrol); --gold-2:var(--petrol-dark); --gold-soft:rgba(11,77,166,0.09);
     --success:#5B8C6E; --success-soft:rgba(91,140,110,0.14);
     --warning:#B98A4A; --warning-soft:rgba(185,138,74,0.14);
     --error:#B5555A; --error-soft:rgba(181,85,90,0.14);
     --muted:var(--text-secondary); --cream-bg-1:var(--bg-main); --cream-bg-2:var(--bg-secondary);
-    --shadow-sm:0 2px 8px rgba(48,47,44,0.06); --shadow-md:0 4px 16px rgba(48,47,44,0.08); --shadow-lg:0 8px 24px rgba(48,47,44,0.10);
+    --shadow-sm:0 2px 8px rgba(16,27,51,0.06); --shadow-md:0 4px 16px rgba(16,27,51,0.08); --shadow-lg:0 8px 24px rgba(16,27,51,0.10);
   }
   *{ margin:0; padding:0; box-sizing:border-box; }
   html,body{ height:100%; }
   body{
     font-family:'Cairo','Inter',sans-serif;
     background:
-      radial-gradient(circle at 15% 10%, rgba(29,65,69,0.05), transparent 45%),
-      radial-gradient(circle at 85% 90%, rgba(150,115,84,0.03), transparent 45%),
+      radial-gradient(circle at 15% 10%, rgba(7,42,94,0.05), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(74,128,214,0.03), transparent 45%),
       linear-gradient(160deg, var(--cream-bg-1), var(--cream-bg-2));
     color:var(--ink); min-height:100vh; padding:32px 20px 64px;
   }
@@ -52,8 +53,8 @@
   }
   .lang-switch button:hover{ color:var(--ink); }
   .lang-switch button.active{
-    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#fff;
-    box-shadow:0 4px 10px rgba(29,65,69,0.18);
+    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#FFF;
+    box-shadow:0 4px 10px rgba(7,42,94,0.18);
   }
 
   /* Back-to-home button (top, opposite corner from language switcher) */
@@ -75,10 +76,10 @@
   /* Header */
   .topbar{ display:flex; align-items:center; gap:14px; margin-bottom:28px; justify-content:center; text-align:center; flex-direction:column; padding-top:6px; }
   .brand-mark{
-    height:84px; background:transparent;
+    height:78px; background:transparent;
     display:flex; align-items:center; justify-content:center;
   }
-  .brand-mark img{ height:100%; width:auto; object-fit:contain; }
+  .brand-mark img{ height:100%; width:auto; max-width:100%; object-fit:contain; display:block; }
   .topbar h1{ font-family:'Cairo','Cormorant Garamond',serif; font-size:26px; font-weight:700; color:var(--gold-2); margin-top:14px; }
   [dir="ltr"] .topbar h1{ font-family:'Cormorant Garamond',serif; }
   .topbar p{ font-size:13px; color:var(--muted); margin-top:4px; }
@@ -102,10 +103,10 @@
     display:flex; align-items:center; gap:8px; transition:all .18s ease; white-space:nowrap;
   }
   .search-btn{
-    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#fff;
-    box-shadow:0 6px 16px rgba(29,65,69,0.22);
+    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#FFF;
+    box-shadow:0 6px 16px rgba(7,42,94,0.22);
   }
-  .search-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(29,65,69,0.28); }
+  .search-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(7,42,94,0.28); }
   .search-btn:disabled{ opacity:.6; cursor:default; transform:none; }
   .scan-btn{
     background:var(--paper); color:var(--gold-2); border:1px solid var(--line);
@@ -121,7 +122,7 @@
   .state-msg.show{ display:flex; }
   .state-msg.err{ color:var(--error); }
   .spinner{
-    width:20px; height:20px; border-radius:50%; border:2px solid rgba(29,65,69,0.12);
+    width:20px; height:20px; border-radius:50%; border:2px solid rgba(7,42,94,0.12);
     border-top-color:var(--gold); animation:spin .7s linear infinite;
   }
   @keyframes spin{ to{ transform:rotate(360deg); } }
@@ -158,9 +159,9 @@
   .back-btn:hover{ border-color:var(--gold); }
   .pdf-btn{
     padding:10px 18px; border-radius:9px; border:none; cursor:pointer;
-    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#fff;
+    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#FFF;
     font-family:inherit; font-weight:700; font-size:12.5px; display:flex; align-items:center; gap:7px;
-    box-shadow:0 6px 14px rgba(29,65,69,0.2);
+    box-shadow:0 6px 14px rgba(7,42,94,0.2);
   }
   .head-actions{ display:flex; gap:10px; flex-wrap:wrap; }
 
@@ -226,7 +227,7 @@
 
   /* QR scan modal */
   .modal-overlay{
-    display:none; position:fixed; inset:0; background:rgba(48,47,44,0.50); z-index:80;
+    display:none; position:fixed; inset:0; background:rgba(16,27,51,0.50); z-index:80;
     align-items:center; justify-content:center; padding:20px;
   }
   .modal-overlay.show{ display:flex; }
@@ -237,7 +238,7 @@
   .modal-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
   .modal-close{ border:none; background:none; font-size:22px; cursor:pointer; color:var(--muted); line-height:1; }
   .modal-close:hover{ color:var(--ink); }
-  #qrReaderBox{ border-radius:12px; overflow:hidden; background:#23211E; min-height:260px; }
+  #qrReaderBox{ border-radius:12px; overflow:hidden; background:#08162F; min-height:260px; }
   .qr-hint{ font-size:11.5px; color:var(--muted); margin-top:10px; text-align:center; }
   .qr-error{ font-size:12.5px; color:var(--error); margin-top:10px; text-align:center; display:none; }
   .qr-error.show{ display:block; }
@@ -247,6 +248,9 @@
     .two-col, .contact-grid{ grid-template-columns:1fr; }
     .lang-switch{ position:static; margin-bottom:12px; justify-content:center; display:flex; }
     .back-top-btn{ position:static; display:inline-flex; margin-bottom:12px; }
+  }
+  @media (max-width:380px){
+    .kpi-grid{ grid-template-columns:1fr; }
   }
 
   .two-col,
@@ -261,6 +265,13 @@
 
 
 </style>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0B4DA6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MilEX EDU">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 </head>
 <body>
 <div class="wrap">
@@ -279,9 +290,13 @@
 
   <div class="topbar">
     <div class="brand-mark">
-<img src="logo.png" alt="Logo">    </div>
+<img class="logo-light" src="logo.png" alt="MilEX">    </div>
     <h1 data-i18n="title">بوابة ولي الأمر</h1>
     <p data-i18n="subtitle">اطّلع على تقرير الحضور والدرجات والمدفوعات لابنك</p>
+  </div>
+
+  <div id="milexDownloadRow" style="text-align:center;margin:-8px 0 18px;">
+    <button type="button" id="milexDlBtn" onclick="MILEX_DL.start('parent', this)" style="background:none;border:1px solid var(--line,#1A3563);color:var(--muted,#8EA1BF);border-radius:10px;padding:8px 16px;font:600 13px Cairo,sans-serif;cursor:pointer;">⬇ <span data-i18n="downloadPage">تحميل الصفحة</span></button>
   </div>
 
   <div class="search-card" id="searchCard">
@@ -388,6 +403,7 @@
 
     <div class="exam-card">
       <div class="section-title" data-i18n="examTableTitle">درجات الامتحانات بالتفصيل</div>
+      <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
       <table>
         <thead>
           <tr>
@@ -399,6 +415,7 @@
         </thead>
         <tbody id="examTableBody"></tbody>
       </table>
+      </div>
     </div>
   </div>
 
@@ -471,6 +488,7 @@
     ar: {
       title: "بوابة ولي الأمر", subtitle: "اطّلع على تقرير الحضور والدرجات والمدفوعات لابنك",
       backToHome: "رجوع",
+      downloadPage: "تحميل الصفحة",
       searchLabel: "رقم هاتف الطالب / رقم هاتف ولي الأمر / كود QR",
       searchPlaceholder: "اكتب الرقم أو كود QR هنا…",
       scanBtn: "مسح QR", searchBtn: "بحث",
@@ -499,6 +517,7 @@
     en: {
       title: "Parent Portal", subtitle: "View your child's attendance, grades, and payment report",
       backToHome: "Back",
+      downloadPage: "Download page",
       searchLabel: "Student phone / Parent phone / QR code",
       searchPlaceholder: "Type the number or QR code here…",
       scanBtn: "Scan QR", searchBtn: "Search",
@@ -574,10 +593,10 @@
   }
   function fmtEGP(n){ return `EGP ${Number(n || 0).toLocaleString('en-US')}`; }
   function getScoreColor(score){
-    if(score >= 90) return "rgba(29,65,69,1)";
-    if(score >= 75) return "rgba(40,86,90,1)";
-    if(score >= 60) return "rgba(184,155,122,1)";
-    return "rgba(150,115,84,1)";
+    if(score >= 90) return "rgba(7,42,94,1)";
+    if(score >= 75) return "rgba(11,77,166,1)";
+    if(score >= 60) return "rgba(143,178,232,1)";
+    return "rgba(74,128,214,1)";
   }
 
   function setState(state){ // 'idle' | 'loading' | 'error' | 'empty' | 'picker' | 'report'
@@ -829,7 +848,7 @@
       type: "doughnut",
       data: {
         labels: [t('present'), t('absent')],
-        datasets: [{ data: [s.attendanceCount, s.absenceCount], backgroundColor: ["rgba(40,86,90,0.75)", "rgba(150,115,84,0.70)"], borderWidth: 0 }]
+        datasets: [{ data: [s.attendanceCount, s.absenceCount], backgroundColor: ["rgba(11,77,166,0.75)", "rgba(74,128,214,0.70)"], borderWidth: 0 }]
       },
       options: {
         maintainAspectRatio: false, cutout: "68%",
@@ -854,15 +873,15 @@
         datasets: [{
           label: t('colScore'),
           data: points.map(p => Math.round((p.score / p.maxScore) * 100)),
-          borderColor: "rgba(29,65,69,0.85)", backgroundColor: "rgba(29,65,69,0.10)",
-          fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: "rgba(29,65,69,1)"
+          borderColor: "rgba(7,42,94,0.85)", backgroundColor: "rgba(7,42,94,0.10)",
+          fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: "rgba(7,42,94,1)"
         }]
       },
       options: {
         maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw}%` } } },
         scales: {
-          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(29,65,69,0.05)" } },
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(7,42,94,0.05)" } },
           x: { ticks: { font: { size: 10, family: currentLang === 'ar' ? "Cairo" : "Inter" } }, grid: { display: false } }
         }
       }
@@ -928,8 +947,15 @@
   setState("idle");
 </script>
 
-  <footer style="text-align:center; padding:18px 10px 22px; font-size:13px; color:#9a9a9a; opacity:0.85;">
+  <footer style="text-align:center; padding:18px 10px 22px; font-size:13px; color:#8698B3; opacity:0.85;">
     Powered by <a href="milex.html" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:underline; font-weight:600;">MilEX</a>
   </footer>
+
+<!-- MilEX EDU PWA: installable on Android/iOS when served over HTTPS -->
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
 </body>
 </html>

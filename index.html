@@ -15,34 +15,36 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="prefetch" href="dashboard.html">
 <link rel="prefetch" href="parent_portal.html">
 <link rel="prefetch" href="scanner.html">
 <link rel="prefetch" href="student_serch.html">
 <link rel="prefetch" href="manage_exams.html">
+<link rel="prefetch" href="exam_builder.html">
+<link rel="prefetch" href="manage_groups.html">
 <link rel="prefetch" href="student_registration.html">
 <link rel="prefetch" href="student_delete.html">
+<link rel="prefetch" href="audit_log.html">
 <style>
   /*
-    Design: continues "The Register" — the same ledger, ink and brass-stamp
-    system used across the app. Each role reads as an index tab in the
-    register; choosing one presses an ink-stamp mark before the door opens.
+    Design: MilEX. The role cards sit under the brand mark; choosing one launches
+    a short orbit-ring pulse before the door opens. Palette is drawn from the
+    MilEX mark: deep navy blue, lime green accent, and a clean navy-black ink.
   */
   :root{
-    --logo-mask: url("logo.png");  
-    --bg-main:#F7F4EE;
-    --bg-secondary:#EDE5D8;
-    --bg-dark-beige:#D8CBB8;
+    --bg-main:#F5F8FC;
+    --bg-secondary:#E3ECF8;
+    --bg-dark-beige:#D5E1F3;
     --card-bg:#FFFFFF;
-    --text-main:#302F2C;
-    --text-secondary:#77736B;
-    --petrol:#28565A;
-    --petrol-dark:#1D4145;
-    --wood:#967354;
-    --wood-light:#B89B7A;
-    --border:#DDD5C8;
+    --text-main:#101B33;
+    --text-secondary:#5C6A80;
+    --petrol:#0B4DA6;
+    --petrol-dark:#072A5E;
+    --wood:#A8D400;
+    --wood-light:#C4E34D;
+    --border:#DCE3ED;
 
     --ink:var(--text-main);
     --ink-2:var(--petrol-dark);
@@ -52,33 +54,33 @@
     --line:var(--border);
     --gold:var(--petrol);
     --gold-2:var(--petrol-dark);
-    --gold-soft:rgba(40,86,90,0.07);
-    --gold-soft-2:rgba(40,86,90,0.10);
-    --success:#5B8C6E;
-    --success-soft:rgba(91,140,110,0.14);
-    --error:#B5555A;
-    --error-soft:rgba(181,85,90,0.14);
+    --gold-soft:rgba(11,77,166,0.08);
+    --gold-soft-2:rgba(11,77,166,0.16);
+    --success:#1FA971;
+    --success-soft:rgba(31,169,113,0.14);
+    --error:#E14B4B;
+    --error-soft:rgba(225,75,75,0.13);
     --on-accent:#ffffff;
-    --shadow-sm:0 2px 8px rgba(48,47,44,0.06);
-    --shadow-md:0 10px 28px rgba(48,47,44,0.08);
-    --shadow-lg:0 24px 60px rgba(48,47,44,0.12);
+    --shadow-sm:0 2px 8px rgba(16,27,51,0.07);
+    --shadow-md:0 10px 28px rgba(16,27,51,0.09);
+    --shadow-lg:0 24px 60px rgba(16,27,51,0.14);
   }
   [data-theme="dark"]{
-    --ink:#EDE5D8;
-    --ink-2:#B89B7A;
-    --muted:#A39C8E;
-    --paper:#23211E;
-    --card:#2C2A26;
-    --line:#3D3931;
-    --gold:#3F8A8F;
-    --gold-2:#B89B7A;
-    --gold-soft:rgba(63,138,143,0.16);
-    --gold-soft-2:rgba(63,138,143,0.22);
-    --success:#6FA98A;
-    --success-soft:rgba(111,169,138,0.16);
-    --error:#C77378;
-    --error-soft:rgba(199,115,120,0.16);
-    --on-accent:#23211E;
+    --ink:#E6EEFB;
+    --ink-2:#9DBBEA;
+    --muted:#8EA1BF;
+    --paper:#08162F;
+    --card:#0D2146;
+    --line:#1A3563;
+    --gold:#5B93E6;
+    --gold-2:#9DBBEA;
+    --gold-soft:rgba(74,134,222,0.16);
+    --gold-soft-2:rgba(74,134,222,0.26);
+    --success:#3FC98A;
+    --success-soft:rgba(63,201,138,0.16);
+    --error:#FF7A7A;
+    --error-soft:rgba(255,122,122,0.16);
+    --on-accent:#071021;
     --shadow-sm:0 2px 8px rgba(0,0,0,0.30);
     --shadow-md:0 10px 28px rgba(0,0,0,0.40);
     --shadow-lg:0 24px 60px rgba(0,0,0,0.5);
@@ -92,9 +94,9 @@
     background-image:
       radial-gradient(circle at 12% 8%, var(--gold-soft-2), transparent 42%),
       radial-gradient(circle at 88% 92%, var(--gold-soft-2), transparent 42%),
-      radial-gradient(circle at 1px 1px, rgba(40,86,90,0.05) 1px, transparent 0),
+      repeating-radial-gradient(circle at 50% 0%, rgba(11,77,166,0.05) 0px, rgba(11,77,166,0.05) 1px, transparent 1px, transparent 90px),
       linear-gradient(165deg, var(--paper) 0%, var(--card) 100%);
-    background-size:auto, auto, 22px 22px, auto;
+    background-size:auto, auto, auto, auto;
     background-attachment:fixed, fixed, fixed, fixed;
     display:flex; flex-direction:column; align-items:center;
     padding:28px 18px 40px;
@@ -119,37 +121,39 @@
 
   .hero{ text-align:center; margin-top:18px; margin-bottom:34px; }
  .brand-mark{
-    width:200px;
-    height:152px;
-    margin:0 auto 16px;
+    width:min(340px,80vw);
+    aspect-ratio:760 / 272;
+    margin:0 auto 18px;
     background-image:url("logo.png");
     background-repeat:no-repeat;
     background-position:center;
     background-size:contain;
-    filter:drop-shadow(var(--shadow-sm));
+    filter:drop-shadow(0 8px 18px rgba(11,77,166,0.18));
 }
+  [data-theme="dark"] .brand-mark{ background-image:url("logo-dark.png"); filter:drop-shadow(0 8px 22px rgba(0,0,0,0.45)); }
   .eyebrow{
     font-size:11px; letter-spacing:0.16em; text-transform:uppercase;
     color:var(--gold); font-weight:700; margin-bottom:10px;
   }
   [dir="rtl"] .eyebrow{ letter-spacing:0.02em; }
   h1{
-    font-family:'Cormorant Garamond',serif; font-weight:700;
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
     font-size:clamp(30px,5vw,42px); margin:0 0 10px; color:var(--ink-2);
     letter-spacing:-0.01em;
   }
-  [dir="rtl"] h1{ font-family:'Cairo',serif; letter-spacing:0; }
+  [dir="rtl"] h1{ font-family:'Cairo',sans-serif; font-weight:800; letter-spacing:0; }
+  .hero h1::after{ content:""; display:block; width:64px; height:4px; border-radius:4px; margin:14px auto 0; background:linear-gradient(90deg,#0B4DA6,#A8D400); }
   .subtitle{ color:var(--muted); font-size:15px; max-width:420px; margin:0 auto; line-height:1.6; }
 
   .roles{
-    width:100%; max-width:920px; display:grid;
-    grid-template-columns:repeat(3,1fr); gap:18px;
+    width:100%; max-width:960px; display:grid;
+    grid-template-columns:repeat(3,1fr); gap:22px;
   }
 .hub-grid{
-  width:100%; max-width:920px; margin:0 auto; display:flex; flex-wrap:wrap;
-  justify-content:center; gap:18px;
+  width:100%; max-width:960px; margin:0 auto; display:flex; flex-wrap:wrap;
+  justify-content:center; gap:22px;
 }
-.hub-grid .role-card{ flex:0 1 190px; width:190px; max-width:210px; }
+.hub-grid .role-card{ flex:0 1 200px; width:200px; max-width:220px; }
   @media (max-width:760px){
     .roles{ grid-template-columns:1fr; max-width:420px; }
     .hub-grid{ max-width:520px; }
@@ -158,44 +162,64 @@
 
   .role-card{
     position:relative; background:var(--card); border:1px solid var(--line);
-    border-radius:16px; padding:28px 22px 24px; text-align:center;
+    border-radius:22px; padding:34px 24px 28px; text-align:center;
     cursor:pointer; box-shadow:var(--shadow-sm); text-decoration:none; color:inherit;
-    display:block;
-    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    display:block; overflow:hidden; isolation:isolate;
+    transition:transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease;
   }
+  /* Top accent bar */
+  .role-card::after{
+    content:""; position:absolute; top:0; left:0; right:0; height:4px;
+    background:linear-gradient(90deg, var(--gold) 0%, var(--wood) 100%);
+    transform:scaleX(0); transform-origin:center; opacity:.9;
+    transition:transform .3s ease;
+  }
+  .role-card:hover::after{ transform:scaleX(1); }
   .role-card::before{
-    content:""; position:absolute; top:-9px; left:50%; transform:translateX(-50%);
-    width:16px; height:16px; border-radius:50%; background:var(--paper);
-    border:1px solid var(--line);
+    content:""; position:absolute; inset:0; border-radius:inherit; z-index:-1;
+    background:radial-gradient(120% 120% at 50% -10%, var(--gold-soft) 0%, transparent 60%);
+    opacity:0; transition:opacity .3s ease; pointer-events:none;
   }
-  .role-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-lg); border-color:var(--gold-soft-2); }
-  .role-card:active{ transform:translateY(-1px) scale(0.98); }
-  .role-card.stamped{ animation:stamp .38s ease; }
+  .role-card:hover{ transform:translateY(-6px); box-shadow:var(--shadow-lg); border-color:var(--gold-soft-2); }
+  .role-card:hover::before{ opacity:1; }
+  .role-card:active{ transform:translateY(-2px) scale(0.98); }
+  .role-card.stamped{ animation:stamp .45s ease; }
   @keyframes stamp{
-    0%{ transform:scale(1); }
-    35%{ transform:scale(0.93) rotate(-1.5deg); }
-    60%{ transform:scale(1.03) rotate(1deg); }
-    100%{ transform:scale(1); }
+    0%{ transform:scale(1); box-shadow:var(--shadow-sm); }
+    40%{ transform:scale(0.96); }
+    70%{ transform:scale(1.03); box-shadow:0 0 0 9px var(--gold-soft), var(--shadow-md); }
+    100%{ transform:scale(1); box-shadow:var(--shadow-sm); }
   }
   .role-icon{
-    width:52px; height:52px; border-radius:50%; margin:0 auto 16px;
+    position:relative;
+    width:62px; height:62px; border-radius:18px; margin:0 auto 18px;
     display:flex; align-items:center; justify-content:center;
-    background:var(--gold-soft); color:var(--gold-2);
+    background:linear-gradient(135deg, var(--gold) 0%, var(--gold-2) 100%);
+    color:var(--on-accent);
+    box-shadow:0 8px 18px rgba(11,77,166,0.28);
   }
-  .role-icon svg{ width:24px; height:24px; }
+  .role-icon::after{
+    content:""; position:absolute; inset:-8px; border-radius:24px;
+    border:1.5px dashed var(--gold-soft-2); opacity:0;
+  }
+  .role-card:hover .role-icon::after{ opacity:1; animation:orbitSpin 3.2s linear infinite; }
+  @keyframes orbitSpin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+  .role-icon svg{ width:27px; height:27px; }
   .role-card h2{
-    font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:700;
-    margin:0 0 6px; color:var(--ink);
+    font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:700;
+    margin:0 0 8px; color:var(--ink);
   }
-  [dir="rtl"] .role-card h2{ font-family:'Cairo',serif; }
-  .role-card p{ font-size:12.5px; color:var(--muted); margin:0; line-height:1.55; }
+  [dir="rtl"] .role-card h2{ font-family:'Cairo',sans-serif; font-weight:700; }
+  .role-card p{ font-size:13px; color:var(--muted); margin:0; line-height:1.6; }
 
-  .hub-grid .role-card{ padding:24px 16px 20px; }
-  .hub-grid .role-icon{ width:44px; height:44px; }
-  .hub-grid .role-icon svg{ width:20px; height:20px; }
+  .hub-grid .role-card{ padding:26px 18px 22px; }
+  .hub-grid .role-icon{ width:50px; height:50px; border-radius:15px; }
+  .hub-grid .role-icon svg{ width:22px; height:22px; }
   .hub-grid .role-card h2{ font-size:18px; }
 
-  .role-card.danger .role-icon{ background:var(--error-soft); color:var(--error); }
+  .role-card.danger .role-icon{ background:linear-gradient(135deg, var(--error) 0%, #FF9B9B 100%); color:var(--on-accent); box-shadow:0 8px 18px rgba(225,75,75,0.28); }
+  .role-card.danger .role-icon::after{ border-color:var(--error-soft); }
+  .role-card.danger::after{ background:linear-gradient(90deg, var(--error) 0%, #FF9B9B 100%); }
   .role-card.danger:hover{ border-color:var(--error); }
 
   .hub-actions{ display:flex; gap:14px; margin-top:26px; align-items:center; flex-wrap:wrap; justify-content:center; }
@@ -229,7 +253,7 @@
 
   /* Overlays (password / change-password) */
   .overlay{
-    position:fixed; inset:0; background:rgba(48,47,44,0.45);
+    position:fixed; inset:0; background:rgba(10,18,32,0.5);
     display:none; align-items:center; justify-content:center; padding:20px;
     z-index:50; backdrop-filter:blur(2px);
   }
@@ -241,9 +265,9 @@
   }
   .auth-card .role-icon{ margin-bottom:14px; }
   .auth-card h3{
-    font-family:'Cormorant Garamond',serif; font-size:22px; margin:0 0 6px; color:var(--ink);
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; margin:0 0 6px; color:var(--ink);
   }
-  [dir="rtl"] .auth-card h3{ font-family:'Cairo',serif; }
+  [dir="rtl"] .auth-card h3{ font-family:'Cairo',sans-serif; font-weight:700; }
   .auth-card .hint{ font-size:12.5px; color:var(--muted); margin-bottom:18px; }
   .field{ text-align:start; margin-bottom:14px; }
   .field label{ display:block; font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:6px; }
@@ -266,7 +290,7 @@
   }
   .btn-primary{
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
-    color:var(--on-accent); box-shadow:0 6px 16px rgba(29,65,69,0.22);
+    color:var(--on-accent); box-shadow:0 6px 16px rgba(7,42,94,0.24);
   }
   .btn-primary:hover{ filter:brightness(1.05); }
   .btn-primary:disabled{ opacity:0.7; cursor:default; }
@@ -283,14 +307,12 @@
     animation-delay:.55s;
   }
   .page-intro-mark{
-    width:120px; height:92px;
-    background:var(--gold);
-    -webkit-mask-image:var(--logo-mask); mask-image:var(--logo-mask);
-    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
-    -webkit-mask-position:center; mask-position:center;
-    -webkit-mask-size:contain; mask-size:contain;
+    width:min(240px,64vw);
+    aspect-ratio:760 / 272;
+    background:url("logo.png") center / contain no-repeat;
     animation:introPulse 1s ease-in-out infinite;
   }
+  [data-theme="dark"] .page-intro-mark{ background-image:url("logo-dark.png"); }
   @keyframes introPulse{
     0%,100%{ transform:scale(1); opacity:.82; }
     50%{ transform:scale(1.1); opacity:1; }
@@ -349,9 +371,9 @@
   .hub-grid .role-card:nth-child(5){ animation-delay:.58s; }
 
   .role-icon{ transition:transform .35s cubic-bezier(.34,1.56,.64,1), background .25s ease, color .25s ease; }
-  .role-card:hover .role-icon{ transform:scale(1.14) rotate(-6deg); }
+  .role-card:hover .role-icon{ transform:scale(1.1) rotate(-6deg); }
   .role-card:active .role-icon{ transform:scale(0.95) rotate(0deg); }
-  .role-card.danger:hover .role-icon{ transform:scale(1.14) rotate(6deg); }
+  .role-card.danger:hover .role-icon{ transform:scale(1.1) rotate(6deg); }
   .role-card h2, .role-card p{ transition:color .2s ease; }
 
   /* --- Buttons: micro-interactions --- */
@@ -361,7 +383,7 @@
   .link-btn:active{ transform:scale(.96); }
   .btn{ transition:transform .16s ease, filter .2s ease, box-shadow .2s ease; }
   .btn:active{ transform:scale(.97); }
-  .btn-primary:not(:disabled):hover{ box-shadow:0 8px 20px rgba(29,65,69,0.28); transform:translateY(-1px); }
+  .btn-primary:not(:disabled):hover{ box-shadow:0 8px 20px rgba(7,42,94,0.3); transform:translateY(-1px); }
   .btn-ghost:hover{ border-color:var(--gold); color:var(--gold); }
 
   /* --- Overlays: smooth scale + fade instead of instant toggle --- */
@@ -387,6 +409,13 @@
     *, *::before, *::after{ animation-duration:.001ms !important; animation-delay:0s !important; transition-duration:.001ms !important; }
   }
 </style>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0B4DA6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MilEX EDU">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 </head>
 <body>
 
@@ -487,6 +516,17 @@
         <p data-i18n="hubSearchDesc">دوّر على أي طالب</p>
       </a>
 
+      <a class="role-card" href="student_edit.html">
+        <div class="role-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 20h4L19 9l-4-4L4 16v4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M13.5 6.5l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2 data-i18n="hubEdit">تعديل طالب</h2>
+        <p data-i18n="hubEditDesc">عدّل بيانات أو مجموعة أي طالب</p>
+      </a>
+
       <a class="role-card" href="manage_exams.html">
         <div class="role-icon">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -496,6 +536,28 @@
         </div>
         <h2 data-i18n="hubExams">إدارة الامتحانات</h2>
         <p data-i18n="hubExamsDesc">أضف امتحانات ودرجات</p>
+      </a>
+
+      <a class="role-card" href="exam_builder.html">
+        <div class="role-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M8 8.5l1.6 1.6L12.5 7M8 15l1.6 1.6L12.5 13.5M14.5 9h2.5M14.5 15.5H17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 data-i18n="hubOnlineExams">الامتحانات الأونلاين</h2>
+        <p data-i18n="hubOnlineExamsDesc">اعمل امتحان وابعت اللينك للطلبة</p>
+      </a>
+
+      <a class="role-card" href="manage_groups.html">
+        <div class="role-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3.5" y="5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M3.5 10h17M8 3v4M16 3v4M8 14h3M13 14h3M8 17h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2 data-i18n="hubGroups">المجاميع والمواعيد</h2>
+        <p data-i18n="hubGroupsDesc">عدّل أيام وأوقات المجاميع</p>
       </a>
 
       <a class="role-card" href="student_registration.html">
@@ -523,6 +585,17 @@
         <p data-i18n="hubScannerDesc">سجّل حضور طالب</p>
       </a>
 
+      <a class="role-card" href="audit_log.html">
+        <div class="role-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2 data-i18n="hubAudit">سجل العمليات</h2>
+        <p data-i18n="hubAuditDesc">مين عدّل أو حذف إيه ومتى</p>
+      </a>
+
       <a class="role-card danger" href="student_delete.html">
         <div class="role-icon">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -537,6 +610,7 @@
 
     <div class="hub-actions">
       <button class="link-btn" onclick="openChangePasswordOverlay()" data-i18n="changePasswordLink">تغيير كلمة المرور</button>
+      <button class="link-btn" data-install onclick="MILEX_INSTALL.start('teacher')" data-i18n="installLink">⬇ تثبيت البرنامج</button>
       <button class="link-btn" onclick="logoutTeacher()" data-i18n="logoutLink">تسجيل خروج</button>
     </div>
 
@@ -575,6 +649,18 @@
         <p data-i18n="hubScannerDesc">سجّل حضور طالب</p>
       </a>
 
+      <a class="role-card" href="student_registration.html">
+        <div class="role-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="8" r="3.3" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M4 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M18 8v5M15.5 10.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2 data-i18n="hubRegister">تسجيل طالب</h2>
+        <p data-i18n="hubRegisterDesc">ضيف طالب جديد</p>
+      </a>
+
       <a class="role-card" href="manage_exams.html">
         <div class="role-icon">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -596,9 +682,21 @@
         <h2 data-i18n="hubSearch">بحث الطلاب</h2>
         <p data-i18n="hubSearchDesc">دوّر على أي طالب</p>
       </a>
+
+      <a class="role-card" href="student_edit.html">
+        <div class="role-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 20h4L19 9l-4-4L4 16v4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M13.5 6.5l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2 data-i18n="hubEdit">تعديل طالب</h2>
+        <p data-i18n="hubEditDesc">عدّل بيانات أو مجموعة أي طالب</p>
+      </a>
     </div>
 
     <div class="hub-actions">
+      <button class="link-btn" data-install onclick="MILEX_INSTALL.start('assistant')" data-i18n="installLink">⬇ تثبيت البرنامج</button>
       <button class="link-btn" onclick="logoutAssistant()" data-i18n="logoutLink">تسجيل خروج</button>
     </div>
 
@@ -640,11 +738,7 @@
         </svg>
       </div>
       <h3 data-i18n="assistantAuthTitle">دخول المساعد</h3>
-      <div class="hint" data-i18n="assistantAuthHint">أدخل الإيميل وكلمة المرور للمتابعة</div>
-      <div class="field">
-        <label for="assistantEmail" data-i18n="emailLabel">الإيميل</label>
-        <input type="email" id="assistantEmail" autocomplete="username">
-      </div>
+      <div class="hint" data-i18n="assistantAuthHint">أدخل كلمة المرور للمتابعة</div>
       <div class="field">
         <label for="assistantPassword" data-i18n="passwordLabel">كلمة المرور</label>
         <input type="password" id="assistantPassword" autocomplete="current-password" onkeydown="if(event.key==='Enter') submitAssistantLogin()">
@@ -683,19 +777,129 @@
     </div>
   </div>
 
+<script src="milex-common.js"></script>
+<script src="milex-install.js"></script>
 <script>
-  // First-time default teacher password (used only if none has been set yet on this browser).
-  const DEFAULT_TEACHER_PASSWORD = "2026";
+  // ============================================================
+  // MilEX Security Layer
+  // - Passwords are never stored or compared in plaintext: only
+  //   their SHA-256 hash is kept in localStorage / compared.
+  // - "Logged in" state is a session token with an expiry (4h),
+  //   stored in sessionStorage (cleared when the browser tab closes),
+  //   not a permanent flag that never expires.
+  // - Repeated wrong password attempts trigger a temporary lockout
+  //   to slow down brute-force guessing.
+  // NOTE: This hardens the UI gate on this browser. It does NOT
+  // replace real access control: the Supabase table data itself must
+  // be protected with Row Level Security (RLS) policies on the
+  // Supabase project, since the anon key is public by design.
+  // ============================================================
+  const MILEX_SESSION_KEY = 'milexTeacherSession';
+  const MILEX_SESSION_DURATION_MS = 4 * 60 * 60 * 1000; // 4 hours
+  const MILEX_LOCK_KEY = 'milexTeacherLoginAttempts';
+  const MILEX_MAX_ATTEMPTS = 5;
 
-  function getTeacherPassword(){
-    return localStorage.getItem('mgTeacherPassword') || DEFAULT_TEACHER_PASSWORD;
+  async function milexSha256(text){
+    const enc = new TextEncoder().encode(text);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
   }
+
+  function milexStartSession(){
+    try{ const value = JSON.stringify({ exp: Date.now() + MILEX_SESSION_DURATION_MS }); sessionStorage.setItem(MILEX_SESSION_KEY, value); localStorage.setItem(MILEX_SESSION_KEY, value); }catch(e){}
+  }
+  function milexClearSession(){
+    try{ sessionStorage.removeItem(MILEX_SESSION_KEY); localStorage.removeItem(MILEX_SESSION_KEY); }catch(e){}
+  }
+  function milexIsSessionValid(){
+    try{
+      const raw = sessionStorage.getItem(MILEX_SESSION_KEY) || localStorage.getItem(MILEX_SESSION_KEY);
+      if(!raw) return false;
+      const data = JSON.parse(raw);
+      const valid = !!(data && data.exp && Date.now() < data.exp);
+      if(!valid){ sessionStorage.removeItem(MILEX_SESSION_KEY); localStorage.removeItem(MILEX_SESSION_KEY); }
+      return valid;
+    }catch(e){ return false; }
+  }
+
+  const MILEX_ASSISTANT_LOCK_KEY = 'milexAssistantLoginAttempts';
+  function milexGetAttempts(key){
+    try{ return JSON.parse(localStorage.getItem(key || MILEX_LOCK_KEY)) || { count: 0, until: 0 }; }
+    catch(e){ return { count: 0, until: 0 }; }
+  }
+  function milexRegisterFailedAttempt(key){
+    const a = milexGetAttempts(key);
+    a.count = (a.count || 0) + 1;
+    if(a.count >= MILEX_MAX_ATTEMPTS){
+      // Progressive lockout: 1 min, growing with repeated failures, capped at 10 min.
+      const minutes = Math.min(a.count - MILEX_MAX_ATTEMPTS + 1, 10);
+      a.until = Date.now() + minutes * 60 * 1000;
+    }
+    localStorage.setItem(key || MILEX_LOCK_KEY, JSON.stringify(a));
+  }
+  function milexRegisterSuccess(key){
+    localStorage.removeItem(key || MILEX_LOCK_KEY);
+  }
+  function milexLockRemainingMs(key){
+    const a = milexGetAttempts(key);
+    return a.until && Date.now() < a.until ? (a.until - Date.now()) : 0;
+  }
+
+  // ---- Assistant: same local password check as the teacher (no Supabase login) ----
+  // Session is kept on this device for 30 days (the scanner must keep working offline at the centre).
+  const MILEX_ASSISTANT_SESSION_KEY = 'milexAssistantSession';
+  const MILEX_ASSISTANT_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
+  function milexStartAssistantSession(){
+    try{ localStorage.setItem(MILEX_ASSISTANT_SESSION_KEY, JSON.stringify({ exp: Date.now() + MILEX_ASSISTANT_SESSION_MS })); }catch(e){}
+  }
+  function milexClearAssistantSession(){
+    try{ localStorage.removeItem(MILEX_ASSISTANT_SESSION_KEY); }catch(e){}
+  }
+  function milexIsAssistantSessionValid(){
+    try{
+      const raw = localStorage.getItem(MILEX_ASSISTANT_SESSION_KEY);
+      if(!raw) return false;
+      const d = JSON.parse(raw);
+      const ok = !!(d && d.exp && Date.now() < d.exp);
+      if(!ok) milexClearAssistantSession();
+      return ok;
+    }catch(e){ return false; }
+  }
+  // Default assistant password = 2026 (SHA-256 below). A different hash can be stored under mgAssistantPasswordHash.
+  const DEFAULT_ASSISTANT_PASSWORD_HASH = "158a323a7ba44870f23d96f1516dd70aa48e9a72db4ebb026b0a89e212a208ab";
+  function getAssistantPasswordHash(){
+    return localStorage.getItem('mgAssistantPasswordHash') || DEFAULT_ASSISTANT_PASSWORD_HASH;
+  }
+
+  const DEFAULT_TEACHER_PASSWORD_HASH = "158a323a7ba44870f23d96f1516dd70aa48e9a72db4ebb026b0a89e212a208ab";
+
+  function getTeacherPasswordHash(){
+    return localStorage.getItem('mgTeacherPasswordHash') || DEFAULT_TEACHER_PASSWORD_HASH;
+  }
+
+  // One-time migration: if an older version of this site left a plaintext
+  // password saved in localStorage, convert it to a hash and delete the
+  // plaintext copy so it never sits on disk unencrypted.
+  (async function milexMigrateLegacyPlaintextPassword(){
+    const legacy = localStorage.getItem('mgTeacherPassword');
+    if(legacy){
+      const hash = await milexSha256(legacy);
+      localStorage.setItem('mgTeacherPasswordHash', hash);
+      localStorage.removeItem('mgTeacherPassword');
+    }
+  })();
 
   // ---- Supabase client (used for real email/password login for the Assistant role) ----
   const SUPABASE_URL = "https://evbjulsahncllewwvlxp.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2Ymp1bHNhaG5jbGxld3d2bHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NzE5MjUsImV4cCI6MjA5OTI0NzkyNX0.Xg9sU6ZenUU3kC2RNIbvZmK19KvE28MM2oyGcKNn8UA";
   const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // The assistant logs in with a PASSWORD ONLY. Behind the scenes it is one
+  // Supabase Auth user with this fixed email. Create that user in
+  // Supabase > Authentication > Users (Auto Confirm ON) and set the password
+  // the assistant will type. To use an existing assistant account instead,
+  // just put its email here.
+  
   const translations = {
     ar:{
       pageTitle:"بوابة الدخول | MilEX",
@@ -707,11 +911,15 @@
       footer:"MilEX",
       teacherAuthTitle:"دخول المدرس", teacherAuthHint:"من فضلك أدخل كلمة المرور للمتابعة",
       passwordLabel:"كلمة المرور", wrongPassword:"كلمة المرور غير صحيحة",
+      tooManyAttempts:"محاولات كتير غلط. حاول تاني بعد", minutesShort:"دقيقة",
       cancel:"إلغاء", enter:"دخول",
       hubEyebrow:"المدرس", hubTitle:"إيه اللي عايز تعمله؟", hubSubtitle:"اختر الأداة اللي محتاجها دلوقتي",
       hubDash:"لوحة التحكم", hubDashDesc:"نظرة حية على المركز",
       hubSearch:"بحث الطلاب", hubSearchDesc:"دوّر على أي طالب",
+      hubEdit:"تعديل طالب", hubEditDesc:"عدّل بيانات أو مجموعة أي طالب",
       hubExams:"إدارة الامتحانات", hubExamsDesc:"أضف امتحانات ودرجات",
+      hubOnlineExams:"الامتحانات الأونلاين", hubOnlineExamsDesc:"اعمل امتحان وابعت اللينك للطلبة",
+      hubGroups:"المجاميع والمواعيد", hubGroupsDesc:"عدّل أيام وأوقات المجاميع",
       hubRegister:"تسجيل طالب", hubRegisterDesc:"ضيف طالب جديد",
       hubScanner:"ماسح الحضور", hubScannerDesc:"سجّل حضور طالب",
       hubDelete:"حذف طالب", hubDeleteDesc:"إزالة بيانات طالب نهائيًا",
@@ -725,10 +933,11 @@
       errMismatch:"كلمة المرور الجديدة وتأكيدها مش متطابقين",
       errTooShort:"لازم تكون كلمة المرور 4 حروف/أرقام على الأقل",
       assistantAuthTitle:"دخول المساعد",
-      assistantAuthHint:"أدخل الإيميل وكلمة المرور للمتابعة",
+      assistantAuthHint:"أدخل كلمة المرور للمتابعة",
       emailLabel:"الإيميل",
-      wrongCredentials:"الإيميل أو كلمة المرور غير صحيحة",
-      signingIn:"جاري الدخول..."
+      wrongCredentials:"كلمة المرور غير صحيحة",
+      signingIn:"جاري الدخول...",
+      hubAudit:"سجل العمليات", hubAuditDesc:"مين عدّل أو حذف إيه ومتى", installLink:"⬇ تثبيت البرنامج"
     },
     en:{
       pageTitle:"Sign In | MilEX",
@@ -740,11 +949,15 @@
       footer:"MilEX",
       teacherAuthTitle:"Teacher sign in", teacherAuthHint:"Enter your password to continue",
       passwordLabel:"Password", wrongPassword:"Incorrect password",
+      tooManyAttempts:"Too many attempts. Try again in", minutesShort:"min",
       cancel:"Cancel", enter:"Enter",
       hubEyebrow:"Teacher", hubTitle:"What do you need?", hubSubtitle:"Pick the tool you need right now",
       hubDash:"Dashboard", hubDashDesc:"Live view of the center",
       hubSearch:"Student Search", hubSearchDesc:"Look up any student",
+      hubEdit:"Edit Student", hubEditDesc:"Change any student's details or group",
       hubExams:"Manage Exams", hubExamsDesc:"Add exams and grades",
+      hubOnlineExams:"Online Exams", hubOnlineExamsDesc:"Build an exam and share the link",
+      hubGroups:"Groups & Times", hubGroupsDesc:"Edit group days and times",
       hubRegister:"Register Student", hubRegisterDesc:"Add a new student",
       hubScanner:"Attendance Scanner", hubScannerDesc:"Check a student in",
       hubDelete:"Delete Student", hubDeleteDesc:"Permanently remove a student's data",
@@ -758,10 +971,11 @@
       errMismatch:"New password and confirmation don't match",
       errTooShort:"Password must be at least 4 characters",
       assistantAuthTitle:"Assistant sign in",
-      assistantAuthHint:"Enter your email and password to continue",
+      assistantAuthHint:"Enter your password to continue",
       emailLabel:"Email",
-      wrongCredentials:"Incorrect email or password",
-      signingIn:"Signing in..."
+      wrongCredentials:"Incorrect password",
+      signingIn:"Signing in...",
+      hubAudit:"Audit log", hubAuditDesc:"Who edited or deleted what, and when", installLink:"⬇ Install app"
     }
   };
 
@@ -801,15 +1015,8 @@
     }
 
     if(role === 'assistant'){
-      // Remembered on this device: skip the login form if we already have a
-      // saved flag AND a still-valid Supabase session (auto-refreshed by supabase-js).
-      let hasSession = false;
-      try{
-        const { data } = await supa.auth.getSession();
-        hasSession = !!(data && data.session);
-      }catch(e){}
-
-      if(localStorage.getItem('mgAssistantOk') === '1' && hasSession){
+      // Remembered on this device: skip the login form while the local session is valid.
+      if(milexIsAssistantSessionValid()){
         setTimeout(showAssistantHub, 180);
       } else {
         setTimeout(openAssistantOverlay, 180);
@@ -818,20 +1025,28 @@
     }
 
     if(role === 'teacher'){
-      if(localStorage.getItem('mgTeacherOk') === '1'){
+      if(milexIsSessionValid()){
         setTimeout(showHub, 180);
         return;
       }
+      milexClearSession();
       setTimeout(openTeacherOverlay, 180);
     }
   }
 
+  // Remember who is using the app now, so audit entries name the right person.
+  function milexSetActiveRole(role){
+    try{ sessionStorage.setItem('milexActiveRole', role); localStorage.setItem('milexActiveRole', role); }catch(e){}
+  }
   function showHub(){
+    milexSetActiveRole('teacher');
     document.getElementById('roleScreen').style.display = 'none';
     document.getElementById('assistantHubScreen').style.display = 'none';
     document.getElementById('hubScreen').style.display = 'block';
   }
   function showAssistantHub(){
+    milexSetActiveRole('assistant');
+    milexClearSession();   // a leftover teacher session on this device must not be used for the assistant's actions
     document.getElementById('roleScreen').style.display = 'none';
     document.getElementById('hubScreen').style.display = 'none';
     document.getElementById('assistantHubScreen').style.display = 'block';
@@ -842,16 +1057,16 @@
     document.getElementById('roleScreen').style.display = 'block';
   }
 
-  // Teacher: remembered permanently on this device (localStorage) until logout.
+  // Teacher: session stays valid for 4 hours on this device/tab, or until logout.
   function logoutTeacher(){
-    localStorage.removeItem('mgTeacherOk');
+    milexClearSession();
     showRoleScreen();
   }
 
-  // Assistant: remembered permanently on this device (localStorage + Supabase session) until logout.
+  // Assistant: remembered on this device (local session) until logout.
   async function logoutAssistant(){
-    try{ await supa.auth.signOut(); }catch(e){}
-    localStorage.removeItem('mgAssistantOk');
+    milexClearAssistantSession();
+    try{ localStorage.removeItem('mgAssistantOk'); await supa.auth.signOut(); }catch(e){}   // clean up any old Supabase login
     showRoleScreen();
   }
 
@@ -864,68 +1079,75 @@
   function closeTeacherOverlay(){
     document.getElementById('teacherOverlay').classList.remove('open');
   }
-  function submitTeacherPassword(){
+  async function submitTeacherPassword(){
+    const dict = translations[currentLang];
+    const errEl = document.getElementById('teacherError');
+    const card = document.querySelector('#teacherOverlay .auth-card');
+
+    const lockMs = milexLockRemainingMs();
+    if(lockMs > 0){
+      const mins = Math.ceil(lockMs / 60000);
+      errEl.textContent = (dict.tooManyAttempts || 'Too many attempts. Try again in a few minutes.') + ' (' + mins + ' ' + (dict.minutesShort || 'min') + ')';
+      errEl.classList.add('show');
+      card.style.animation = 'none';
+      requestAnimationFrame(()=>{ card.style.animation = 'stamp .38s ease'; });
+      return;
+    }
+
     const val = document.getElementById('teacherPassword').value;
-    if(val === getTeacherPassword()){
-      localStorage.setItem('mgTeacherOk','1');
+    const inputHash = await milexSha256(val);
+    if(inputHash === getTeacherPasswordHash()){
+      milexRegisterSuccess();
+      milexStartSession();
       closeTeacherOverlay();
       showHub();
     } else {
-      document.getElementById('teacherError').classList.add('show');
-      const card = document.querySelector('#teacherOverlay .auth-card');
+      milexRegisterFailedAttempt();
+      errEl.textContent = dict.wrongPassword;
+      errEl.classList.add('show');
       card.style.animation = 'none';
       requestAnimationFrame(()=>{ card.style.animation = 'stamp .38s ease'; });
     }
   }
 
-  // ---- Assistant login (real Supabase email/password auth) ----
+  // ---- Assistant login (local password, like the teacher) ----
   function openAssistantOverlay(){
     document.getElementById('assistantOverlay').classList.add('open');
     document.getElementById('assistantError').classList.remove('show');
-    document.getElementById('assistantEmail').value = '';
     document.getElementById('assistantPassword').value = '';
-    document.getElementById('assistantEmail').focus();
+    document.getElementById('assistantPassword').focus();
   }
   function closeAssistantOverlay(){
     document.getElementById('assistantOverlay').classList.remove('open');
   }
   async function submitAssistantLogin(){
     const dict = translations[currentLang];
-    const email = document.getElementById('assistantEmail').value.trim();
-    const password = document.getElementById('assistantPassword').value;
     const errEl = document.getElementById('assistantError');
-    const btn = document.getElementById('assistantSubmitBtn');
+    const card = document.querySelector('#assistantOverlay .auth-card');
+    const shake = () => { card.style.animation = 'none'; requestAnimationFrame(()=>{ card.style.animation = 'stamp .38s ease'; }); };
     errEl.classList.remove('show');
 
-    if(!email || !password){
-      errEl.textContent = dict.wrongCredentials;
-      errEl.classList.add('show');
+    const lockMs = milexLockRemainingMs(MILEX_ASSISTANT_LOCK_KEY);
+    if(lockMs > 0){
+      const mins = Math.ceil(lockMs / 60000);
+      errEl.textContent = (dict.tooManyAttempts || 'Too many attempts. Try again in a few minutes.') + ' (' + mins + ' ' + (dict.minutesShort || 'min') + ')';
+      errEl.classList.add('show'); shake();
       return;
     }
 
-    btn.disabled = true;
-    const originalText = btn.textContent;
-    btn.textContent = dict.signingIn;
+    const val = document.getElementById('assistantPassword').value;
+    if(!val){ errEl.textContent = dict.wrongCredentials; errEl.classList.add('show'); return; }
 
-    try{
-      const { error } = await supa.auth.signInWithPassword({ email, password });
-      if(error){
-        errEl.textContent = dict.wrongCredentials;
-        errEl.classList.add('show');
-        const card = document.querySelector('#assistantOverlay .auth-card');
-        card.style.animation = 'none';
-        requestAnimationFrame(()=>{ card.style.animation = 'stamp .38s ease'; });
-      } else {
-        localStorage.setItem('mgAssistantOk','1');
-        closeAssistantOverlay();
-        showAssistantHub();
-      }
-    } catch(e){
+    const inputHash = await milexSha256(val);
+    if(inputHash === getAssistantPasswordHash()){
+      milexRegisterSuccess(MILEX_ASSISTANT_LOCK_KEY);
+      milexStartAssistantSession();
+      closeAssistantOverlay();
+      showAssistantHub();
+    } else {
+      milexRegisterFailedAttempt(MILEX_ASSISTANT_LOCK_KEY);
       errEl.textContent = dict.wrongCredentials;
-      errEl.classList.add('show');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = originalText;
+      errEl.classList.add('show'); shake();
     }
   }
 
@@ -941,7 +1163,7 @@
   function closeChangePasswordOverlay(){
     document.getElementById('changePasswordOverlay').classList.remove('open');
   }
-  function submitChangePassword(){
+  async function submitChangePassword(){
     const dict = translations[currentLang];
     const cur = document.getElementById('currentPassword').value;
     const next = document.getElementById('newPassword').value;
@@ -950,7 +1172,8 @@
     const okEl = document.getElementById('changePasswordSuccess');
     errEl.classList.remove('show'); okEl.classList.remove('show');
 
-    if(cur !== getTeacherPassword()){
+    const curHash = await milexSha256(cur);
+    if(curHash !== getTeacherPasswordHash()){
       errEl.textContent = dict.errCurrentWrong; errEl.classList.add('show'); return;
     }
     if(next.length < 4){
@@ -959,7 +1182,8 @@
     if(next !== confirm){
       errEl.textContent = dict.errMismatch; errEl.classList.add('show'); return;
     }
-    localStorage.setItem('mgTeacherPassword', next);
+    const nextHash = await milexSha256(next);
+    localStorage.setItem('mgTeacherPasswordHash', nextHash);
     okEl.classList.add('show');
     setTimeout(closeChangePasswordOverlay, 1200);
   }
@@ -969,6 +1193,13 @@
   if(document.documentElement.getAttribute('data-theme') === 'dark'){
     document.getElementById('themeBtn').textContent = '☀️';
   }
+</script>
+
+<!-- MilEX EDU PWA: installable on Android/iOS when served over HTTPS -->
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
 </script>
 </body>
 </html>

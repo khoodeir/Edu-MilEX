@@ -3,6 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+// ---- MilEX access guard ----
+// This page is for teachers/admins only. If there is no valid, non-expired
+// login session (created by index.html after the correct password is
+// entered), redirect immediately back to the login page before any content
+// is shown. The session lives in sessionStorage (per-tab, auto-expires),
+// not in a permanent flag, so it can't just be set once and forgotten.
+(function(){
+  try{
+    var raw = sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession');
+    var valid = false;
+    if(raw){
+      var data = JSON.parse(raw);
+      valid = !!(data && data.exp && Date.now() < data.exp);
+      if(!valid){ sessionStorage.removeItem('milexTeacherSession'); localStorage.removeItem('milexTeacherSession'); }
+    }
+    if(!valid){
+      window.location.replace('index.html');
+    }
+  }catch(e){
+    window.location.replace('index.html');
+  }
+})();
+</script>
+
 <title>Student Live Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -20,17 +45,17 @@
 <style>
   :root{
     /* ===== Light Premium Theme — Design Tokens ===== */
-    --bg-main:#F7F4EE;
-    --bg-secondary:#EDE5D8;
-    --bg-dark-beige:#D8CBB8;
+    --bg-main:#F5F8FC;
+    --bg-secondary:#DEE8F7;
+    --bg-dark-beige:#D2E1F4;
     --card-bg:#FFFFFF;
-    --text-main:#302F2C;
-    --text-secondary:#77736B;
-    --petrol:#28565A;
-    --petrol-dark:#1D4145;
-    --wood:#967354;
-    --wood-light:#B89B7A;
-    --border:#DDD5C8;
+    --text-main:#101B33;
+    --text-secondary:#5C6A80;
+    --petrol:#0B4DA6;
+    --petrol-dark:#072A5E;
+    --wood:#4A80D6;
+    --wood-light:#9DBBEA;
+    --border:#DCE3ED;
 
     --ink:var(--text-main);
     --ink-2:var(--petrol-dark);
@@ -39,7 +64,7 @@
     --line:var(--border);
     --gold:var(--petrol);
     --gold-2:var(--petrol-dark);
-    --gold-soft:rgba(40,86,90,0.08);
+    --gold-soft:rgba(11,77,166,0.08);
     --success:#5B8C6E;
     --success-soft:rgba(91,140,110,0.14);
     --warning:#B98A4A;
@@ -49,28 +74,28 @@
     --muted:var(--text-secondary);
     --cream-bg-1:var(--bg-main);
     --cream-bg-2:var(--bg-secondary);
-    --shadow-sm:0 2px 8px rgba(48,47,44,0.06);
-    --shadow-md:0 4px 16px rgba(48,47,44,0.08);
-    --shadow-lg:0 8px 24px rgba(48,47,44,0.10);
+    --shadow-sm:0 2px 8px rgba(16,27,51,0.06);
+    --shadow-md:0 4px 16px rgba(16,27,51,0.08);
+    --shadow-lg:0 8px 24px rgba(16,27,51,0.10);
   }
   [data-theme="dark"]{
-    --ink:#EDE5D8;
-    --ink-2:#B89B7A;
-    --paper:#23211E;
-    --card:#2C2A26;
-    --line:#3D3931;
-    --gold:#3F8A8F;
-    --gold-2:#B89B7A;
-    --gold-soft:rgba(63,138,143,0.16);
+    --ink:#DEE8F7;
+    --ink-2:#9DBBEA;
+    --paper:#08162F;
+    --card:#0D2146;
+    --line:#1A3563;
+    --gold:#4A86DE;
+    --gold-2:#9DBBEA;
+    --gold-soft:rgba(74,134,222,0.16);
     --success:#6FA98A;
     --success-soft:rgba(111,169,138,0.16);
     --warning:#C79A5C;
     --warning-soft:rgba(199,154,92,0.16);
     --error:#C77378;
     --error-soft:rgba(199,115,120,0.16);
-    --muted:#A39C8E;
-    --cream-bg-1:#221F1C;
-    --cream-bg-2:#2A2723;
+    --muted:#8EA1BF;
+    --cream-bg-1:#08162F;
+    --cream-bg-2:#0A1C3C;
     --shadow-sm:0 1px 2px rgba(0,0,0,0.3);
     --shadow-md:0 8px 24px rgba(0,0,0,0.35);
     --shadow-lg:0 20px 50px rgba(0,0,0,0.45);
@@ -86,8 +111,8 @@
   body{
     font-family:'Inter',sans-serif;
     background:
-     radial-gradient(circle at 15% 10%, rgba(40,86,90,0.035), transparent 45%),
-      radial-gradient(circle at 85% 90%, rgba(150,115,84,0.03), transparent 45%),
+     radial-gradient(circle at 15% 10%, rgba(11,77,166,0.035), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(74,128,214,0.03), transparent 45%),
       linear-gradient(160deg, var(--cream-bg-1), var(--cream-bg-2));
     color:var(--ink);
     min-height:100vh;
@@ -125,7 +150,7 @@
   }
   .sidebar-toggle:hover {
     background: var(--gold);
-    color: #fff;
+    color: #FFF;
     border-color: var(--gold);
     transform: translateY(-1px);
     box-shadow: var(--shadow-sm);
@@ -150,22 +175,22 @@
     display:inline-flex; align-items:center; gap:8px;
     padding:11px 18px; border-radius:10px;
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
-    color:#ffffff; font-family:'Inter',sans-serif; font-size:13px; font-weight:600;
-    text-decoration:none; box-shadow:0 6px 16px rgba(29,65,69,0.22);
+    color:#FFFFFF; font-family:'Inter',sans-serif; font-size:13px; font-weight:600;
+    text-decoration:none; box-shadow:0 6px 16px rgba(7,42,94,0.22);
     transition:transform .15s ease, box-shadow .15s ease;
     white-space:nowrap;
   }
-  .scanner-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(29,65,69,0.28); }
+  .scanner-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(7,42,94,0.28); }
   .scanner-btn svg{ width:16px; height:16px; flex-shrink:0; }
   .refresh-btn{
     display:flex; align-items:center; gap:8px;
     padding:11px 20px; border-radius:10px; border:none;
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
-    color:#ffffff; font-family:'Inter',sans-serif;
+    color:#FFFFFF; font-family:'Inter',sans-serif;
     font-weight:600; font-size:13px; cursor:pointer; transition:all .18s ease;
-    box-shadow:0 6px 16px rgba(29,65,69,0.18);
+    box-shadow:0 6px 16px rgba(7,42,94,0.18);
   }
-  .refresh-btn:hover{ filter:brightness(1.06); transform:translateY(-1px); box-shadow:0 8px 20px rgba(29,65,69,0.24); }
+  .refresh-btn:hover{ filter:brightness(1.06); transform:translateY(-1px); box-shadow:0 8px 20px rgba(7,42,94,0.24); }
   .refresh-btn:active{ transform:translateY(0); filter:brightness(0.96); }
   .refresh-btn .spin{ display:inline-block; }
   .refresh-btn.loading .spin{ animation:spin .8s linear infinite; }
@@ -217,13 +242,13 @@
   .tab:hover{ color:var(--ink); background:var(--paper); border-color:var(--gold); }
   .tab.active{
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
-    color:#ffffff; z-index:5;
+    color:#FFFFFF; z-index:5;
     box-shadow:var(--shadow-md);
     border-color:var(--gold);
   }
   .tab.active::after{
     content:""; position:absolute; right: -15px; top:50%; transform:translateY(-50%);
-    width: 4px; height: 20px; background: var(--gold);
+    width: 4px; height: 20px; background: #A8D400;
     border-radius: 4px 0 0 4px;
   }
   [dir="rtl"] .tab.active::after {
@@ -236,7 +261,7 @@
     min-width:20px; height:18px; padding:0 6px; display:inline-flex; align-items:center; justify-content:center;
     line-height:1; transition:all .18s ease;
   }
-  .tab.active .tab-count{ background:rgba(255,255,255,0.22); color:#fff; }
+  .tab.active .tab-count{ background:rgba(255,255,255,0.22); color:#FFF; }
   .tab-count:empty{ display:none; }
   .tab-group-label{
     font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em;
@@ -301,7 +326,7 @@
   .state-msg.show{ display:flex; }
   .state-msg.err{ color:var(--error); flex-direction:column; gap:9px; }
   .state-msg .spinner{
-    width:18px; height:18px; border-radius:50%;     border:2px solid rgba(40,86,90,0.12);
+    width:18px; height:18px; border-radius:50%;     border:2px solid rgba(11,77,166,0.12);
     border-top-color:var(--gold); animation:spin .7s linear infinite; flex-shrink:0;
   }
   .content{ display:none; }
@@ -326,7 +351,7 @@
   }
   .seal-ring{ position:relative; width:58px; height:58px; flex-shrink:0; }
   .seal-ring svg{ transform:rotate(-90deg); }
-  .seal-ring .bg{ stroke:rgba(40,86,90,0.10); }
+  .seal-ring .bg{ stroke:rgba(11,77,166,0.10); }
   .seal-ring .fg{ stroke:var(--gold); stroke-linecap:round; transition:stroke-dashoffset .6s ease; }
   .seal-pct{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
@@ -384,7 +409,7 @@
   .list-name{ display:flex; align-items:center; gap:9px; min-width:0; }
   .list-name .name{ font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px; }
   .list-name .grade-chip{
-    font-size:9.5px; font-weight:600; color:var(--gold-2); background:rgba(40,86,90,0.08);
+    font-size:9.5px; font-weight:600; color:var(--gold-2); background:rgba(11,77,166,0.08);
     padding:2px 7px; border-radius:999px; flex-shrink:0;
   }
   .rank{
@@ -397,10 +422,54 @@
   .val.high{ color:var(--success); }
   .phone-link{
     font-size:11px; color:var(--muted); text-decoration:none; display:inline-block;
-    padding:3px 8px; border-radius:6px; background:rgba(40,86,90,0.05); transition:all .15s ease;
+    padding:3px 8px; border-radius:6px; background:rgba(11,77,166,0.05); transition:all .15s ease;
     cursor:pointer;
   }
   .phone-link:hover{ color:var(--gold-2); background:var(--gold-soft); }
+  .list-actions{ display:flex; align-items:center; gap:6px; flex-shrink:0; }
+  .wa-btn{
+    display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600;
+    color:#1FA971; text-decoration:none; padding:4px 9px; border-radius:6px;
+    background:rgba(31,169,113,0.12); transition:all .15s ease; white-space:nowrap; cursor:pointer;
+  }
+  .wa-btn:hover{ background:rgba(31,169,113,0.22); transform:translateY(-1px); }
+  [data-theme="dark"] .wa-btn{ color:#3FC98A; background:rgba(63,201,138,0.16); }
+  .section-title-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:15px;
+  }
+  .section-title-row .section-title{ margin-bottom:0; }
+  .sendall-btn{
+    display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600;
+    font-family:'Inter',sans-serif; color:#1FA971; border:1px solid rgba(31,169,113,0.35);
+    background:rgba(31,169,113,0.08); padding:5px 11px; border-radius:999px; cursor:pointer;
+    transition:all .15s ease; white-space:nowrap; flex-shrink:0;
+  }
+  .sendall-btn:hover{ background:rgba(31,169,113,0.18); transform:translateY(-1px); }
+  [data-theme="dark"] .sendall-btn{ color:#3FC98A; border-color:rgba(63,201,138,0.4); background:rgba(63,201,138,0.1); }
+  .wa-bulk-progress{ font-size:11px; font-weight:600; color:var(--muted); letter-spacing:.03em; text-transform:uppercase; margin-bottom:6px; }
+  .wa-bulk-name{ font-family:'Cormorant Garamond',serif; font-weight:700; font-size:22px; color:var(--ink); margin-bottom:18px; }
+  .wa-bulk-actions{ display:flex; gap:10px; }
+  .wa-bulk-send{
+    flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    font-family:'Inter',sans-serif; font-size:13.5px; font-weight:700; color:#fff; border:none;
+    background:#1FA971; padding:11px 14px; border-radius:10px; cursor:pointer; transition:all .15s ease;
+  }
+  .wa-bulk-send:hover{ background:#188a5c; }
+  .wa-bulk-skip{
+    font-family:'Inter',sans-serif; font-size:13px; font-weight:600; color:var(--muted);
+    border:1px solid var(--line); background:transparent; padding:11px 14px; border-radius:10px; cursor:pointer;
+  }
+  .wa-bulk-skip:hover{ color:var(--ink); background:var(--gold-soft); }
+  .wa-bulk-done{ text-align:center; padding:12px 0; }
+  .wa-bulk-done-title{ font-family:'Cormorant Garamond',serif; font-weight:700; font-size:20px; color:var(--ink); margin-bottom:6px; }
+  .wa-bulk-done-sub{ font-size:12.5px; color:var(--muted); }
+  .settings-card textarea.wa-template{
+    width:100%; min-height:64px; resize:vertical; font-family:'Cairo','Inter',sans-serif; font-size:12.5px;
+    padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:var(--card); color:var(--ink);
+    margin-top:6px; margin-bottom:12px; line-height:1.6;
+  }
+  .settings-card textarea.wa-template:focus{ outline:none; border-color:var(--gold); }
+  .settings-card .wa-field-label{ font-size:12.5px; font-weight:600; color:var(--ink); }
   .empty-note{ text-align:center; color:var(--muted); font-size:12.5px; padding:20px 0; }
   .roster-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:15px; flex-wrap:wrap; }
   .search-box{ flex:1; min-width:220px; position:relative; }
@@ -421,7 +490,7 @@
     transition:all .15s ease;
   }
   .pay-filter button:hover{ border-color:var(--gold); color:var(--ink); }
-  .pay-filter button.active{ background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#ffffff; border-color:var(--gold); }
+  .pay-filter button.active{ background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#FFFFFF; border-color:var(--gold); }
   .table-scroll-top{ overflow-x:auto; overflow-y:hidden; height:16px; margin-bottom:2px; }
   .table-scroll-top-inner{ height:1px; }
   .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:16px; -webkit-overflow-scrolling:touch; }
@@ -434,11 +503,11 @@
   tbody td{ padding:11px 14px; border-bottom:1px solid var(--line); color:var(--ink); white-space:nowrap; }
   tbody tr:last-child td{ border-bottom:none; }
   tbody tr{ transition:background .12s ease; }
-  tbody tr:hover{ background:rgba(40,86,90,0.03); }
+  tbody tr:hover{ background:rgba(11,77,166,0.03); }
   .chip{ display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:700; }
   .chip.paid{ background:var(--success-soft); color:var(--success); }
   .chip.unpaid{ background:var(--error-soft); color:var(--error); }
-  .bar-track{ width:70px; height:6px; border-radius:4px; background:rgba(40,86,90,0.08); display:inline-block; vertical-align:middle; margin-right:7px; }
+  .bar-track{ width:70px; height:6px; border-radius:4px; background:rgba(11,77,166,0.08); display:inline-block; vertical-align:middle; margin-right:7px; }
   .bar-fill{ height:100%; border-radius:4px; background:var(--gold); }
   .excel-btn{
     padding:10px 16px; border-radius:9px; border:1px solid var(--line); background:var(--card);
@@ -451,42 +520,42 @@
   .tab.history-tab, .tab.exams-tab, .tab.settings-tab { margin-inline-start: 0; }
   .tab.history-tab::before, .tab.exams-tab::before, .tab.settings-tab::before { content: none; }
   #settingsView{
-    --sv-navy:#28565A;
-    --sv-navy-2:#1D4145;
-    --sv-purple:#967354;
-    --sv-purple-2:#7A5C42;
-    --sv-bg:#EDE5D8;
+    --sv-navy:#0B4DA6;
+    --sv-navy-2:#072A5E;
+    --sv-purple:#4A80D6;
+    --sv-purple-2:#0B4DA6;
+    --sv-bg:#DEE8F7;
     --sv-card:#FFFFFF;
-    --sv-ink:#302F2C;
-    --sv-muted:#77736B;
-    --sv-line:#DDD5C8;
-    --sv-shadow:0 10px 30px rgba(48,47,44,0.06);
+    --sv-ink:#101B33;
+    --sv-muted:#5C6A80;
+    --sv-line:#DCE3ED;
+    --sv-shadow:0 10px 30px rgba(16,27,51,0.06);
     background:var(--sv-bg);
     margin:-30px;
     padding:30px;
     border-radius:0 16px 16px 16px;
   }
   [data-theme="dark"] #settingsView{
-    --sv-bg:#221F1C;
-    --sv-card:#2C2A26;
-    --sv-line:#3D3931;
-    --sv-ink:#EDE5D8;
-    --sv-muted:#A39C8E;
+    --sv-bg:#08162F;
+    --sv-card:#0D2146;
+    --sv-line:#1A3563;
+    --sv-ink:#DEE8F7;
+    --sv-muted:#8EA1BF;
     --sv-shadow:0 10px 30px rgba(0,0,0,0.35);
   }
   .sv-hero{
-    background:linear-gradient(135deg, #28565A 0%, #1D4145 100%);
-    border-radius:20px; padding:26px 28px; color:#fff;
+    background:linear-gradient(135deg, #0B4DA6 0%, #072A5E 100%);
+    border-radius:20px; padding:26px 28px; color:#FFF;
     display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
     margin-bottom:22px; box-shadow:var(--sv-shadow);
   }
-  [data-theme="dark"] .sv-hero{ background:linear-gradient(135deg, #1D4145 0%, #23211E 100%); }
+  [data-theme="dark"] .sv-hero{ background:linear-gradient(135deg, #072A5E 0%, #08162F 100%); }
   .sv-hero-left{ display:flex; align-items:center; gap:16px; }
   .sv-hero-avatar{
     width:52px; height:52px; border-radius:50%; flex-shrink:0;
     background:linear-gradient(135deg, var(--sv-purple), var(--sv-purple-2));
     display:flex; align-items:center; justify-content:center; font-size:22px;
-    box-shadow:0 6px 16px rgba(29,65,69,0.35);
+    box-shadow:0 6px 16px rgba(7,42,94,0.35);
   }
   .sv-hero-title{ font-family:'Cormorant Garamond',serif; font-weight:700; font-size:21px; }
   [dir="rtl"] .sv-hero-title{ font-family:'Cairo','Cormorant Garamond',serif; }
@@ -509,7 +578,7 @@
   #settingsView .settings-card-icon{
     width:44px; height:44px; border-radius:14px;
     background:linear-gradient(135deg, var(--sv-purple), var(--sv-purple-2));
-    color:#fff; font-size:18px; box-shadow:0 6px 14px rgba(29,65,69,0.25);
+    color:#FFF; font-size:18px; box-shadow:0 6px 14px rgba(7,42,94,0.25);
   }
   #settingsView .settings-card-title{ color:var(--sv-ink); }
   #settingsView .settings-card-sub{ color:var(--sv-muted); }
@@ -518,22 +587,22 @@
   }
   #settingsView .settings-row-label{ color:var(--sv-ink); }
   #settingsView .settings-row-desc{ color:var(--sv-muted); }
-  #settingsView .switch .slider{ background:#D8CBB8; }
-  [data-theme="dark"] #settingsView .switch .slider{ background:rgba(184,155,122,0.18); }
+  #settingsView .switch .slider{ background:#D2E1F4; }
+  [data-theme="dark"] #settingsView .switch .slider{ background:rgba(143,178,232,0.18); }
   #settingsView .switch input:checked + .slider{ background:linear-gradient(135deg, var(--sv-navy), var(--sv-purple)); }
-  #settingsView .switch .slider::before{ box-shadow:0 2px 6px rgba(29,65,69,0.20); }
+  #settingsView .switch .slider::before{ box-shadow:0 2px 6px rgba(7,42,94,0.20); }
   #settingsView .lang-switch{ background:var(--sv-bg); border:1px solid var(--sv-line); border-radius:14px; }
   #settingsView .lang-switch button{ color:var(--sv-muted); border-radius:10px; }
   #settingsView .lang-switch button:hover{ color:var(--sv-ink); }
   #settingsView .lang-switch button.active{
-    background:linear-gradient(135deg, var(--sv-navy), var(--sv-purple)); color:#fff;
-    box-shadow:0 6px 14px rgba(29,65,69,0.30);
+    background:linear-gradient(135deg, var(--sv-navy), var(--sv-purple)); color:#FFF;
+    box-shadow:0 6px 14px rgba(7,42,94,0.30);
   }
   #settingsView .theme-preview button{ border-radius:16px; border:2px solid var(--sv-line); background:var(--sv-card); }
-  #settingsView .theme-preview button.active{ border-color:var(--sv-purple); box-shadow:0 0 0 3px rgba(40,86,90,0.12); }
+  #settingsView .theme-preview button.active{ border-color:var(--sv-purple); box-shadow:0 0 0 3px rgba(11,77,166,0.12); }
   #settingsView .theme-preview span{ color:var(--sv-ink); }
-  #settingsView .theme-preview .swatch.light{ background:linear-gradient(160deg,#F7F4EE,#FFFFFF); border:1px solid #DDD5C8; }
-  #settingsView .theme-preview .swatch.dark{ background:linear-gradient(160deg,#23211E,#2C2A26); border:1px solid #3D3931; }
+  #settingsView .theme-preview .swatch.light{ background:linear-gradient(160deg,#F5F8FC,#FFFFFF); border:1px solid #DCE3ED; }
+  #settingsView .theme-preview .swatch.dark{ background:linear-gradient(160deg,#08162F,#0D2146); border:1px solid #1A3563; }
   #settingsView .settings-note{
     background:var(--sv-bg); border:1px solid var(--sv-line); color:var(--sv-muted); border-radius:12px;
   }
@@ -559,12 +628,12 @@
   .switch{ position:relative; display:inline-block; width:46px; height:26px; flex-shrink:0; }
   .switch input{ opacity:0; width:0; height:0; }
   .switch .slider{
-    position:absolute; cursor:pointer; inset:0;     background:rgba(40,86,90,0.15);
+    position:absolute; cursor:pointer; inset:0;     background:rgba(11,77,166,0.15);
     border-radius:999px; transition:.2s ease;
   }
   .switch .slider::before{
     content:""; position:absolute; height:20px; width:20px; left:3px; top:3px;
-    background:#fff; border-radius:50%; transition:.2s ease; box-shadow:0 1px 3px rgba(0,0,0,0.25);
+    background:#FFF; border-radius:50%; transition:.2s ease; box-shadow:0 1px 3px rgba(0,0,0,0.25);
   }
   .switch input:checked + .slider{ background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); }
   .switch input:checked + .slider::before{ transform:translateX(20px); }
@@ -577,8 +646,8 @@
   }
   .lang-switch button:hover{ color:var(--ink); }
   .lang-switch button.active{
-    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#ffffff;
-    box-shadow:0 4px 10px rgba(29,65,69,0.18);
+    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#FFFFFF;
+    box-shadow:0 4px 10px rgba(7,42,94,0.18);
   }
   .theme-preview{ display:flex; gap:10px; }
   .theme-preview button{
@@ -588,8 +657,8 @@
   }
   .theme-preview button.active{ border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-soft); }
   .theme-preview .swatch{ width:100%; height:38px; border-radius:7px; }
-  .theme-preview .swatch.light{ background:linear-gradient(160deg,#F7F4EE,#FFFFFF); border:1px solid #DDD5C8; }
-  .theme-preview .swatch.dark{ background:linear-gradient(160deg,#23211E,#2C2A26); border:1px solid #3D3931; }
+  .theme-preview .swatch.light{ background:linear-gradient(160deg,#F5F8FC,#FFFFFF); border:1px solid #DCE3ED; }
+  .theme-preview .swatch.dark{ background:linear-gradient(160deg,#08162F,#0D2146); border:1px solid #1A3563; }
   .theme-preview span{ font-size:11.5px; font-weight:600; color:var(--ink); }
   .settings-note{
     font-size:11.5px; color:var(--muted); background:var(--gold-soft); border:1px solid var(--line);
@@ -608,15 +677,78 @@
     margin-bottom:22px;
   }
   .hist-toolbar .left{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+
+  /* ===== Premium filter buttons (Group / City) ===== */
+  .fx-bar{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:22px; }
+  .fx{ position:relative; }
+  .fx-btn{
+    display:flex; align-items:center; gap:12px; min-width:250px; padding:8px 14px 8px 8px;
+    border-radius:16px; border:1px solid var(--line); cursor:pointer; color:var(--ink);
+    background:linear-gradient(180deg, var(--card) 0%, var(--paper) 100%);
+    box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.55);
+    font-family:inherit; text-align:start; transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+  }
+  [dir="rtl"] .fx-btn{ padding:8px 8px 8px 14px; }
+  .fx-btn:hover{ border-color:var(--gold); box-shadow:var(--shadow-md), inset 0 1px 0 rgba(255,255,255,.55); transform:translateY(-1px); }
+  .fx-btn:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  .fx.open .fx-btn, .fx-btn.filtered{
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--gold) 16%, transparent), var(--shadow-md);
+  }
+  .fx-ico{
+    width:40px; height:40px; border-radius:12px; flex-shrink:0; display:grid; place-items:center; color:#fff;
+    background:linear-gradient(145deg, var(--gold) 0%, var(--gold-2) 100%);
+    box-shadow:0 6px 14px color-mix(in srgb, var(--gold) 35%, transparent), inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  [data-theme="dark"] .fx-ico{ color:#08162F; background:linear-gradient(145deg, var(--gold-2) 0%, var(--gold) 100%); }
+  .fx-ico svg{ width:20px; height:20px; }
+  .fx-txt{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; }
+  .fx-label{ font-size:11px; color:var(--muted); font-weight:600; }
+  .fx-value{ font-size:14px; font-weight:700; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fx-count{
+    font-family:'Space Grotesk',sans-serif; font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:999px;
+    color:var(--gold-2); background:color-mix(in srgb, var(--gold) 12%, transparent); flex-shrink:0;
+  }
+  .fx-chev{ width:16px; height:16px; color:var(--muted); flex-shrink:0; transition:transform .2s ease; }
+  .fx.open .fx-chev{ transform:rotate(180deg); color:var(--gold); }
+  .fx-menu{
+    position:absolute; top:calc(100% + 8px); inset-inline-start:0; min-width:100%; width:max-content; max-width:340px; max-height:320px; overflow:auto;
+    z-index:60; padding:6px; border-radius:16px; border:1px solid var(--line); background:var(--card);
+    box-shadow:var(--shadow-lg); opacity:0; visibility:hidden; transform:translateY(-6px) scale(.98); transform-origin:top;
+    transition:opacity .16s ease, transform .16s ease, visibility .16s;
+  }
+  .fx.open .fx-menu{ opacity:1; visibility:visible; transform:none; }
+  .fx-opt{
+    display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border:none; border-radius:11px; cursor:pointer;
+    background:transparent; color:var(--ink); font-family:inherit; font-size:13px; font-weight:600; text-align:start;
+  }
+  .fx-opt:hover, .fx-opt:focus-visible{ background:var(--gold-soft); outline:none; }
+  .fx-opt .nm{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .fx-opt .ct{ font-family:'Space Grotesk',sans-serif; font-size:11.5px; color:var(--muted); font-weight:600; }
+  .fx-opt.zero{ opacity:.45; }
+  .fx-opt.sel{ background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#fff; }
+  [data-theme="dark"] .fx-opt.sel{ color:#08162F; }
+  .fx-opt.sel .ct{ color:inherit; opacity:.85; }
+  .fx-opt .tick{ width:15px; height:15px; flex-shrink:0; visibility:hidden; }
+  .fx-opt.sel .tick{ visibility:visible; }
+  .fx-opt.all{ margin-bottom:4px; }
+  @media (max-width:640px){
+    .fx-bar{ flex-direction:column; }
+    .fx, .fx-btn{ width:100%; }
+    .fx-menu{ max-width:none; width:100%; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .fx-btn, .fx-menu, .fx-chev{ transition:none !important; }
+  }
   .hist-select{
     padding:10px 14px; border-radius:9px; border:1px solid var(--line); background:var(--card);
     color:var(--ink); font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600; cursor:pointer; outline:none;
   }
   .save-snapshot-btn{
     display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:9px; border:none;
-    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#ffffff;
+    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#FFFFFF;
     font-family:'Inter',sans-serif; font-weight:700; font-size:12.5px; cursor:pointer;
-    box-shadow:0 6px 16px rgba(29,65,69,0.16); transition:all .15s ease;
+    box-shadow:0 6px 16px rgba(7,42,94,0.16); transition:all .15s ease;
   }
   .save-snapshot-btn:hover{ filter:brightness(1.06); transform:translateY(-1px); }
   .save-snapshot-btn:disabled{ opacity:.6; cursor:default; transform:none; }
@@ -644,7 +776,7 @@
   }
   .score-input:focus{ border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-soft); }
   .modal-overlay{
-    display:none; position:fixed; inset:0; background:rgba(48,47,44,0.50); z-index:80;
+    display:none; position:fixed; inset:0; background:rgba(16,27,51,0.50); z-index:80;
     align-items:center; justify-content:center; padding:20px;
   }
   .modal-overlay.show{ display:flex; }
@@ -785,13 +917,20 @@
     .list-name .grade-chip{ font-size:9px; padding:2px 6px; }
   }
 </style>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0B4DA6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MilEX EDU">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 </head>
 <body>
 
 <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
 <div class="sidebar-logo">
-<img src="logo.png" alt="Logo"></div>
+<img class="logo-light" src="logo.png" alt="MilEX"><img class="logo-dark" src="logo-dark.png" alt="MilEX"></div>
 
 <div class="topbar">
   <div class="brand">
@@ -836,6 +975,8 @@
     <div class="tab-group" data-group="other">
       <div class="tab exams-tab" id="examsTab" data-i18n="tabExams">📝 Exam Grades</div>
       <div class="tab history-tab" id="historyTab" data-i18n="tabHistory">📂 Monthly History</div>
+      <div class="tab" id="absTab"><span id="absTabLbl">📉 غياب متتالي</span></div>
+      <div class="tab" id="auditTab"><span id="auditTabLbl">🧾 سجل العمليات</span></div>
     </div>
     <div class="tab-group-label" data-group="settings" onclick="toggleGroup(this)">▼ Settings</div>
     <div class="tab-group" data-group="settings">
@@ -852,15 +993,9 @@
 
     <div class="content" id="dashContent">
 
-      <div class="hist-toolbar" id="groupFilterToolbar" style="margin-bottom:20px;">
-        <div class="left">
-          <span style="font-size:12.5px; font-weight:700; color:var(--gold-2); display:flex; align-items:center; gap:6px;">
-            🧩 <span data-i18n="colGroup">Group</span>:
-          </span>
-          <select class="hist-select" id="groupFilterSelect" onchange="onGroupFilterChange()">
-            <option value="all">All Groups</option>
-          </select>
-        </div>
+      <div class="fx-bar" id="groupFilterToolbar">
+        <div class="fx" id="fx-group"></div>
+        <div class="fx" id="fx-city"></div>
       </div>
 
       <div class="kpi-grid">
@@ -1067,8 +1202,21 @@
           <div id="topAttendersList"></div>
         </div>
         <div class="list-card">
-          <div class="section-title" data-i18n="secUnpaidStudents">Unpaid Students</div>
+          <div class="section-title-row">
+            <div class="section-title" data-i18n="secUnpaidStudents">Unpaid Students</div>
+            <button type="button" class="sendall-btn" onclick="openWaBulkModal('waUnpaidTemplate', lastUnpaidList)">💬 <span data-i18n="sendAllBtn">Send to All</span></button>
+          </div>
           <div id="unpaidList"></div>
+        </div>
+      </div>
+
+      <div class="list-grid">
+        <div class="list-card" style="grid-column:1 / -1;">
+          <div class="section-title-row">
+            <div class="section-title"><span data-i18n="secAbsenceFollowup">Attendance Follow-up</span> <span class="tag" data-i18n="tagNeedsCall">needs follow-up</span></div>
+            <button type="button" class="sendall-btn" onclick="openWaBulkModal('waAbsenceTemplate', lastAbsenceList)">💬 <span data-i18n="sendAllBtn">Send to All</span></button>
+          </div>
+          <div id="absenceFollowupList"></div>
         </div>
       </div>
 
@@ -1242,6 +1390,50 @@
       </div>
     </div>
 
+    <div id="absView" style="display:none;">
+      <div class="chart-card">
+        <div class="section-title" id="absTitle"></div>
+        <div class="hist-toolbar">
+          <div class="left">
+            <select id="absGrade" class="hist-select"></select>
+            <label style="font-size:13px;color:var(--muted);"><span id="absMinLbl"></span>
+              <input type="number" id="absMin" value="3" min="1" style="width:64px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);"></label>
+            <button type="button" class="hist-select" id="absReload" style="cursor:pointer;">🔄</button>
+          </div>
+        </div>
+        <div class="state-msg" id="absLoading"><span class="spinner"></span> …</div>
+        <div class="state-msg err" id="absErr"></div>
+        <div class="table-wrap" id="absWrap" style="display:none;">
+          <table>
+            <thead><tr id="absHead"></tr></thead>
+            <tbody id="absBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="auditView" style="display:none;">
+      <div class="chart-card">
+        <div class="section-title" id="auditTitle"></div>
+        <div class="hist-toolbar">
+          <div class="left">
+            <select id="auditAction" class="hist-select"></select>
+            <select id="auditActor" class="hist-select"></select>
+            <input type="text" id="auditSearch" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);min-width:170px;">
+            <button type="button" class="hist-select" id="auditReload" style="cursor:pointer;">🔄</button>
+          </div>
+        </div>
+        <div class="state-msg" id="auditLoading"><span class="spinner"></span> …</div>
+        <div class="state-msg err" id="auditErr"></div>
+        <div class="table-wrap" id="auditWrap" style="display:none;">
+          <table>
+            <thead><tr id="auditHead"></tr></thead>
+            <tbody id="auditBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <div id="settingsView" style="display:none;">
 
       <div class="sv-hero">
@@ -1294,6 +1486,23 @@
           </div>
         </div>
 
+        <div class="settings-card" style="grid-column:1 / -1;">
+          <div class="settings-card-head">
+            <div class="settings-card-icon">💬</div>
+            <div>
+              <div class="settings-card-title" data-i18n="settingsWA">WhatsApp Reminders</div>
+              <div class="settings-card-sub" data-i18n="settingsWASub">Customize the one-click reminder messages</div>
+            </div>
+          </div>
+          <div class="wa-field-label" data-i18n="waUnpaidLabel">Unpaid fee reminder</div>
+          <textarea class="wa-template" id="waUnpaidTemplateInput" oninput="saveWaTemplate('waUnpaidTemplate', this.value)"></textarea>
+          <div class="wa-field-label" data-i18n="waAbsenceLabel">Attendance follow-up message</div>
+          <textarea class="wa-template" id="waAbsenceTemplateInput" oninput="saveWaTemplate('waAbsenceTemplate', this.value)"></textarea>
+          <div class="settings-note" data-i18n="waTemplateNote">
+            Use {name}, {grade}, {group}, {city} as placeholders — they're filled in automatically per student.
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1334,6 +1543,16 @@
     </div>
     <div id="paymentHistoryBody"></div>
     <div id="paymentHistorySummary" style="margin-top:14px; font-size:12.5px; color:var(--muted); text-align:center;"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="waBulkModalOverlay" onclick="if(event.target===this) closeWaBulkModal()">
+  <div class="modal-box" style="max-width:380px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div class="section-title" style="margin-bottom:0;" data-i18n="sendAllBtn">Send to All</div>
+      <button class="modal-close" onclick="closeWaBulkModal()">×</button>
+    </div>
+    <div id="waBulkModalBody"></div>
   </div>
 </div>
 
@@ -1414,17 +1633,18 @@
   const GRADE_LABELS = Object.fromEntries(Object.entries(GRADE_CONFIG).map(([k,v]) => [k, v.labelEn]));
   const GRADES = Object.keys(GRADE_CONFIG);
   const GRADE_COLORS = {
-  first_prep: "#28565A",
-  second_prep: "#5B8C8F",
-  third_prep: "#967354",
-  first_secondary: "#B89B7A",
-  second_secondary: "#8A867C",
-  third_secondary: "#B8AFA0"
+  first_prep: "#0B4DA6",
+  second_prep: "#4A80D6",
+  third_prep: "#4A80D6",
+  first_secondary: "#9DBBEA",
+  second_secondary: "#5F7BA6",
+  third_secondary: "#B6CCEE"
 };
 
   let currentGrade = "all";
   let payFilterState = "all";
   let currentGroupFilter = "all";
+  let currentCityFilter = "all";
   let combined = { students: [], statsRows: [], examAverages: {}, examStudentAverages: [] };
   let charts = { attVsPerf: null, gradeRadar: null, attByCity: null, studentsByGroup: null, revenueByCity: null, collectionByGroup: null };
   let histCharts = { rate: null, rev: null, students: null };
@@ -1446,8 +1666,16 @@
       secScoreDist: "Score Distribution", tagByStudent: "by student",
       secTopAttendance: "Top Attendance", secUnpaidStudents: "Unpaid Students",
       secTopExam: "Top Exam Performers", secNeedsImprovement: "Needs Improvement",
+      secAbsenceFollowup: "Attendance Follow-up", tagNeedsCall: "needs follow-up",
+      waBtn: "WhatsApp", waNoPhone: "no phone on file", allCaughtUp: "🎉 Everyone is attending well",
+      settingsWA: "WhatsApp Reminders", settingsWASub: "Customize the one-click reminder messages",
+      waUnpaidLabel: "Unpaid fee reminder", waAbsenceLabel: "Attendance follow-up message",
+      waTemplateNote: "Use {name}, {grade}, {group}, {city} as placeholders — they're filled in automatically per student.",
+      sendAllBtn: "Send to All", waBulkSendBtn: "Open WhatsApp", waBulkSkipBtn: "Skip",
+      waBulkDoneTitle: "All done!", waBulkDoneSub: "You've gone through everyone on this list.",
+      waBulkNoPhones: "No parent phone numbers on file for this list.",
       searchNamePhone: "Search by name or phone…",
-      filterAll: "All", filterPaid: "Paid", filterUnpaid: "Unpaid", filterAllGroups: "All Groups", exportExcel: "Export Excel",
+      filterAll: "All", filterPaid: "Paid", filterUnpaid: "Unpaid", filterAllGroups: "All Groups", filterAllCities: "All Cities", fxStudents: "students", exportExcel: "Export Excel",
       colName: "Name", colCity: "City", colGroup: "Group", colGrade: "Grade", colPresent: "Present", colAbsent: "Absent",
       colAttendanceRate: "Attendance Rate", colStudentPhone: "Student Phone", colParentPhone: "Parent Phone",
       colPayment: "Payment", colMonthsPaid: "Months Paid", colLastAttendance: "Last Attendance",
@@ -1523,8 +1751,16 @@
       secScoreDist: "توزيع الدرجات", tagByStudent: "لكل طالب",
       secTopAttendance: "الأعلى حضورًا", secUnpaidStudents: "طلاب لم يدفعوا بعد",
       secTopExam: "الأعلى تحصيلًا للدرجات", secNeedsImprovement: "بحاجة إلى تحسين المستوى",
+      secAbsenceFollowup: "متابعة الغياب", tagNeedsCall: "يحتاج متابعة",
+      waBtn: "واتساب", waNoPhone: "لا يوجد رقم هاتف", allCaughtUp: "🎉 الكل ملتزم بالحضور",
+      settingsWA: "تذكيرات واتساب", settingsWASub: "خصّص نصوص رسائل التذكير بضغطة زر",
+      waUnpaidLabel: "رسالة تذكير بالدفع", waAbsenceLabel: "رسالة متابعة الغياب",
+      waTemplateNote: "استخدم {name}, {grade}, {group}, {city} كعناصر تُستبدل تلقائيًا ببيانات كل طالب.",
+      sendAllBtn: "إرسال للكل", waBulkSendBtn: "فتح واتساب", waBulkSkipBtn: "تخطي",
+      waBulkDoneTitle: "تم الإرسال للجميع!", waBulkDoneSub: "لقد انتهيت من كل من في هذه القائمة.",
+      waBulkNoPhones: "لا توجد أرقام هواتف لأولياء الأمور في هذه القائمة.",
       searchNamePhone: "ابحث بالاسم أو رقم الهاتف…",
-      filterAll: "الكل", filterPaid: "مدفوع", filterUnpaid: "غير مدفوع", filterAllGroups: "كل المجموعات", exportExcel: "تصدير إكسل",
+      filterAll: "الكل", filterPaid: "مدفوع", filterUnpaid: "غير مدفوع", filterAllGroups: "كل المجموعات", filterAllCities: "كل المدن", fxStudents: "طالب", exportExcel: "تصدير إكسل",
       colName: "الاسم", colCity: "المدينة", colGroup: "المجموعة", colGrade: "الصف", colPresent: "حضور", colAbsent: "غياب",
       colAttendanceRate: "نسبة الحضور", colStudentPhone: "هاتف الطالب", colParentPhone: "هاتف ولي الأمر",
       colPayment: "الدفع", colMonthsPaid: "الشهور المدفوعة", colLastAttendance: "آخر حضور",
@@ -1603,6 +1839,142 @@
       third_secondary: currentLang === "ar" ? I18N.ar.tabThirdSecondary : I18N.en.tabThirdSecondary
     };
     return map[grade] || GRADE_LABELS[grade] || "—";
+  }
+
+  /* ============================================================
+     WHATSAPP SMART REMINDERS
+     One-click wa.me links for unpaid fees and low attendance,
+     with admin-editable message templates saved in localStorage.
+     ============================================================ */
+  const WA_DEFAULT_COUNTRY_CODE = "20"; // Egypt — used when a phone has no country code
+  const WA_TEMPLATE_DEFAULTS = {
+    waUnpaidTemplate: "السلام عليكم، نود تذكيركم بأن مصروفات الشهر الحالي لـ {name} ({grade} - {group}) لم تُسجَّل بعد. برجاء التواصل لإتمام الدفع في أقرب وقت. شكرًا لتعاونكم",
+    waAbsenceTemplate: "السلام عليكم، نلاحظ أن نسبة حضور {name} ({grade} - {group}) قلّت مؤخرًا. نتمنى الاطمئنان والتأكد من عدم وجود أي عائق، ونرحب بأي استفسار. شكرًا لمتابعتكم"
+  };
+
+  function getWaTemplate(key){
+    return localStorage.getItem(key) || WA_TEMPLATE_DEFAULTS[key];
+  }
+
+  function saveWaTemplate(key, value){
+    localStorage.setItem(key, value && value.trim() ? value : WA_TEMPLATE_DEFAULTS[key]);
+  }
+
+  function loadWaTemplatesIntoSettings(){
+    const uEl = document.getElementById("waUnpaidTemplateInput");
+    const aEl = document.getElementById("waAbsenceTemplateInput");
+    if(uEl) uEl.value = getWaTemplate("waUnpaidTemplate");
+    if(aEl) aEl.value = getWaTemplate("waAbsenceTemplate");
+  }
+
+  function fillWaTemplate(tpl, s){
+    return String(tpl)
+      .replace(/\{name\}/g, s.name || "")
+      .replace(/\{grade\}/g, tGradeLabel(s.grade) || "")
+      .replace(/\{group\}/g, s.groupName || "")
+      .replace(/\{city\}/g, s.city || "");
+  }
+
+  function normalizeWaPhone(phone){
+    if(!phone) return null;
+    let p = String(phone).replace(/[^\d+]/g, "");
+    if(!p) return null;
+    if(p.startsWith("+")) p = p.slice(1);
+    if(p.startsWith("00")) p = p.slice(2);
+    if(p.startsWith("0")) p = WA_DEFAULT_COUNTRY_CODE + p.slice(1);
+    else if(p.length <= 11 && !p.startsWith(WA_DEFAULT_COUNTRY_CODE)) p = WA_DEFAULT_COUNTRY_CODE + p;
+    return p;
+  }
+
+  function waLink(phone, message){
+    const p = normalizeWaPhone(phone);
+    if(!p) return null;
+    return `https://wa.me/${p}?text=${encodeURIComponent(message)}`;
+  }
+
+  function waButtonHtml(s, templateKey){
+    // Reminders always go to the parent's phone, never the student's —
+    // if there's no parent number on file, we show "no phone" rather
+    // than silently falling back to the student's own phone.
+    const phone = s.parentPhone;
+    const link = phone ? waLink(phone, fillWaTemplate(getWaTemplate(templateKey), s)) : null;
+    if(!link) return `<span class="empty-note" style="padding:0;">${t("waNoPhone")}</span>`;
+    return `<a class="wa-btn" href="${link}" target="_blank" rel="noopener">💬 ${t("waBtn")}</a>`;
+  }
+
+  function waBulkLink(s, templateKey){
+    // Same parent-only rule as waButtonHtml, exposed separately so the
+    // "send to all" flow can build a queue of {student, link} pairs.
+    const phone = s.parentPhone;
+    return phone ? waLink(phone, fillWaTemplate(getWaTemplate(templateKey), s)) : null;
+  }
+
+  /* ============================================================
+     WHATSAPP "SEND TO ALL"
+     Browsers block a page from popping open many wa.me tabs from a
+     single click, so instead of trying (and failing silently) to open
+     everyone at once, this walks the admin through the list one
+     student at a time: click "Open WhatsApp" for the current student,
+     it opens their chat with the message pre-filled, and the modal
+     auto-advances to the next one. Each open is still a real click, so
+     nothing gets blocked.
+     ============================================================ */
+  let waBulkQueue = [];
+  let waBulkIndex = 0;
+  let waBulkTemplateKey = null;
+  let lastUnpaidList = [];
+  let lastAbsenceList = [];
+
+  function openWaBulkModal(templateKey, students){
+    waBulkTemplateKey = templateKey;
+    waBulkQueue = (students || [])
+      .map(s => ({ student: s, link: waBulkLink(s, templateKey) }))
+      .filter(item => item.link);
+    waBulkIndex = 0;
+    document.getElementById("waBulkModalOverlay").classList.add("show");
+    renderWaBulkStep();
+  }
+
+  function renderWaBulkStep(){
+    const body = document.getElementById("waBulkModalBody");
+    const total = waBulkQueue.length;
+    if(!total){
+      body.innerHTML = `<div class="empty-note">${t("waBulkNoPhones")}</div>`;
+      return;
+    }
+    if(waBulkIndex >= total){
+      body.innerHTML = `
+        <div class="wa-bulk-done">
+          <div class="wa-bulk-done-title">${t("waBulkDoneTitle")}</div>
+          <div class="wa-bulk-done-sub">${t("waBulkDoneSub")}</div>
+        </div>`;
+      return;
+    }
+    const item = waBulkQueue[waBulkIndex];
+    body.innerHTML = `
+      <div class="wa-bulk-progress">${waBulkIndex + 1} ${t("outOf")} ${total}</div>
+      <div class="wa-bulk-name">${item.student.name}</div>
+      <div class="wa-bulk-actions">
+        <button class="wa-bulk-send" onclick="waBulkSendCurrent()">💬 ${t("waBulkSendBtn")}</button>
+        <button class="wa-bulk-skip" onclick="waBulkNext()">${t("waBulkSkipBtn")}</button>
+      </div>`;
+  }
+
+  function waBulkSendCurrent(){
+    const item = waBulkQueue[waBulkIndex];
+    if(item) window.open(item.link, "_blank", "noopener");
+    waBulkNext();
+  }
+
+  function waBulkNext(){
+    waBulkIndex++;
+    renderWaBulkStep();
+  }
+
+  function closeWaBulkModal(){
+    document.getElementById("waBulkModalOverlay").classList.remove("show");
+    waBulkQueue = [];
+    waBulkIndex = 0;
   }
 
   function applyTranslations(){
@@ -1705,6 +2077,7 @@ function goBack(){
     document.getElementById("historyView").style.display = "none";
     document.getElementById("examsView").style.display = "none";
     document.getElementById("settingsView").style.display = "";
+    loadWaTemplatesIntoSettings();
     closeSidebarOnMobileNav();
   });
 
@@ -1714,6 +2087,7 @@ function goBack(){
       tab.classList.add("active");
       currentGrade = tab.dataset.grade;
       currentGroupFilter = "all";
+      currentCityFilter = "all";
       document.getElementById("dashboardView").style.display = "";
       document.getElementById("historyView").style.display = "none";
       document.getElementById("examsView").style.display = "none";
@@ -1767,32 +2141,104 @@ function goBack(){
   }
 
   function getGroupFilteredStudents(list){
-    return currentGroupFilter === "all" ? list : list.filter(s => (s.groupName || "").trim() === currentGroupFilter);
+    return list.filter(s =>
+      (currentGroupFilter === "all" || (s.groupName || "").trim() === currentGroupFilter) &&
+      (currentCityFilter === "all" || (s.city || "").trim() === currentCityFilter)
+    );
+  }
+
+  /* ---------- Premium filter dropdowns (Group / City) ---------- */
+  const FX_ICONS = {
+    group: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.2 2.7-5.2 6-5.2s6 2 6 5.2"/><path d="M16 5.2a3.2 3.2 0 0 1 0 5.6"/><path d="M18 14.2c1.9.6 3 2.2 3 4.8"/></svg>',
+    city: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg>'
+  };
+  const FX_CHEV = '<svg class="fx-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+  const FX_TICK = '<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
+  const FX = {
+    group: { field: "groupName", labelKey: "colGroup", allKey: "filterAllGroups", get: () => currentGroupFilter, set: v => { currentGroupFilter = v; }, other: s => currentCityFilter === "all" || (s.city || "").trim() === currentCityFilter },
+    city:  { field: "city",      labelKey: "colCity",  allKey: "filterAllCities", get: () => currentCityFilter,  set: v => { currentCityFilter = v; },  other: s => currentGroupFilter === "all" || (s.groupName || "").trim() === currentGroupFilter }
+  };
+  const fxEsc = v => String(v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+  function renderFx(kind, students){
+    const cfg = FX[kind];
+    const root = document.getElementById("fx-" + kind);
+    if(!root) return;
+    const values = Array.from(new Set(students.map(s => (s[cfg.field] || "").trim()).filter(Boolean)))
+      .sort((a,b) => a.localeCompare(b, currentLang === "ar" ? "ar" : "en"));
+    if(cfg.get() !== "all" && !values.includes(cfg.get())) cfg.set("all");
+
+    const counts = {};
+    students.filter(cfg.other).forEach(s => { const v = (s[cfg.field] || "").trim(); if(v) counts[v] = (counts[v] || 0) + 1; });
+    const totalInScope = students.filter(cfg.other).length;
+    const cur = cfg.get();
+    const shownValue = cur === "all" ? t(cfg.allKey) : cur;
+    const shownCount = cur === "all" ? totalInScope : (counts[cur] || 0);
+
+    const opt = (val, name, count, extra) =>
+      `<button type="button" role="option" class="fx-opt${extra || ""}${val === cur ? " sel" : ""}${count === 0 ? " zero" : ""}" data-fx-kind="${kind}" data-fx-value="${fxEsc(val)}" aria-selected="${val === cur}">
+         ${FX_TICK}<span class="nm">${fxEsc(name)}</span><span class="ct num">${count}</span>
+       </button>`;
+
+    const wasOpen = root.classList.contains("open");
+    root.innerHTML = `
+      <button type="button" class="fx-btn${cur !== "all" ? " filtered" : ""}" aria-haspopup="listbox" aria-expanded="${wasOpen}" data-fx-toggle="${kind}">
+        <span class="fx-ico">${FX_ICONS[kind]}</span>
+        <span class="fx-txt"><span class="fx-label">${t(cfg.labelKey)}</span><span class="fx-value">${fxEsc(shownValue)}</span></span>
+        <span class="fx-count">${shownCount} ${t("fxStudents")}</span>
+        ${FX_CHEV}
+      </button>
+      <div class="fx-menu" role="listbox">
+        ${opt("all", t(cfg.allKey), totalInScope, " all")}
+        ${values.map(v => opt(v, v, counts[v] || 0, "")).join("")}
+      </div>`;
   }
 
   function populateGroupFilterOptions(students){
-    const select = document.getElementById("groupFilterSelect");
-    if(!select) return;
-    const groups = Array.from(new Set(students.map(s => (s.groupName || "").trim()).filter(Boolean)))
-      .sort((a,b) => a.localeCompare(b, currentLang === "ar" ? "ar" : "en"));
+    renderFx("group", students);
+    renderFx("city", students);
+  }
 
-    const previousValue = currentGroupFilter;
-    select.innerHTML = `<option value="all">${t('filterAllGroups')}</option>` +
-      groups.map(g => `<option value="${g.replace(/"/g, '&quot;')}">${g}</option>`).join("");
+  function closeAllFx(){
+    document.querySelectorAll(".fx.open").forEach(el => {
+      el.classList.remove("open");
+      const b = el.querySelector(".fx-btn"); if(b) b.setAttribute("aria-expanded", "false");
+    });
+  }
 
-    if(previousValue !== "all" && groups.includes(previousValue)){
-      select.value = previousValue;
-      currentGroupFilter = previousValue;
-    } else {
-      select.value = "all";
-      currentGroupFilter = "all";
+  document.addEventListener("click", e => {
+    const toggle = e.target.closest("[data-fx-toggle]");
+    const opt = e.target.closest(".fx-opt");
+    if(opt){
+      FX[opt.dataset.fxKind].set(opt.dataset.fxValue);
+      renderAll();
+      return;
     }
-  }
+    if(toggle){
+      const root = toggle.closest(".fx");
+      const willOpen = !root.classList.contains("open");
+      closeAllFx();
+      if(willOpen){ root.classList.add("open"); toggle.setAttribute("aria-expanded", "true"); }
+      return;
+    }
+    closeAllFx();
+  });
 
-  function onGroupFilterChange(){
-    currentGroupFilter = document.getElementById("groupFilterSelect").value;
-    renderAll();
-  }
+  document.addEventListener("keydown", e => {
+    const root = e.target.closest && e.target.closest(".fx");
+    if(e.key === "Escape"){
+      const open = document.querySelector(".fx.open");
+      if(open){ closeAllFx(); const b = open.querySelector(".fx-btn"); if(b) b.focus(); }
+      return;
+    }
+    if(!root || (e.key !== "ArrowDown" && e.key !== "ArrowUp")) return;
+    e.preventDefault();
+    if(!root.classList.contains("open")){ root.classList.add("open"); root.querySelector(".fx-btn").setAttribute("aria-expanded", "true"); }
+    const items = Array.from(root.querySelectorAll(".fx-opt"));
+    const i = items.indexOf(document.activeElement);
+    const next = e.key === "ArrowDown" ? (i + 1) % items.length : (i <= 0 ? items.length - 1 : i - 1);
+    items[next].focus();
+  });
 
   function wireTopScrollbar(topId, innerId, wrapId){
     const top = document.getElementById(topId);
@@ -1830,10 +2276,10 @@ function goBack(){
   
   function getScoreColor(score, opacity = 1) {
   const alpha = opacity;
-  if (score >= 90) return `rgba(29,65,69,${alpha})`;
-  if (score >= 75) return `rgba(40,86,90,${alpha})`;
-  if (score >= 60) return `rgba(184,155,122,${alpha})`;
-  return `rgba(150,115,84,${alpha})`;
+  if (score >= 90) return `rgba(7,42,94,${alpha})`;
+  if (score >= 75) return `rgba(11,77,166,${alpha})`;
+  if (score >= 60) return `rgba(143,178,232,${alpha})`;
+  return `rgba(74,128,214,${alpha})`;
 }
   
   function toggleGroup(labelEl) {
@@ -2145,6 +2591,7 @@ function goBack(){
     renderGradeRadarChart();
     renderTopAttenders(students);
     renderUnpaidList(unpaidStudents);
+    renderAbsenceFollowupList(students);
     renderExamPerformerLists();
     renderCityGroupKpis(students);
     renderAttByCityChart(students);
@@ -2187,7 +2634,7 @@ function goBack(){
         labels: rows.map(r => tGradeLabel(r.grade)),
         datasets: [{
           data: rows.map(r => r.rate ?? 0),
-          backgroundColor: "rgba(40,86,90,0.60)",
+          backgroundColor: "rgba(11,77,166,0.60)",
           borderRadius: 6, maxBarThickness: 46
         }]
       },
@@ -2195,7 +2642,7 @@ function goBack(){
         maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw}%` } } },
         scales: {
-          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(40,86,90,0.05)" } },
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(11,77,166,0.05)" } },
           x: { ticks: { font: { size: 11, family: "Inter" } }, grid: { display: false } }
         }
       }
@@ -2217,7 +2664,7 @@ function goBack(){
         labels: ["Paid", "Unpaid"],
         datasets: [{
           data: [paidCount, unpaidCount],
-           backgroundColor: ["rgba(40,86,90,0.75)", "rgba(150,115,84,0.70)"],
+           backgroundColor: ["rgba(11,77,166,0.75)", "rgba(74,128,214,0.70)"],
           borderWidth: 0
         }]
       },
@@ -2273,7 +2720,7 @@ function goBack(){
             } } }
           },
           scales: {
-            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(40,86,90,0.05)" } },
+            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(11,77,166,0.05)" } },
             x: { ticks: { font: { size: 10 } }, grid: { display: false } }
           }
         }
@@ -2295,7 +2742,7 @@ function goBack(){
           maintainAspectRatio: false,
           plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw}%` } } },
           scales: {
-            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(40,86,90,0.05)" } },
+            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(11,77,166,0.05)" } },
             x: { ticks: { font: { size: 10 } }, grid: { display: false } }
           }
         }
@@ -2398,15 +2845,15 @@ function goBack(){
       data: {
         labels: grades.map(g => tGradeLabel(g)),
         datasets: [
-          { label: 'Attendance', data: attData, backgroundColor: '#28565A', borderRadius: 4, maxBarThickness: 22 },
-          { label: 'Exam Score', data: scoreData, backgroundColor: '#967354', borderRadius: 4, maxBarThickness: 22 }
+          { label: 'Attendance', data: attData, backgroundColor: '#0B4DA6', borderRadius: 4, maxBarThickness: 22 },
+          { label: 'Exam Score', data: scoreData, backgroundColor: '#4A80D6', borderRadius: 4, maxBarThickness: 22 }
         ]
       },
       options: {
         indexAxis: 'y',
         maintainAspectRatio: false,
         scales: {
-          x: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(40,86,90,0.08)" } },
+          x: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(11,77,166,0.08)" } },
           y: { ticks: { font: { size: 11 } }, grid: { display: false } }
         },
         plugins: {
@@ -2429,10 +2876,10 @@ function goBack(){
     canvas.style.display = "block"; emptyEl.classList.remove("show");
 
     const bands = [
-  { label: "Excellent (90-100%)", min: 90, max: 101, color: "rgba(29,65,69,0.85)" },
-  { label: "Good (75-89%)",       min: 75, max: 90,  color: "rgba(40,86,90,0.70)" },
-  { label: "Average (60-74%)",    min: 60, max: 75,  color: "rgba(184,155,122,0.75)" },
-  { label: "Needs Work (<60%)",   min: -1, max: 60,  color: "rgba(150,115,84,0.80)" }
+  { label: "Excellent (90-100%)", min: 90, max: 101, color: "rgba(7,42,94,0.85)" },
+  { label: "Good (75-89%)",       min: 75, max: 90,  color: "rgba(11,77,166,0.70)" },
+  { label: "Average (60-74%)",    min: 60, max: 75,  color: "rgba(143,178,232,0.75)" },
+  { label: "Needs Work (<60%)",   min: -1, max: 60,  color: "rgba(74,128,214,0.80)" }
 ];
     const counts = bands.map(b => rows.filter(r => r.avg >= b.min && r.avg < b.max).length);
 
@@ -2523,7 +2970,7 @@ function goBack(){
     if(canvas) canvas.style.display = "block"; if(emptyEl) emptyEl.classList.remove("show");
 
     const rows = cities.map(c => ({ city: c, rate: computeFieldRate(cityMap[c]) }));
-    const colors = cities.map((_, i) => `rgba(40,86,90,${0.3 + (i / Math.max(1, cities.length)) * 0.5})`);
+    const colors = cities.map((_, i) => `rgba(11,77,166,${0.3 + (i / Math.max(1, cities.length)) * 0.5})`);
 
     charts.attByCity = new Chart(canvas, {
       type: "bar",
@@ -2539,7 +2986,7 @@ function goBack(){
         maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw}%` } } },
         scales: {
-          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(40,86,90,0.05)" } },
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(11,77,166,0.05)" } },
           x: { ticks: { font: { size: 10, family: "Inter" } }, grid: { display: false } }
         }
       }
@@ -2558,8 +3005,8 @@ function goBack(){
     if(canvas) canvas.style.display = "block"; if(emptyEl) emptyEl.classList.remove("show");
 
    const palette = [
-  "rgba(40,86,90,0.75)", "rgba(150,115,84,0.70)", "rgba(29,65,69,0.75)",
-  "rgba(184,155,122,0.75)", "rgba(138,134,124,0.65)", "rgba(216,203,184,0.85)",
+  "rgba(11,77,166,0.75)", "rgba(74,128,214,0.70)", "rgba(7,42,94,0.75)",
+  "rgba(143,178,232,0.75)", "rgba(138,134,124,0.65)", "rgba(216,203,184,0.85)",
   "rgba(91,140,143,0.60)", "rgba(122,92,66,0.65)"
 ];
 
@@ -2599,7 +3046,7 @@ function goBack(){
         labels: cities,
         datasets: [{
           data: cities.map(c => cityMap[c].revenue),
-          backgroundColor: "rgba(150,115,84,0.65)",
+          backgroundColor: "rgba(74,128,214,0.65)",
           borderRadius: 6, maxBarThickness: 46
         }]
       },
@@ -2607,7 +3054,7 @@ function goBack(){
         maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmtEGP(c.raw) } } },
         scales: {
-          y: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: "rgba(40,86,90,0.05)" } },
+          y: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: "rgba(11,77,166,0.05)" } },
           x: { ticks: { font: { size: 10, family: "Inter" } }, grid: { display: false } }
         }
       }
@@ -2638,7 +3085,7 @@ function goBack(){
         datasets: [{
           label: "Collection Rate",
           data: rows.map(r => r.rate),
-          backgroundColor: "rgba(40,86,90,0.60)",
+          backgroundColor: "rgba(11,77,166,0.60)",
           borderRadius: 6, maxBarThickness: 46
         }]
       },
@@ -2646,7 +3093,7 @@ function goBack(){
         maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw}%` } } },
         scales: {
-          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(40,86,90,0.05)" } },
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(11,77,166,0.05)" } },
           x: { ticks: { font: { size: 10, family: "Inter" } }, grid: { display: false } }
         }
       }
@@ -2753,7 +3200,7 @@ function goBack(){
           <span class="rank">${i+1}</span>
           <span class="name">${s.name}</span>
           ${currentGrade === "all" ? `<span class="grade-chip">${tGradeLabel(s.grade)}</span>` : ""}
-          ${s.city ? `<span class="grade-chip" style="background:rgba(40,86,90,0.12); color:var(--muted);">${s.city}</span>` : ""}
+          ${s.city ? `<span class="grade-chip" style="background:rgba(11,77,166,0.12); color:var(--muted);">${s.city}</span>` : ""}
           ${s.groupName ? `<span class="grade-chip" style="background:rgba(91,140,110,0.14); color:var(--success);">${s.groupName}</span>` : ""}
         </div>
         <div class="val" style="color: ${getScoreColor(s.p, 1)}">${s.p}%</div>
@@ -2763,18 +3210,51 @@ function goBack(){
 
   function renderUnpaidList(unpaidStudents){
     const el = document.getElementById("unpaidList");
+    lastUnpaidList = unpaidStudents; // full (unsliced) list, used by "send to all"
     if(!unpaidStudents.length){ el.innerHTML = `<div class="empty-note">🎉 Everyone has paid</div>`; return; }
     el.innerHTML = unpaidStudents.slice(0, 8).map(s => `
       <div class="list-row">
         <div class="list-name">
           <span class="name">${s.name}</span>
           ${currentGrade === "all" ? `<span class="grade-chip">${tGradeLabel(s.grade)}</span>` : ""}
-          ${s.city ? `<span class="grade-chip" style="background:rgba(40,86,90,0.12); color:var(--muted);">${s.city}</span>` : ""}
+          ${s.city ? `<span class="grade-chip" style="background:rgba(11,77,166,0.12); color:var(--muted);">${s.city}</span>` : ""}
           ${s.groupName ? `<span class="grade-chip" style="background:rgba(91,140,110,0.14); color:var(--success);">${s.groupName}</span>` : ""}
         </div>
-        ${s.studentPhone ? `<a class="phone-link" href="tel:${s.studentPhone}">${s.studentPhone}</a>` : `<span class="empty-note" style="padding:0;">—</span>`}
+        <div class="list-actions">
+          ${s.studentPhone ? `<a class="phone-link" href="tel:${s.studentPhone}">${s.studentPhone}</a>` : ""}
+          ${waButtonHtml(s, "waUnpaidTemplate")}
+        </div>
       </div>
-    `).join("") + (unpaidStudents.length > 8 ? `<div class="empty-note">+${unpaidStudents.length - 8} more — see the table below</div>` : "");
+    `).join("") + (unpaidStudents.length > 8 ? `<div class="empty-note">+${unpaidStudents.length - 8} ${t("moreSeeTable")}</div>` : "");
+  }
+
+  function renderAbsenceFollowupList(students){
+    const el = document.getElementById("absenceFollowupList");
+    if(!el) return;
+    const ABSENCE_THRESHOLD = 70; // attendance rate % below which a student needs follow-up
+    const flagged = students
+      .map(s => ({ ...s, p: pct(s.attendanceCount, s.absenceCount) }))
+      .filter(s => s.p != null && s.p < ABSENCE_THRESHOLD && (s.attendanceCount + s.absenceCount) > 0)
+      .sort((a, b) => a.p - b.p);
+
+    lastAbsenceList = flagged; // full (unsliced) list, used by "send to all"
+    if(!flagged.length){ el.innerHTML = `<div class="empty-note">${t("allCaughtUp")}</div>`; return; }
+
+    el.innerHTML = flagged.slice(0, 8).map(s => `
+      <div class="list-row">
+        <div class="list-name">
+          <span class="name">${s.name}</span>
+          ${currentGrade === "all" ? `<span class="grade-chip">${tGradeLabel(s.grade)}</span>` : ""}
+          ${s.city ? `<span class="grade-chip" style="background:rgba(11,77,166,0.12); color:var(--muted);">${s.city}</span>` : ""}
+          ${s.groupName ? `<span class="grade-chip" style="background:rgba(91,140,110,0.14); color:var(--success);">${s.groupName}</span>` : ""}
+          <span class="val low" style="font-size:12px;">${s.p}%</span>
+        </div>
+        <div class="list-actions">
+          ${s.studentPhone ? `<a class="phone-link" href="tel:${s.studentPhone}">${s.studentPhone}</a>` : ""}
+          ${waButtonHtml(s, "waAbsenceTemplate")}
+        </div>
+      </div>
+    `).join("") + (flagged.length > 8 ? `<div class="empty-note">+${flagged.length - 8} ${t("moreSeeTable")}</div>` : "");
   }
 
   function renderExamPerformerLists(){
@@ -2805,7 +3285,7 @@ function goBack(){
           <span class="rank">${i+1}</span>
           <span class="name">${s.name}</span>
           ${currentGrade === "all" ? `<span class="grade-chip">${tGradeLabel(s.grade)}</span>` : ""}
-          ${s.city ? `<span class="grade-chip" style="background:rgba(40,86,90,0.12); color:var(--muted);">${s.city}</span>` : ""}
+          ${s.city ? `<span class="grade-chip" style="background:rgba(11,77,166,0.12); color:var(--muted);">${s.city}</span>` : ""}
           ${s.groupName ? `<span class="grade-chip" style="background:rgba(91,140,110,0.14); color:var(--success);">${s.groupName}</span>` : ""}
           ${examCountChip(s.count)}
         </div>
@@ -3096,15 +3576,15 @@ function deltaBadge(curr, prev, suffix = ""){
       data: {
         labels,
         datasets: [
-          { label: "Attendance Rate", data: rows.map(r => r[col.attendanceRate]), borderColor: "rgba(40,86,90,0.85)", backgroundColor: "rgba(40,86,90,0.10)", fill: true, tension: 0.3 },
-          { label: "Collection Rate", data: rows.map(r => r[col.collectionRate]), borderColor: "rgba(110,100,90,0.75)", backgroundColor: "rgba(110,100,90,0.08)", fill: true, tension: 0.3 }
+          { label: "Attendance Rate", data: rows.map(r => r[col.attendanceRate]), borderColor: "rgba(11,77,166,0.85)", backgroundColor: "rgba(11,77,166,0.10)", fill: true, tension: 0.3 },
+          { label: "Collection Rate", data: rows.map(r => r[col.collectionRate]), borderColor: "rgba(92,106,128,0.75)", backgroundColor: "rgba(92,106,128,0.08)", fill: true, tension: 0.3 }
         ]
       },
       options: {
         maintainAspectRatio: false,
         plugins: { legend: { position: "bottom", labels: { font: { family: "Inter", size: 11 }, padding: 12 } }, tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw}%` } } },
         scales: {
-          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(40,86,90,0.05)" } },
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(11,77,166,0.05)" } },
           x: { ticks: { font: { size: 10 } }, grid: { display: false } }
         }
       }
@@ -3114,13 +3594,13 @@ function deltaBadge(curr, prev, suffix = ""){
       type: "bar",
       data: {
         labels,
-        datasets: [{ label: "Revenue", data: rows.map(r => r[col.revenue]), backgroundColor: "rgba(40,86,90,0.60)", borderRadius: 6, maxBarThickness: 40 }]
+        datasets: [{ label: "Revenue", data: rows.map(r => r[col.revenue]), backgroundColor: "rgba(11,77,166,0.60)", borderRadius: 6, maxBarThickness: 40 }]
       },
       options: {
         maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmtEGP(c.raw) } } },
         scales: {
-          y: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: "rgba(40,86,90,0.05)" } },
+          y: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: "rgba(11,77,166,0.05)" } },
           x: { ticks: { font: { size: 10 } }, grid: { display: false } }
         }
       }
@@ -3130,13 +3610,13 @@ function deltaBadge(curr, prev, suffix = ""){
       type: "line",
       data: {
         labels,
-        datasets: [{ label: "Total Students", data: rows.map(r => r[col.students]), borderColor: "rgba(150,115,84,0.85)", backgroundColor: "rgba(150,115,84,0.12)", fill: true, tension: 0.3, pointBackgroundColor: "rgba(150,115,84,1)" }]
+        datasets: [{ label: "Total Students", data: rows.map(r => r[col.students]), borderColor: "rgba(74,128,214,0.85)", backgroundColor: "rgba(74,128,214,0.12)", fill: true, tension: 0.3, pointBackgroundColor: "rgba(74,128,214,1)" }]
       },
       options: {
         maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `Students: ${c.raw}` } } },
         scales: {
-          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } }, grid: { color: "rgba(40,86,90,0.05)" } },
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } }, grid: { color: "rgba(11,77,166,0.05)" } },
           x: { ticks: { font: { size: 10 } }, grid: { display: false } }
         }
       }
@@ -3366,9 +3846,9 @@ function deltaBadge(curr, prev, suffix = ""){
           datasets: [{
             label: "Score",
             data: points.map(p => p.pct),
-            borderColor: "rgba(40,86,90,0.85)",
-            backgroundColor: "rgba(40,86,90,0.10)",
-            fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: "rgba(40,86,90,1)"
+            borderColor: "rgba(11,77,166,0.85)",
+            backgroundColor: "rgba(11,77,166,0.10)",
+            fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: "rgba(11,77,166,1)"
           }]
         },
         options: {
@@ -3381,7 +3861,7 @@ function deltaBadge(curr, prev, suffix = ""){
             } } }
           },
           scales: {
-            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(40,86,90,0.05)" } },
+            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(11,77,166,0.05)" } },
             x: { ticks: { font: { size: 10 } }, grid: { display: false } }
           }
         }
@@ -3468,6 +3948,169 @@ function deltaBadge(curr, prev, suffix = ""){
   loadDashboard();
   loadSidebarCounts();
 
+</script>
+
+<!-- MilEX EDU PWA: installable on Android/iOS when served over HTTPS -->
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+<script>
+/* ============ Consecutive-absence report + Audit log (added) ============ */
+(function(){
+  const $ = id => document.getElementById(id);
+  const L = (ar, en) => (typeof currentLang !== 'undefined' && currentLang === 'ar') ? ar : en;
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const MY_VIEWS = ['absView','auditView'];
+  const ALL_VIEWS = ['dashboardView','historyView','examsView','settingsView','absView','auditView'];
+
+  function labels(){
+    $('absTabLbl').textContent = '📉 ' + L('غياب متتالي','Consecutive Absences');
+    $('auditTabLbl').textContent = '🧾 ' + L('سجل العمليات','Audit Log');
+    // sidebar section headings (were hard-coded English)
+    const GROUPS = { grades:['الصفوف','Grades'], other:['أخرى','Other'], settings:['الإعدادات','Settings'] };
+    document.querySelectorAll('.tab-group-label').forEach(el => {
+      const g = GROUPS[el.dataset.group]; if(!g) return;
+      const grp = document.querySelector('.tab-group[data-group="' + el.dataset.group + '"]');
+      el.textContent = (grp && grp.classList.contains('collapsed') ? '▶ ' : '▼ ') + L(g[0], g[1]);
+    });
+    $('absTitle').textContent = L('طلاب غابوا حصص متتالية','Students absent several sessions in a row');
+    $('absMinLbl').textContent = L('على الأقل: ','At least: ');
+    $('auditTitle').textContent = L('سجل العمليات (مين عمل إيه ومتى)','Audit log (who did what and when)');
+    $('auditSearch').placeholder = L('ابحث باسم الطالب…','Search student name…');
+    const sel = $('absGrade'); const keep = sel.value || 'all'; sel.innerHTML = '';
+    sel.add(new Option(L('كل الصفوف','All grades'),'all'));
+    Object.keys(GRADE_CONFIG).forEach(k => sel.add(new Option(L(GRADE_CONFIG[k].labelAr, GRADE_CONFIG[k].labelEn), k)));
+    sel.value = keep;
+    const A = $('auditAction'); const keepA = A.value || 'all'; A.innerHTML = '';
+    [['all',L('كل العمليات','All actions')],['delete_student',L('حذف طالب','Delete student')],['change_group',L('تغيير مجموعة','Change group')],
+     ['change_grade',L('تغيير صف','Change grade')],['edit_student',L('تعديل بيانات','Edit details')],['config_save',L('تعديل مجموعات التسجيل','Registration groups edit')],
+     ['download_bundle',L('تحميل نسخة مستقلة','Standalone download')],['revoke_bundles',L('إلغاء النسخ المحمّلة','Revoke copies')],['offline_sync',L('رفع مسحات أوفلاين','Offline sync')]]
+     .forEach(([v,t]) => A.add(new Option(t,v)));
+    A.value = keepA;
+    const U = $('auditActor'); const keepU = U.value || 'all'; U.innerHTML = '';
+    [['all',L('الكل','Everyone')],['teacher',L('المدرس','Teacher')],['assistant',L('المساعد','Assistant')]].forEach(([v,t]) => U.add(new Option(t,v)));
+    U.value = keepU;
+  }
+  labels();
+
+  function show(viewId, tabId){
+    document.querySelectorAll('#gradeTabs .tab').forEach(t => t.classList.remove('active'));
+    $(tabId).classList.add('active');
+    ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.style.display = (v === viewId) ? '' : 'none'; });
+    if(typeof closeSidebarOnMobileNav === 'function') closeSidebarOnMobileNav();
+  }
+  // any other tab hides my views (their own handlers show what they need)
+  document.querySelectorAll('#gradeTabs .tab').forEach(t => {
+    if(t.id === 'absTab' || t.id === 'auditTab') return;
+    t.addEventListener('click', () => MY_VIEWS.forEach(v => $(v).style.display = 'none'));
+  });
+  document.querySelectorAll('#langSwitch button').forEach(b => b.addEventListener('click', () => setTimeout(() => {
+    labels();
+    if($('absView').style.display !== 'none') loadAbs();
+    if($('auditView').style.display !== 'none') renderAudit();
+  }, 30)));
+
+  /* ---------- consecutive absences ---------- */
+  async function loadAbs(){
+    $('absLoading').classList.add('show'); $('absErr').classList.remove('show'); $('absWrap').style.display = 'none';
+    const min = Math.max(1, Number($('absMin').value) || 3);
+    const sel = $('absGrade').value;
+    const keys = sel === 'all' ? Object.keys(GRADE_CONFIG) : [sel];
+    try{
+      const parts = await Promise.all(keys.map(async k => {
+        const { data, error } = await supa.from(GRADE_CONFIG[k].attendanceTable)
+          .select('full_name,student_phone,parent_phone,group_name,attendance_count,absence_count,last_attendance_date,consecutive_absences')
+          .gte('consecutive_absences', min);
+        if(error) throw new Error(error.message);
+        return (data || []).map(r => ({ ...r, grade: k }));
+      }));
+      const rows = parts.flat().sort((a,b) => (b.consecutive_absences||0) - (a.consecutive_absences||0));
+      $('absHead').innerHTML = ['#',L('الاسم','Name'),L('الصف','Grade'),L('المجموعة','Group'),L('غياب متتالي','In a row'),L('إجمالي الغياب','Total absences'),L('آخر حضور','Last attended'),L('ولي الأمر','Parent')]
+        .map(h => `<th>${h}</th>`).join('');
+      $('absBody').innerHTML = rows.map((r,i) => {
+        const ph = String(r.parent_phone || '').replace(/\D/g,'');
+        const wa = ph ? 'https://wa.me/20' + ph.replace(/^0/,'') + '?text=' + encodeURIComponent(L(
+          `السلام عليكم، ولي أمر الطالب ${r.full_name}. نحيط حضرتك علمًا بأن الطالب تغيب ${r.consecutive_absences} حصص متتالية. برجاء التواصل معنا.`,
+          `Hello, parent of ${r.full_name}. Your child has missed ${r.consecutive_absences} sessions in a row. Please get in touch.`)) : '';
+        return `<tr>
+          <td>${i+1}</td><td>${esc(r.full_name)}</td>
+          <td>${esc(L(GRADE_CONFIG[r.grade].labelAr, GRADE_CONFIG[r.grade].labelEn))}</td>
+          <td>${esc(r.group_name || '—')}</td>
+          <td><b style="color:var(--error);">${r.consecutive_absences}</b></td>
+          <td>${r.absence_count ?? 0}</td>
+          <td>${esc(String(r.last_attendance_date || '—').slice(0,10))}</td>
+          <td>${ph ? `<a href="tel:${esc(ph)}">📞</a> &nbsp; <a href="${wa}" target="_blank" rel="noopener">💬</a> <span style="color:var(--muted);">${esc(ph)}</span>` : '—'}</td>
+        </tr>`; }).join('') || `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:22px;">${L('مفيش طلاب بالشرط ده 🎉','No students match 🎉')}</td></tr>`;
+      $('absWrap').style.display = '';
+    }catch(e){
+      const missing = /consecutive_absences/i.test(e.message || '');
+      $('absErr').textContent = missing
+        ? L('عمود consecutive_absences مش موجود — شغّل ملف milex_upgrade.sql في Supabase الأول.', 'Column consecutive_absences is missing — run milex_upgrade.sql in Supabase first.')
+        : (e.message || String(e));
+      $('absErr').classList.add('show');
+    }finally{ $('absLoading').classList.remove('show'); }
+  }
+  $('absTab').addEventListener('click', () => { show('absView','absTab'); labels(); loadAbs(); });
+  $('absReload').addEventListener('click', loadAbs);
+  $('absGrade').addEventListener('change', loadAbs);
+  $('absMin').addEventListener('change', loadAbs);
+
+  /* ---------- audit log ---------- */
+  let auditRows = [];
+  const ACTION_LABEL = () => ({ delete_student:L('حذف طالب','Deleted student'), change_group:L('تغيير مجموعة','Changed group'),
+    change_grade:L('تغيير صف','Changed grade'), edit_student:L('تعديل بيانات','Edited details'), config_save:L('تعديل مجموعات التسجيل','Edited registration groups'),
+    download_bundle:L('تحميل نسخة مستقلة','Downloaded standalone copy'), revoke_bundles:L('إلغاء النسخ المحمّلة','Revoked downloaded copies'), offline_sync:L('رفع مسحات أوفلاين','Offline scans synced') });
+  const FIELD = { full_name:'الاسم', student_phone:'هاتف الطالب', parent_phone:'هاتف ولي الأمر', city:'المدينة', created_at:'تاريخ التسجيل',
+    attendance_count:'الحضور', absence_count:'الغياب', last_attendance_date:'آخر حضور', payment_status:'حالة الدفع', amount_paid:'المبلغ', last_payment_date:'آخر دفع' };
+  function detailText(r){
+    const d = r.details || {};
+    if(r.action === 'change_group' || r.action === 'change_grade') return `${d.from ?? '—'}  ←  ${d.to ?? '—'}`;
+    if(r.action === 'delete_student') return [d.via === 'bulk_cleanup' ? L('تنظيف جماعي','bulk cleanup') : '', d.group, d.phone].filter(Boolean).join(' · ');
+    if(r.action === 'download_bundle') return L('نسخة ','Copy: ') + (d.role === 'assistant' ? L('المساعد','assistant') : L('المدرس','teacher'));
+    if(r.action === 'revoke_bundles') return L('كل النسخ القديمة اترفضت','All older copies rejected');
+    if(r.action === 'offline_sync') return L(`اترفع ${d.sent ?? 0} · اترفض ${d.rejected ?? 0}`, `Synced ${d.sent ?? 0} · rejected ${d.rejected ?? 0}`);
+    if(r.action === 'config_save') return L(`${(d.groups||[]).length} مجموعة محفوظة`, `${(d.groups||[]).length} groups saved`);
+    if(r.action === 'edit_student'){
+      const out = [];
+      ['attendance','payment'].forEach(sec => Object.entries(d[sec] || {}).forEach(([k,v]) => { if(k === 'full_name' && sec === 'payment') return; out.push(`${FIELD[k] || k}: ${v.from ?? '—'} ← ${v.to ?? '—'}`); }));
+      return out.join(' | ');
+    }
+    return '';
+  }
+  function renderAudit(){
+    const act = $('auditAction').value, who = $('auditActor').value, q = $('auditSearch').value.trim().toLowerCase();
+    const rows = auditRows.filter(r => (act === 'all' || r.action === act) && (who === 'all' || r.actor_role === who) && (!q || String(r.student_name||'').toLowerCase().includes(q)));
+    $('auditHead').innerHTML = [L('الوقت','Time'),L('بواسطة','By'),L('العملية','Action'),L('الطالب','Student'),L('الصف','Grade'),L('التفاصيل','Details')].map(h => `<th>${h}</th>`).join('');
+    const AL = ACTION_LABEL();
+    $('auditBody').innerHTML = rows.map(r => `<tr>
+      <td style="white-space:nowrap;">${esc(new Date(r.created_at).toLocaleString(L('ar-EG','en-GB')))}</td>
+      <td>${esc(r.actor_role === 'teacher' ? L('المدرس','Teacher') : L('المساعد','Assistant'))}</td>
+      <td>${esc(AL[r.action] || r.action)}</td>
+      <td>${esc(r.student_name || '—')}</td>
+      <td>${esc(GRADE_CONFIG[r.grade] ? L(GRADE_CONFIG[r.grade].labelAr, GRADE_CONFIG[r.grade].labelEn) : '—')}</td>
+      <td style="max-width:420px;">${esc(detailText(r))}</td></tr>`).join('')
+      || `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:22px;">${L('مفيش عمليات','No entries')}</td></tr>`;
+    $('auditWrap').style.display = '';
+  }
+  async function loadAudit(){
+    $('auditLoading').classList.add('show'); $('auditErr').classList.remove('show'); $('auditWrap').style.display = 'none';
+    try{
+      const { data, error } = await supa.from('audit_log').select('*').order('created_at', { ascending:false }).limit(500);
+      if(error) throw new Error(error.message);
+      auditRows = data || [];
+      renderAudit();
+    }catch(e){
+      $('auditErr').textContent = /audit_log/i.test(e.message || '') ? L('جدول audit_log مش موجود — شغّل ملف milex_upgrade.sql في Supabase الأول.', 'Table audit_log is missing — run milex_upgrade.sql in Supabase first.') : (e.message || String(e));
+      $('auditErr').classList.add('show');
+    }finally{ $('auditLoading').classList.remove('show'); }
+  }
+  $('auditTab').addEventListener('click', () => { show('auditView','auditTab'); labels(); loadAudit(); });
+  $('auditReload').addEventListener('click', loadAudit);
+  ['auditAction','auditActor'].forEach(id => $(id).addEventListener('change', renderAudit));
+  $('auditSearch').addEventListener('input', renderAudit);
+})();
 </script>
 </body>
 </html>

@@ -3,8 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+// ---- MilEX access guard ----
+// This page is for teachers/admins only. If there is no valid, non-expired
+// login session (created by index.html after the correct password is
+// entered), redirect immediately back to the login page before any content
+// is shown. The session lives in sessionStorage (per-tab, auto-expires),
+// not in a permanent flag, so it can't just be set once and forgotten.
+(function(){
+  try{
+    var raw = (sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession'));
+    var valid = false;
+    if(raw){
+      var data = JSON.parse(raw);
+      valid = !!(data && data.exp && Date.now() < data.exp);
+    }
+    if(!valid){
+      window.location.replace('index.html');
+    }
+  }catch(e){
+    window.location.replace('index.html');
+  }
+})();
+</script>
+
 <title>حذف طالب</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="milex-common.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,32 +40,31 @@
 <link rel="preconnect" href="https://evbjulsahncllewwvlxp.supabase.co">
 <style>
   :root{
-    --ink:#263238; --ink-2:#244F52;
-    --paper:#F3EFE7; --card:#FFFFFF;
-    --line:rgba(38,50,56,0.15);
-    --gold:#244F52; --gold-2:#1E4447; --gold-soft:rgba(36,79,82,0.12);
+    --ink:#101B33; --ink-2:#0B4DA6;
+    --paper:#EEF3FA; --card:#FFFFFF;
+    --line:rgba(16,27,51,0.15);
+    --gold:#0B4DA6; --gold-2:#072A5E; --gold-soft:rgba(11,77,166,0.12);
     --success:#2F9E73; --success-soft:rgba(46,125,82,0.12);
     --error:#A94442;
     --error-soft:rgba(169,68,66,0.12);
-    --muted:#64748B;
-    --cream-bg-1:#F4F1EA; --cream-bg-2:#EDE9E0;
-    --on-accent:#f6f2ea;
-    --danger:#8A6F52;
-    --danger-2:#6F5943; --danger-soft:rgba(179,38,30,0.12);
-    --shadow-sm:0 1px 2px rgba(14,31,48,0.10);
-    --shadow-md:0 8px 24px rgba(14,31,48,0.14);
-    --shadow-lg:0 20px 50px rgba(14,31,48,0.18);
+    --muted:#5C6A80;
+    --cream-bg-1:#F3F7FC; --cream-bg-2:#EEF3FA;
+    --on-accent:#F5F8FC;
+    --danger:#C0392B; --danger-2:#962D22; --danger-soft:rgba(192,57,43,0.12);
+    --shadow-sm:0 1px 2px rgba(7,42,94,0.10);
+    --shadow-md:0 8px 24px rgba(7,42,94,0.14);
+    --shadow-lg:0 20px 50px rgba(7,42,94,0.18);
   }
   body.dark{
-    --ink:#E8EDF4; --ink-2:#B9CBDE;
-    --paper:#10182A; --card:#182338;
-    --line:rgba(232,237,244,0.14);
-    --gold:#4FA8D8; --gold-2:#7FC8EE; --gold-soft:rgba(79,168,216,0.20);
-    --success:#4CAF50; --success-soft:rgba(63,168,115,0.18);
-    --error:#4FA8D8; --error-soft:rgba(79,168,216,0.18);
-    --muted:#8A96A8;
-    --cream-bg-1:#10182A; --cream-bg-2:#141C2E;
-    --on-accent:#f6f2ea;
+    --ink:#DEE8F7; --ink-2:#BFD0EC;
+    --paper:#08162F; --card:#0D2146;
+    --line:rgba(222,232,247,0.14);
+    --gold:#4A80D6; --gold-2:#9DBBEA; --gold-soft:rgba(74,134,222,0.20);
+    --success:#6FBF4A; --success-soft:rgba(63,168,115,0.18);
+    --error:#E26D6D; --error-soft:rgba(226,109,109,0.18);
+    --muted:#9FB3D4;
+    --cream-bg-1:#08162F; --cream-bg-2:#0A1C3C;
+    --on-accent:#F5F8FC;
     --danger:#e5564c; --danger-2:#c0392b; --danger-soft:rgba(229,86,76,0.18);
     --shadow-sm:0 1px 2px rgba(0,0,0,0.35);
     --shadow-md:0 8px 24px rgba(0,0,0,0.45);
@@ -51,8 +75,8 @@
   body{
     font-family:'Cairo','Inter',sans-serif;
     background:
-      radial-gradient(circle at 15% 10%, rgba(36,79,82,0.06), transparent 45%),
-      radial-gradient(circle at 85% 90%, rgba(36,79,82,0.04), transparent 45%),
+      radial-gradient(circle at 15% 10%, rgba(11,77,166,0.06), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(11,77,166,0.04), transparent 45%),
       linear-gradient(160deg, var(--cream-bg-1), var(--cream-bg-2));
     color:var(--ink);
     min-height:100vh;
@@ -82,7 +106,7 @@
     padding:11px 18px; border-radius:10px;
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
     color:var(--on-accent); font-family:'Cairo','Inter',sans-serif; font-size:13px; font-weight:700;
-    text-decoration:none; box-shadow:0 6px 16px rgba(27,79,114,0.28); border:none; cursor:pointer;
+    text-decoration:none; box-shadow:0 6px 16px rgba(11,77,166,0.28); border:none; cursor:pointer;
     white-space:nowrap;
   }
   .back-btn svg{ width:16px; height:16px; flex-shrink:0; }
@@ -119,6 +143,20 @@
     color:var(--muted); font-size:15px; pointer-events:none;
   }
 
+  /* ===== Cleanup button + list ===== */
+  .btn-cleanup{
+    padding:11px 16px; border-radius:10px; border:1px solid rgba(179,38,30,0.35);
+    background:var(--danger-soft); color:var(--danger-2); cursor:pointer;
+    font-family:'Cairo','Inter',sans-serif; font-size:13px; font-weight:700; white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .btn-cleanup:hover{ background:var(--danger); color:#FFF; }
+  .cleanup-list{ max-height:220px; overflow:auto; border:1px solid var(--line); border-radius:10px; margin-bottom:16px; }
+  .cleanup-list:empty{ display:none; }
+  .cleanup-list div{ padding:8px 12px; font-size:12.5px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; gap:8px; }
+  .cleanup-list div:last-child{ border-bottom:none; }
+  .cleanup-list small{ color:var(--muted); }
+
   .result-count{ font-size:12px; color:var(--muted); margin-bottom:12px; }
 
   .state-msg{
@@ -128,7 +166,7 @@
   .state-msg.show{ display:flex; }
   .state-msg.err{ color:var(--error); flex-direction:column; gap:9px; }
   .state-msg .spinner{
-    width:18px; height:18px; border-radius:50%; border:2px solid rgba(27,79,114,0.18);
+    width:18px; height:18px; border-radius:50%; border:2px solid rgba(11,77,166,0.18);
     border-top-color:var(--gold); animation:spin .7s linear infinite; flex-shrink:0;
   }
   @keyframes spin{ to{ transform:rotate(360deg); } }
@@ -143,9 +181,9 @@
   }
   tbody td{ padding:11px 14px; border-bottom:1px solid var(--line); color:var(--ink); white-space:nowrap; }
   tbody tr:last-child td{ border-bottom:none; }
-  tbody tr:hover{ background:rgba(27,79,114,0.06); }
+  tbody tr:hover{ background:rgba(11,77,166,0.06); }
   .grade-chip{
-    font-size:9.5px; font-weight:700; color:var(--gold-2); background:rgba(27,79,114,0.12);
+    font-size:9.5px; font-weight:700; color:var(--gold-2); background:rgba(11,77,166,0.12);
     padding:2px 7px; border-radius:999px;
   }
   .chip{ display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:700; }
@@ -156,7 +194,7 @@
     font-family:'Cairo','Inter',sans-serif; font-weight:700; font-size:12.5px; padding:8px 14px; border-radius:8px;
     display:inline-flex; align-items:center; gap:6px; transition:all .15s ease;
   }
-  .delete-btn:hover{ background:var(--danger); color:#fff; border-color:var(--danger); }
+  .delete-btn:hover{ background:var(--danger); color:#FFF; border-color:var(--danger); }
   .delete-btn:disabled{ opacity:.5; cursor:not-allowed; }
 
   .footer-note{ text-align:center; font-size:11.5px; color:var(--muted); margin-top:24px; display:flex; align-items:center; justify-content:center; gap:7px; }
@@ -164,7 +202,7 @@
 
   /* ===== Modal ===== */
   .modal-overlay{
-    display:none; position:fixed; inset:0; background:rgba(20,20,18,0.55); z-index:80;
+    display:none; position:fixed; inset:0; background:rgba(7,22,47,0.55); z-index:80;
     align-items:center; justify-content:center; padding:20px;
   }
   .modal-overlay.show{ display:flex; }
@@ -203,7 +241,7 @@
   }
   .btn-cancel{ background:var(--paper); color:var(--ink); border:1px solid var(--line) !important; }
   .btn-cancel:hover{ background:var(--line); }
-  .btn-confirm-delete{ background:var(--danger); color:#fff; }
+  .btn-confirm-delete{ background:var(--danger); color:#FFF; }
   .btn-confirm-delete:hover{ background:var(--danger-2); }
   .btn-confirm-delete:disabled{ opacity:.5; cursor:not-allowed; }
   .modal-status{ margin-top:14px; font-size:12.5px; text-align:center; min-height:18px; }
@@ -218,7 +256,18 @@
     .controls{ flex-direction:column; align-items:stretch; }
     .grade-select{ min-width:0; }
   }
+  .app-footer{
+    text-align:center; padding:22px 10px 10px; font-size:13px; color:var(--muted); opacity:0.85;
+  }
+  .app-footer a{ color:inherit; text-decoration:underline; font-weight:600; }
 </style>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0B4DA6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MilEX EDU">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 </head>
 <body>
 
@@ -255,6 +304,7 @@
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="ابحث بالاسم أو رقم الهاتف…" oninput="renderResults()">
       </div>
+      <button class="btn-cleanup" onclick="openCleanupModal()">🧹 حذف غير النشطين (شهر + حضور صفر)</button>
     </div>
 
     <div class="state-msg show" id="loadingMsg">
@@ -309,6 +359,25 @@
   </div>
 </div>
 
+<!-- Cleanup (inactive students) modal -->
+<div class="modal-overlay" id="cleanupOverlay" onclick="if(event.target===this) closeCleanupModal()">
+  <div class="modal-box">
+    <div class="modal-icon">🧹</div>
+    <div class="modal-title">حذف الطلاب غير النشطين</div>
+    <div class="modal-sub" id="cleanupSummary"></div>
+    <div class="cleanup-list" id="cleanupList"></div>
+    <label class="confirm-label">للتأكيد اكتب كلمة: <span style="color:var(--danger-2);">حذف</span></label>
+    <input type="text" class="confirm-input" id="cleanupConfirmInput" oninput="checkCleanupInput()" autocomplete="off">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCleanupModal()">إلغاء</button>
+      <button class="btn-confirm-delete" id="cleanupConfirmBtn" disabled onclick="performCleanup()">حذف الكل نهائيًا</button>
+    </div>
+    <div class="modal-status" id="cleanupStatus"></div>
+  </div>
+</div>
+
+<div class="app-footer">Powered by <a href="milex.html" target="_blank" rel="noopener noreferrer">MilEX</a></div>
+
 <script>
   /* ============================================================
      SUPABASE CONNECTION — same database as the main dashboard
@@ -339,7 +408,8 @@
       lastAttendance: "last_attendance_date",
       amountPaid: "amount_paid",
       paymentStatus: "payment_status",
-      lastPaymentDate: "last_payment_date"
+      lastPaymentDate: "last_payment_date",
+      createdAt: "created_at"   // تاريخ التسجيل — لازم يكون موجود في جداول الحضور
     }
   };
 
@@ -415,7 +485,9 @@
         studentPhone: a[col.studentPhone] ?? "",
         city: a[col.city] ?? "",
         groupName: a[col.groupName] ?? "",
-        paymentStatus: p[col.paymentStatus] ?? ""
+        paymentStatus: p[col.paymentStatus] ?? "",
+        createdAt: a[col.createdAt] ?? null,
+        attendanceCount: Number(a[col.attendanceCount] ?? 0)
       };
     });
   }
@@ -484,7 +556,30 @@
     }).join("");
   }
 
-  /* ---------- Delete flow ---------- */
+  /* ---------- Shared delete (scores → payments → attendance) ---------- */
+  async function deleteStudentData(qrCode, grade){
+    const col = SCHEMA.col;
+
+    const { error: scoresErr } = await supa
+      .from(SCORES_SCHEMA.table)
+      .delete()
+      .eq(SCORES_SCHEMA.col.studentCode, qrCode);
+    if(scoresErr) throw new Error(`(الامتحانات) ${scoresErr.message}`);
+
+    const { error: payErr } = await supa
+      .from(SCHEMA.paymentsTable(grade))
+      .delete()
+      .eq(col.qrCode, qrCode);
+    if(payErr) throw new Error(`(الدفع) ${payErr.message}`);
+
+    const { error: attErr } = await supa
+      .from(SCHEMA.attendanceTable(grade))
+      .delete()
+      .eq(col.qrCode, qrCode);
+    if(attErr) throw new Error(`(الحضور) ${attErr.message}`);
+  }
+
+  /* ---------- Single delete flow ---------- */
   function openDeleteModal(qrCode, grade, name){
     pendingDelete = { qrCode, grade, name };
     document.getElementById("deleteStudentName").textContent = name || "هذا الطالب";
@@ -518,25 +613,10 @@
     statusEl.innerHTML = `<span class="spinner"></span> جاري حذف بيانات الطالب…`;
 
     try{
-      const col = SCHEMA.col;
-
-      const { error: scoresErr } = await supa
-        .from(SCORES_SCHEMA.table)
-        .delete()
-        .eq(SCORES_SCHEMA.col.studentCode, qrCode);
-      if(scoresErr) throw new Error(`(الامتحانات) ${scoresErr.message}`);
-
-      const { error: payErr } = await supa
-        .from(SCHEMA.paymentsTable(grade))
-        .delete()
-        .eq(col.qrCode, qrCode);
-      if(payErr) throw new Error(`(الدفع) ${payErr.message}`);
-
-      const { error: attErr } = await supa
-        .from(SCHEMA.attendanceTable(grade))
-        .delete()
-        .eq(col.qrCode, qrCode);
-      if(attErr) throw new Error(`(الحضور) ${attErr.message}`);
+      const snap = students.find(x => x.qrCode === qrCode && x.grade === grade) || {};
+      await deleteStudentData(qrCode, grade);
+      MILEX.audit(supa, { action:'delete_student', grade, student_name:name, qr_code:String(qrCode),
+        details:{ via:'single', group: snap.groupName || null, phone: snap.studentPhone || null, city: snap.city || null, attendance_count: snap.attendanceCount ?? null } });
 
       statusEl.className = "modal-status ok";
       statusEl.textContent = `تم حذف ${name} وكل بياناته بنجاح`;
@@ -553,6 +633,89 @@
     }
   }
 
+  /* ---------- Cleanup inactive students ---------- */
+  const CLEANUP_DAYS = 30;   // عدد الأيام — غيّره لو عايز مدة تانية
+  let pendingCleanup = [];
+
+  function escHtml(s){
+    return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+
+  function openCleanupModal(){
+    const limit = Date.now() - CLEANUP_DAYS * 24 * 60 * 60 * 1000;
+    const noDate = students.filter(s => !s.createdAt).length;
+
+    // الشرط: حضور = 0 + مسجل من CLEANUP_DAYS يوم أو أكتر (اللي مالوش تاريخ بيتخطى)
+    // لو عايز تستثني اللي دافع ضيف:  && !isPaid(s.paymentStatus)
+    pendingCleanup = students.filter(s =>
+      s.attendanceCount === 0 &&
+      s.createdAt && new Date(s.createdAt).getTime() <= limit
+    );
+
+    const scope = currentGrade === "all" ? "كل الصفوف" : GRADE_LABELS[currentGrade];
+    document.getElementById("cleanupSummary").innerHTML = pendingCleanup.length
+      ? `تم العثور على <b>${pendingCleanup.length}</b> طالب في (${scope}) مسجلين من ${CLEANUP_DAYS} يوم أو أكتر وحضورهم صفر.
+         ${noDate ? `<br><small>(تم تخطي ${noDate} طالب بدون تاريخ تسجيل)</small>` : ""}`
+      : `مفيش طلاب مطابقين للشرط في (${scope}).
+         ${noDate ? `<br><small>(${noDate} طالب بدون تاريخ تسجيل)</small>` : ""}`;
+
+    document.getElementById("cleanupList").innerHTML = pendingCleanup.map(s =>
+      `<div><span>${escHtml(s.name)}</span><small>${GRADE_LABELS[s.grade]} · ${new Date(s.createdAt).toLocaleDateString("ar-EG")}</small></div>`
+    ).join("");
+
+    document.getElementById("cleanupConfirmInput").value = "";
+    document.getElementById("cleanupConfirmBtn").disabled = true;
+    document.getElementById("cleanupStatus").textContent = "";
+    document.getElementById("cleanupStatus").className = "modal-status";
+    document.getElementById("cleanupOverlay").classList.add("show");
+  }
+
+  function closeCleanupModal(){
+    document.getElementById("cleanupOverlay").classList.remove("show");
+    pendingCleanup = [];
+  }
+
+  function checkCleanupInput(){
+    const ok = document.getElementById("cleanupConfirmInput").value.trim() === "حذف" && pendingCleanup.length > 0;
+    document.getElementById("cleanupConfirmBtn").disabled = !ok;
+  }
+
+  async function performCleanup(){
+    const statusEl = document.getElementById("cleanupStatus");
+    const btn = document.getElementById("cleanupConfirmBtn");
+    const list = [...pendingCleanup];
+    btn.disabled = true;
+
+    let done = 0;
+    const failed = [];
+    for(const s of list){
+      statusEl.className = "modal-status";
+      statusEl.innerHTML = `<span class="spinner"></span> جاري الحذف… ${done}/${list.length}`;
+      try{
+        await deleteStudentData(s.qrCode, s.grade);
+        MILEX.audit(supa, { action:'delete_student', grade:s.grade, student_name:s.name, qr_code:String(s.qrCode),
+          details:{ via:'bulk_cleanup', group: s.groupName || null, phone: s.studentPhone || null, city: s.city || null, attendance_count: s.attendanceCount ?? null } });
+        students = students.filter(x => !(x.qrCode === s.qrCode && x.grade === s.grade));
+        done++;
+      }catch(err){
+        console.error(err);
+        failed.push(`${s.name}: ${err.message || err}`);
+      }
+    }
+
+    renderResults();
+    if(failed.length){
+      statusEl.className = "modal-status err";
+      statusEl.textContent = `تم حذف ${done} وفشل ${failed.length}. أول خطأ: ${failed[0]}`;
+      pendingCleanup = list.filter(s => students.some(x => x.qrCode === s.qrCode && x.grade === s.grade));
+      document.getElementById("cleanupConfirmBtn").disabled = false;
+    }else{
+      statusEl.className = "modal-status ok";
+      statusEl.textContent = `تم حذف ${done} طالب بنجاح`;
+      setTimeout(closeCleanupModal, 1500);
+    }
+  }
+
   populateGradeSelect();
   (function initDark(){
     let savedDark = false;
@@ -563,6 +726,13 @@
     }
   })();
   loadData();
+</script>
+
+<!-- MilEX EDU PWA: installable on Android/iOS when served over HTTPS -->
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
 </script>
 </body>
 </html>

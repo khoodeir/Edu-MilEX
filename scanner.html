@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Student Attendance Scanner</title>
 <script>
+  // Hide the page immediately until the access guard below confirms a
+  // valid teacher or assistant session; avoids flashing protected content.
+  document.documentElement.style.visibility = 'hidden';
+</script>
+<script>
   // Apply saved theme + language before first paint to avoid a flash of the wrong look.
   (function(){
     try{
@@ -19,6 +24,7 @@
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="milex-common.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -36,20 +42,20 @@
     and the card carries a faint ruled-paper texture instead of a plain flat surface.
   */
   :root{
-    --bg-main:#F7F4EE; --bg-secondary:#EDE5D8; --bg-dark-beige:#D8CBB8;
-    --card-bg:#FFFFFF; --text-main:#302F2C; --text-secondary:#77736B;
-    --petrol:#28565A; --petrol-dark:#1D4145; --wood:#967354; --wood-light:#B89B7A;
-    --border:#DDD5C8;
+    --bg-main:#F5F8FC; --bg-secondary:#DEE8F7; --bg-dark-beige:#D2E1F4;
+    --card-bg:#FFFFFF; --text-main:#101B33; --text-secondary:#5C6A80;
+    --petrol:#0B4DA6; --petrol-dark:#072A5E; --wood:#4A80D6; --wood-light:#9DBBEA;
+    --border:#DCE3ED;
 
     --ink:var(--text-main);
     --ink-2:var(--petrol-dark);
     --muted:var(--text-secondary);
     --paper:var(--bg-main);
     --card:var(--card-bg);
-    --field:#ffffff;
-    --line:rgba(48,47,44,0.14);
-    --gold-rgb:40,86,90;
-    --gold-2-rgb:29,65,69;
+    --field:#FFFFFF;
+    --line:rgba(16,27,51,0.14);
+    --gold-rgb:21,101,192;
+    --gold-2-rgb:13,71,161;
     --gold:rgb(var(--gold-rgb));
     --gold-2:rgb(var(--gold-2-rgb));
     --gold-soft:rgba(var(--gold-rgb),0.08);
@@ -66,26 +72,26 @@
     --cream-bg-1:var(--bg-secondary);
     --cream-bg-2:var(--bg-main);
     --surface-off:var(--bg-secondary);
-    --scrim:rgba(48,47,44,0.50);
-    --btn-ink:#ffffff;
-    --shadow-sm:0 1px 3px rgba(48,47,44,0.07);
-    --shadow-md:0 8px 24px rgba(48,47,44,0.09);
-    --shadow-lg:0 22px 52px rgba(48,47,44,0.14);
+    --scrim:rgba(16,27,51,0.50);
+    --btn-ink:#FFFFFF;
+    --shadow-sm:0 1px 3px rgba(16,27,51,0.07);
+    --shadow-md:0 8px 24px rgba(16,27,51,0.09);
+    --shadow-lg:0 22px 52px rgba(16,27,51,0.14);
     --accent:var(--gold);
     --accent-2:var(--gold-2);
     --glass-border:var(--line);
   }
 
   :root[data-theme="dark"]{
-    --ink:#EDE5D8;
-    --ink-2:#F7F4EE;
-    --muted:#A39C8E;
-    --paper:#23211E;
-    --card:#2C2A26;
-    --field:#2C2A26;
+    --ink:#DEE8F7;
+    --ink-2:#F5F8FC;
+    --muted:#8EA1BF;
+    --paper:#08162F;
+    --card:#0D2146;
+    --field:#0D2146;
     --line:rgba(255,255,255,0.08);
-    --gold-rgb:63,138,143;
-    --gold-2-rgb:184,155,122;
+    --gold-rgb:59,130,246;
+    --gold-2-rgb:127,178,245;
     --gold-soft:rgba(var(--gold-rgb),0.16);
     --gold-soft-2:rgba(var(--gold-rgb),0.24);
     --success-rgb:111,169,138;
@@ -94,13 +100,13 @@
     --success-soft:rgba(var(--success-rgb),0.16);
     --warning-soft:rgba(var(--warning-rgb),0.16);
     --error-soft:rgba(var(--error-rgb),0.16);
-    --cream-bg-1:#23211E;
-    --cream-bg-2:#2A2723;
-    --surface-off:#2A2723;
-    --scrim:rgba(48,47,44,0.6);
-    --shadow-sm:0 1px 3px rgba(48,47,44,0.35);
-    --shadow-md:0 8px 24px rgba(48,47,44,0.4);
-    --shadow-lg:0 22px 52px rgba(48,47,44,0.5);
+    --cream-bg-1:#08162F;
+    --cream-bg-2:#0A1C3C;
+    --surface-off:#0A1C3C;
+    --scrim:rgba(16,27,51,0.6);
+    --shadow-sm:0 1px 3px rgba(16,27,51,0.35);
+    --shadow-md:0 8px 24px rgba(16,27,51,0.4);
+    --shadow-lg:0 22px 52px rgba(16,27,51,0.5);
   }
 
   *{ margin:0; padding:0; box-sizing:border-box; }
@@ -159,7 +165,7 @@
     display:flex; align-items:center; justify-content:center;
     font-size:15px; transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
     position:static !important;
-    box-shadow:0 1px 2px rgba(48,47,44,0.06);
+    box-shadow:0 1px 2px rgba(16,27,51,0.06);
   }
   .icon-btn:hover{ color:var(--accent); border-color:var(--accent-2); background:var(--gold-soft-2); box-shadow:0 3px 8px rgba(var(--gold-rgb),0.18); transform:translateY(-1px); }
   .icon-btn:active{ transform:translateY(0) scale(0.94); }
@@ -167,16 +173,14 @@
   html[dir="rtl"] #settingsBtn{ right:auto; }
 
   .brand-logo{
-    width:230px; height:auto; aspect-ratio:606/453;
-    margin:35px auto 24px;
-    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
--webkit-mask-image:url("logo.png");    -webkit-mask-repeat:no-repeat;
-    -webkit-mask-position:center;
-    -webkit-mask-size:contain;
-mask-image:url("logo.png");    mask-repeat:no-repeat;
-    mask-position:center;
-    mask-size:contain;
+    width:100%; max-width:340px; height:auto; aspect-ratio:760/272;
+    margin:30px auto 22px;
+    background-image:url("logo.png");
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:contain;
   }
+  [data-theme="dark"] .brand-logo{ background-image:url("logo-dark.png"); }
 
   .session-bar{ margin-top:18px; margin-bottom:8px; }
   .start-session-btn{
@@ -187,7 +191,7 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     position:relative;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.22),
-      inset 0 -2px 0 rgba(48,47,44,0.12),
+      inset 0 -2px 0 rgba(16,27,51,0.12),
       0 8px 20px rgba(var(--gold-rgb),0.3);
     transition:transform .15s ease, box-shadow .2s ease, filter .2s ease;
   }
@@ -196,7 +200,7 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     transform:translateY(-2px);
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.24),
-      inset 0 -2px 0 rgba(48,47,44,0.12),
+      inset 0 -2px 0 rgba(16,27,51,0.12),
       0 12px 26px rgba(var(--gold-rgb),0.36);
     filter:brightness(1.05);
   }
@@ -204,7 +208,7 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     transform:translateY(0) scale(0.985);
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.18),
-      inset 0 -1px 0 rgba(48,47,44,0.12),
+      inset 0 -1px 0 rgba(16,27,51,0.12),
       0 5px 12px rgba(var(--gold-rgb),0.3);
   }
   .start-session-btn:disabled{ opacity:0.65; cursor:not-allowed; transform:none; }
@@ -249,7 +253,7 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     letter-spacing:0.01em;
     cursor:pointer; transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     display:flex; flex-direction:row; align-items:center; justify-content:center; gap:8px;
-    box-shadow:0 1px 0 var(--line), 0 4px 10px rgba(48,47,44,0.05);
+    box-shadow:0 1px 0 var(--line), 0 4px 10px rgba(16,27,51,0.05);
     overflow:hidden;
   }
   html[dir="rtl"] .tool-btn{ font-family:'Tajawal',sans-serif; }
@@ -347,6 +351,24 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
   .field-group input:focus{ border-color:var(--accent-2); }
   .field-group input::-webkit-calendar-picker-indicator{ filter:invert(0.3); }
   html[data-theme="dark"] .field-group input::-webkit-calendar-picker-indicator{ filter:invert(0.85); }
+  .manual-entry{
+    display:flex; gap:8px; align-items:stretch; margin:0 0 14px;
+  }
+  .manual-entry input{
+    flex:1; min-width:0; padding:11px 14px;
+    background:var(--field); border:1px solid var(--glass-border);
+    border-radius:10px; color:var(--ink);
+    font-family:'Manrope',sans-serif; font-size:15px; font-weight:700;
+    letter-spacing:2px; text-transform:uppercase; direction:ltr; text-align:center; outline:none;
+  }
+  .manual-entry input::placeholder{ letter-spacing:0; font-weight:500; text-transform:none; }
+  .manual-entry input:focus{ border-color:var(--accent-2); }
+  .manual-entry button{
+    padding:0 18px; border:none; border-radius:10px; cursor:pointer;
+    background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
+    color:#fff; font-weight:700; font-size:13.5px; font-family:inherit;
+  }
+  .manual-entry button:disabled{ opacity:.55; cursor:default; }
   .hint{
     font-size:11px; color:var(--error); text-align:center;
     margin-bottom:14px; min-height:14px;
@@ -355,7 +377,7 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
   .scan-frame{
     position:relative; border-radius:14px; overflow:hidden;
     border:1px solid var(--glass-border);
-    background:#23211E;
+    background:#08162F;
     transition:opacity .2s ease, background .2s ease;
   }
   .scan-frame.hidden{ display:none; }
@@ -400,6 +422,10 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
   }
   .cooldown-badge.show{ display:block; }
 
+  .offline-badge{ display:none; align-items:center; justify-content:center; gap:8px; margin:10px auto 0; padding:9px 14px;
+    border-radius:12px; background:rgba(184,122,30,0.14); color:#8a5a12; border:1px solid rgba(184,122,30,0.4);
+    font-weight:600; font-size:13.5px; cursor:pointer; max-width:420px; }
+  html[data-theme="dark"] .offline-badge{ color:#f0c27a; }
   #status{
     margin-top:20px;
     display:inline-flex; align-items:center; gap:8px;
@@ -540,7 +566,7 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     width:100%; max-width:400px; max-height:85vh; overflow-y:auto;
     background:var(--card); border:1px solid var(--glass-border); border-radius:14px;
     padding:22px 20px; text-align:left;
-    box-shadow:0 8px 30px rgba(48,47,44,0.22);
+    box-shadow:0 8px 30px rgba(16,27,51,0.22);
   }
   html[dir="rtl"] .modal{ text-align:right; }
   .modal-header{
@@ -572,8 +598,8 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
   .theme-option:hover{ transform:translateY(-2px); }
   .theme-option.selected{ border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-soft); }
   .theme-swatch{ height:34px; border-radius:7px; margin-bottom:6px; }
-  .theme-swatch.light{ background:linear-gradient(135deg,#F7F4EE,#EDE5D8); border:1px solid rgba(48,47,44,0.16); }
-  .theme-swatch.dark{ background:linear-gradient(135deg,#2C2A26,#23211E); border:1px solid rgba(255,255,255,0.1); }
+  .theme-swatch.light{ background:linear-gradient(135deg,#F5F8FC,#DEE8F7); border:1px solid rgba(16,27,51,0.16); }
+  .theme-swatch.dark{ background:linear-gradient(135deg,#0D2146,#08162F); border:1px solid rgba(255,255,255,0.1); }
   .theme-option-label{ font-size:12px; font-weight:600; color:var(--ink); }
   html[dir="rtl"] .theme-option-label{ font-family:'Tajawal',sans-serif; }
   .lang-toggle{
@@ -623,7 +649,7 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
   .toast{
     position:fixed; top:18px; left:50%; transform:translateX(-50%);
     background:var(--gold-2); color:var(--btn-ink); padding:11px 18px; border-radius:9px;
-    font-size:13px; font-weight:600; z-index:200; box-shadow:0 6px 18px rgba(48,47,44,0.25);
+    font-size:13px; font-weight:600; z-index:200; box-shadow:0 6px 18px rgba(16,27,51,0.25);
     opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
     max-width:88%; text-align:center;
   }
@@ -634,6 +660,12 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     .scan-line, .dot, .result-check, .spinner, .session-pulse, .container{
       animation:none !important;
     }
+  }
+
+  @media (max-width:420px){
+    body{ padding:24px 10px; }
+    .container{ padding:16px 16px 24px; }
+    .header-actions{ padding:0 14px; }
   }
 
   .session-ended-overlay{
@@ -658,6 +690,13 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     margin-top:14px; font-size:12px; color:var(--muted);
   }
 </style>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0B4DA6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MilEX EDU">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 </head>
 <body>
 
@@ -734,6 +773,14 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
       <div data-i18n="scan_placeholder">Start the session to activate the camera</div>
     </div>
   </div>
+
+  <div class="manual-entry" id="manualEntry">
+    <input type="text" id="manualCode" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" data-i18n-ph="manual_placeholder" placeholder="Or type the student code (e.g. ST123456)">
+    <button type="button" id="manualBtn" onclick="submitManualCode()" data-i18n="manual_btn">Submit</button>
+  </div>
+
+  <div class="offline-badge" id="offlineBadge" onclick="flushQueue(true)"></div>
+  <div class="offline-badge" id="rejectedBadge" onclick="showRejected()" style="background:rgba(192,57,43,.12);color:#c0392b;border-color:rgba(192,57,43,.4);"></div>
 
   <div id="status" class="wait">
     <span class="dot"></span>
@@ -836,15 +883,44 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     return `rgba(167, 58, 46, ${alpha})`;
   }
 
-  const WEBHOOKS = {
-    attendance: "https://students.milestones-tech.com/webhook/scannerللعرض",
-    payment:    "https://students.milestones-tech.com/webhook/scannerللعرض",
-    session:    "https://students.milestones-tech.com/webhook/Attendance_Session_Managerللعرض"
-  };
-
   const SUPABASE_URL = "https://evbjulsahncllewwvlxp.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2Ymp1bHNhaG5jbGxld3d2bHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NzE5MjUsImV4cCI6MjA5OTI0NzkyNX0.Xg9sU6ZenUU3kC2RNIbvZmK19KvE28MM2oyGcKNn8UA";
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ---- MilEX access guard ----
+  // Only a teacher (password session from index.html) or an assistant
+  // (real Supabase email/password login) may use the scanner. Anyone else
+  // is sent back to the login page before the page becomes visible.
+  (async function milexGuardScanner(){
+    let teacherOk = false;
+    try{
+      const raw = (sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession'));
+      if(raw){
+        const data = JSON.parse(raw);
+        teacherOk = !!(data && data.exp && Date.now() < data.exp);
+      }
+    }catch(e){}
+
+    let assistantOk = false;
+    if(!teacherOk){
+      try{
+        const { data: sessData } = await supabaseClient.auth.getSession();
+        assistantOk = !!(sessData && sessData.session) && localStorage.getItem('mgAssistantOk') === '1';
+      }catch(e){}
+    }
+
+    // Offline: supabase-js can't refresh an expired token without internet, so trust the
+    // saved login on this device instead of kicking the assistant out mid-session.
+    if(!teacherOk && !assistantOk && !navigator.onLine && localStorage.getItem('mgAssistantOk') === '1'){
+      assistantOk = Object.keys(localStorage).some(k => /^sb-.+-auth-token$/.test(k));
+    }
+    if(!teacherOk && !assistantOk){
+      window.location.replace('index.html');
+      return;
+    }
+    document.documentElement.style.visibility = 'visible';
+  })();
+
   const SESSION_TABLE = "attendance_sessions";
   const SESSION_POLL_MS = 5000;
   let lastSupabaseError = "";
@@ -898,7 +974,7 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
   // Groups per grade, per the requested mapping:
   //  prep1 -> Sat & Tue 3:00 | prep2 -> Sat & Tue 4:00 | prep3 -> Sat & Tue 2:00
   //  first -> Sun & Wed 2:00 | second -> Sun & Wed 3:00 & 6:00 | third -> Sun & Wed 12:00 & 5:00
-  const GRADE_GROUPS = {
+  let GRADE_GROUPS = {
     prep3: [
       { id: "سبت وثلاث 2", en: "Sat & Tue - 2:00", ar: "السبت والثلاثاء - الساعة 2" }
     ],
@@ -932,6 +1008,60 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     return GRADE_GROUPS[grade] || [];
   }
 
+  // ---- Groups come from the registration admin panel (Supabase app_config) ----
+  // The hardcoded GRADE_GROUPS above is only the fallback if the server is unreachable.
+  const REG_GRADE_TO_SCANNER = {
+    "First Prep":"prep1", "Second Prep":"prep2", "Third Prep":"prep3",
+    "First Grade":"first", "Second Grade":"second", "Third Grade":"third"
+  };
+  // The 8 original groups keep the exact id the DB functions already know,
+  // as long as the admin hasn't changed their day/time.
+  const LEGACY_GROUP_IDS = {
+    "prep1-sattue-3": {id:"سبت وثلاث 3", dayAr:"سبت وتلات", time:"3:00"},
+    "prep2-sattue-4": {id:"سبت وثلاث 4", dayAr:"سبت وتلات", time:"4:00"},
+    "prep3-sattue-2": {id:"سبت وثلاث 2", dayAr:"سبت وتلات", time:"2:00"},
+    "sec1-sunwed-2":  {id:"الأحد والأربعاء 2",  dayAr:"حد واربع", time:"2:00"},
+    "sec2-sunwed-3":  {id:"الأحد والأربعاء 3",  dayAr:"حد واربع", time:"3:00"},
+    "sec2-sunwed-6":  {id:"الأحد والأربعاء 6",  dayAr:"حد واربع", time:"6:00"},
+    "sec3-sunwed-12": {id:"الأحد والأربعاء 12", dayAr:"حد واربع", time:"12:00"},
+    "sec3-sunwed-5":  {id:"الأحد والأربعاء 5",  dayAr:"حد واربع", time:"5:00"}
+  };
+
+  function buildGroupsFromConfig(cfg){
+    const out = { prep1:[], prep2:[], prep3:[], first:[], second:[], third:[] };
+    (cfg.stages || []).forEach(stage => (stage.grades || []).forEach(grade => {
+      const key = REG_GRADE_TO_SCANNER[grade.value];
+      if(!key) return; // custom grades have no attendance tables yet
+      (grade.groups || []).forEach(g => {
+        const time = String(g.time || "");
+        const shortTime = time.replace(":00", "");
+        const legacy = LEGACY_GROUP_IDS[g.value];
+        // same string the registration page writes into group_name
+        const id = (legacy && legacy.dayAr === g.dayAr && legacy.time === time)
+          ? legacy.id : `${g.dayAr} ${shortTime}`;
+        out[key].push({
+          id,
+          en: `${g.dayEn || g.dayAr} - ${time}`,
+          ar: `${g.dayAr} - الساعة ${shortTime}`
+        });
+      });
+    }));
+    return out;
+  }
+
+  async function loadGroupsFromServer(){
+    try{
+      const { data, error } = await supabaseClient
+        .from('app_config').select('value').eq('key', 'reg_form_data').maybeSingle();
+      if(error || !data || !data.value || !Array.isArray(data.value.stages)) return;
+      GRADE_GROUPS = buildGroupsFromConfig(data.value);
+      if(typeof sessionActive !== 'undefined' && sessionActive) return; // don't change groups mid-session
+      const groups = groupsForGrade(currentGrade);
+      if(!groups.some(g => g.id === currentGroup)) currentGroup = groups[0] ? groups[0].id : "";
+      renderGroupOptions();
+    }catch(e){ console.warn('groups sync failed', e); }
+  }
+
   function groupLabel(group){
     const g = groupsForGrade(currentGrade).find(x => x.id === group);
     if(!g) return group;
@@ -948,6 +1078,7 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     en: {
       title_settings:"Settings", title_back:"Back",
       eyebrow_scanner:"Live scanner", title_app:"Student Attendance System",
+      manual_placeholder:"Or type the student code (e.g. ST123456)", manual_btn:"Submit", manual_empty:"Type the student code first",
       btn_start_session:"Start Session", btn_search:"Search", btn_exam:"Exam", btn_dash:"Dash",
       mode_attendance:"Attendance", mode_payment:"Payment",
       label_grade:"Grade Level", label_month:"Month", label_amount:"Amount (EGP)",
@@ -962,6 +1093,14 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
       status_confirming_payment:"Confirming payment…",
       status_no_active_session:"No active attendance session.",
       status_cant_connect:"Can't reach the server",
+      offline_saved:"📴 No connection — scan saved ({n} waiting to sync)",
+      offline_dup:"📴 Already saved offline",
+      offline_badge:"📴 {n} scan(s) waiting to sync — tap to retry",
+      offline_synced:"✅ Synced {n} saved scan(s)",
+      offline_rejected:"⚠️ {n} saved scan(s) were rejected by the server (already recorded / invalid)",
+      offline_student:"Saved offline",
+      rejected_badge:"⚠️ {n} saved scan(s) rejected — tap to see who",
+      rejected_clear:"Clear this list?",
       payment_hint_missing:"Please enter the month and amount first",
       history_title:"Last Scans", history_empty:"No scans yet",
       footer_text:"Powered by MilEX",
@@ -996,6 +1135,7 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     ar: {
       title_settings:"الإعدادات", title_back:"رجوع",
       eyebrow_scanner:"الماسح المباشر", title_app:"نظام حضور الطلاب",
+      manual_placeholder:"أو اكتب كود الطالب (مثال: ST123456)", manual_btn:"تسجيل", manual_empty:"اكتب كود الطالب الأول",
       btn_start_session:"بدء الجلسة", btn_search:"بحث", btn_exam:"الامتحان", btn_dash:"لوحة",
       mode_attendance:"الحضور", mode_payment:"الدفع",
       label_grade:"المرحلة الدراسية", label_month:"الشهر", label_amount:"المبلغ (جنيه)",
@@ -1010,6 +1150,14 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
       status_confirming_payment:"جارٍ تأكيد الدفع…",
       status_no_active_session:"لا توجد جلسة حضور نشطة.",
       status_cant_connect:"تعذّر الوصول إلى الخادم",
+      offline_saved:"📴 مفيش إنترنت — اتحفظ الاسكان ({n} في انتظار الإرسال)",
+      offline_dup:"📴 الطالب ده محفوظ أوفلاين قبل كده",
+      offline_badge:"📴 {n} اسكان في انتظار الإرسال — اضغط للمحاولة",
+      offline_synced:"✅ اتبعت {n} اسكان محفوظ",
+      offline_rejected:"⚠️ {n} اسكان محفوظ السيرفر رفضه (مسجل قبل كده / غير صالح)",
+      offline_student:"محفوظ أوفلاين",
+      rejected_badge:"⚠️ {n} اسكان مرفوض — اضغط تشوف مين",
+      rejected_clear:"مسح القائمة؟",
       payment_hint_missing:"من فضلك أدخل الشهر والمبلغ أولاً",
       history_title:"آخر عمليات المسح", history_empty:"لا توجد عمليات مسح بعد",
       footer_text:"بدعم من MilEX",
@@ -1069,10 +1217,14 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     document.querySelectorAll("[data-i18n-title]").forEach(el=>{
       el.setAttribute("title", t(el.getAttribute("data-i18n-title")));
     });
+    document.querySelectorAll("[data-i18n-ph]").forEach(el=>{
+      el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph")));
+    });
 
     renderLangButtons();
     renderGradeOptions();
     renderGroupOptions();
+    renderQueueBadge();
     renderSessionBar();
     refreshIdleStatus();
   }
@@ -1509,22 +1661,12 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     document.getElementById("groupLockHint").classList.add("show");
     document.getElementById("groupLockOverlay").classList.add("show");
 
-    // grade_label/group_label always stay in English here — the scanner's
-    // display language never changes what n8n receives.
-    fetch(WEBHOOKS.session, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "session_start",
-        grade: currentGrade,
-        grade_label: GRADE_LABELS_EN[currentGrade],
-        group: currentGroup,
-        group_label: GROUP_LABELS_EN[currentGroup],
-        mode: currentMode,
-        started_by: currentUser?.email || 'unknown',
-        timestamp: new Date().toISOString()
-      })
-    }).catch(()=>{});
+    // Calls fn_session_start directly in Postgres (marks the whole group
+    // "Absent" as a baseline for this session) — no n8n involved.
+    supabaseClient.rpc('fn_session_start', {
+      p_grade: currentGrade,
+      p_group_raw: currentGroup
+    }).then(({ error }) => { if(error) console.error(error); }).catch(()=>{});
 
     resumeSessionSync();
   }
@@ -1565,19 +1707,12 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     sessionStorage.removeItem('dismissedSessionId');
 
     try{
-      await fetch(WEBHOOKS.session, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "session_end",
-          grade: endedGrade,
-          grade_label: GRADE_LABELS_EN[endedGrade],
-          group: endedGroup,
-          group_label: GROUP_LABELS_EN[endedGroup],
-          mode: endedMode,
-          ended_by: currentUser?.email || 'unknown',
-          timestamp: new Date().toISOString()
-        })
+      // Calls fn_session_end directly: whoever is still "Absent" in this
+      // group gets absence_count +1, and the group's last session date is
+      // recorded. No n8n involved.
+      await supabaseClient.rpc('fn_session_end', {
+        p_grade: endedGrade,
+        p_group_raw: endedGroup
       });
     }catch(e){}
 
@@ -1808,7 +1943,127 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     startScanner();
   }
 
-  function onScanSuccess(decodedText){
+  // ================= OFFLINE QUEUE =================
+  // When there is no internet, scans are saved on this device and sent to
+  // Supabase automatically as soon as the connection is back.
+  const QUEUE_KEY = "scannerOfflineQueue";
+  let flushing = false;
+
+  function loadQueue(){ try{ return JSON.parse(localStorage.getItem(QUEUE_KEY)) || []; }catch(e){ return []; } }
+  function saveQueue(q){ try{ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }catch(e){} renderQueueBadge(); }
+
+  function isNetworkError(err){
+    if(!navigator.onLine) return true;
+    const m = String((err && (err.message || err.details)) || err || "");
+    return /failed to fetch|networkerror|network request failed|load failed|fetch failed|timeout|timed out/i.test(m)
+        || (err && err.name === "TypeError");
+  }
+
+  function renderQueueBadge(){
+    const el = document.getElementById("offlineBadge");
+    if(!el) return;
+    const n = loadQueue().length;
+    el.style.display = n ? "flex" : "none";
+    el.textContent = t('offline_badge').replace('{n}', n);
+  }
+
+  function enqueueScan(item){
+    const q = loadQueue();
+    if(q.some(x => x.mode === item.mode && x.grade === item.grade && x.qr === item.qr && x.month === item.month)) return false;
+    q.push(item);
+    saveQueue(q);
+    return true;
+  }
+
+  function callScanRpc(item){
+    return item.mode === "payment"
+      ? supabaseClient.rpc('fn_scan_payment', { p_grade: item.grade, p_qr: item.qr, p_amount: Number(item.amount), p_month: item.month })
+      : supabaseClient.rpc('fn_scan_attendance', { p_grade: item.grade, p_qr: item.qr });
+  }
+
+  // Scans the server refused (already recorded / invalid) are kept so the assistant can see WHO they were.
+  const REJ_KEY = "scannerOfflineRejected";
+  function loadRejected(){ try{ return JSON.parse(localStorage.getItem(REJ_KEY)) || []; }catch(e){ return []; } }
+  function addRejected(item, why){
+    const r = loadRejected(); r.push({ qr:item.qr, mode:item.mode, ts:item.ts, why:String(why || '').slice(0,120) });
+    try{ localStorage.setItem(REJ_KEY, JSON.stringify(r.slice(-100))); }catch(e){}
+    renderRejectedBadge();
+  }
+  function renderRejectedBadge(){
+    const el = document.getElementById("rejectedBadge"); if(!el) return;
+    const n = loadRejected().length;
+    el.style.display = n ? "flex" : "none";
+    el.textContent = t('rejected_badge').replace('{n}', n);
+  }
+  function showRejected(){
+    const r = loadRejected(); if(!r.length) return;
+    const lines = r.map(x => `${new Date(x.ts).toLocaleString()} — ${x.qr} — ${x.why || '?'}`).join("\n");
+    if(confirm(lines + "\n\n" + t('rejected_clear'))){ try{ localStorage.removeItem(REJ_KEY); }catch(e){} renderRejectedBadge(); }
+  }
+
+  async function flushQueue(manual){
+    if(flushing) return;
+    if(!navigator.onLine){ if(manual) showToast(t('status_cant_connect')); return; }
+    if(!loadQueue().length) return;
+    flushing = true;
+    let sent = 0, rejected = 0, oldest = 0;
+    try{
+      while(true){
+        const q = loadQueue();
+        if(!q.length) break;
+        const item = q[0];
+        let done = false;
+        try{
+          const { data, error } = await callScanRpc(item);
+          if(error){
+            if(isNetworkError(error)) break;      // still offline -> keep it, try later
+            rejected++; addRejected(item, error.message); done = true;   // real DB error -> don't loop forever
+          } else if(data && data.success){ sent++; done = true; }
+          else { rejected++; addRejected(item, data && data.message); done = true; }
+        }catch(e){
+          if(isNetworkError(e)) break;
+          rejected++; addRejected(item, e && e.message); done = true;
+        }
+        if(done){ oldest = oldest ? Math.min(oldest, item.ts || oldest) : (item.ts || 0); const fresh = loadQueue(); fresh.shift(); saveQueue(fresh); }
+      }
+    } finally {
+      flushing = false;
+      renderQueueBadge();
+    }
+    if(sent || rejected){
+      try{ if(window.MILEX) MILEX.audit(supabaseClient, { action:'offline_sync', details:{ sent, rejected, oldest: oldest ? new Date(oldest).toISOString() : null } }); }catch(e){}
+    }
+    if(sent) showToast(t('offline_synced').replace('{n}', sent));
+    if(rejected) setTimeout(()=>showToast(t('offline_rejected').replace('{n}', rejected)), sent ? 2600 : 0);
+  }
+
+  function queueScanOffline(decodedText, month, amount){
+    const added = enqueueScan({
+      id: Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+      mode: currentMode, grade: currentGrade, group: currentGroup,
+      qr: decodedText, month: month || "", amount: amount || "", ts: Date.now()
+    });
+    const n = loadQueue().length;
+    sending = false;
+    if(added){
+      setStatus(t('offline_saved').replace('{n}', n), "warning", false);
+      pushHistory("📴 " + t('offline_student') + " · " + String(decodedText).slice(0, 10), new Date().toLocaleTimeString(), true);
+      beep("success");
+    } else {
+      setStatus(t('offline_dup'), "warning", false);
+      beep("duplicate");
+    }
+    document.getElementById("scanFrame").classList.add("locked");
+    armAutoResume(false);
+  }
+
+  window.addEventListener("online", () => flushQueue(false));
+  window.addEventListener("offline", renderQueueBadge);
+  setInterval(() => { if(loadQueue().length) flushQueue(false); }, 15000);
+  setTimeout(() => { renderQueueBadge(); renderRejectedBadge(); flushQueue(false); }, 1500);
+  // ================= /OFFLINE QUEUE =================
+
+  async function onScanSuccess(decodedText){
     if(sending) return;
     if(!canScan()){
       setStatus(t('status_no_active_session'), "error", false);
@@ -1838,58 +2093,79 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
     sending = true;
     pauseScanner();
 
-    const webhookUrl = WEBHOOKS[currentMode];
-    setLoadingStatus(currentMode === "payment" ? t('status_confirming_payment') : t('status_sending_attendance'));
-
-    // Payload sent to n8n uses fixed English keys/labels — unaffected by the UI language.
-    const payload = {
-      qr_code: decodedText,
-      mode: currentMode,
-      grade: currentGrade,
-      grade_label: GRADE_LABELS_EN[currentGrade],
-      group: currentGroup,
-      group_label: GROUP_LABELS_EN[currentGroup],
-      lang: currentLang
-    };
-    if(currentMode === "payment"){
-      payload.month = month;
-      payload.amount = amount;
+    // No connection at all: save the scan on this device, sync later.
+    if(!navigator.onLine){
+      queueScanOffline(decodedText, month, amount);
+      return;
     }
 
-    fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    })
-    .then(async response => {
-      let data = {};
-      try{ data = await response.json(); }catch(e){}
-      sending = false;
+    setLoadingStatus(currentMode === "payment" ? t('status_confirming_payment') : t('status_sending_attendance'));
 
-      if(data.success){
-        const s = data.student || {};
+    // Calls the Postgres RPC functions directly (fn_scan_attendance /
+    // fn_scan_payment) — no n8n involved.
+    try{
+      const { data, error } = currentMode === "payment"
+        ? await supabaseClient.rpc('fn_scan_payment', {
+            p_grade: currentGrade,
+            p_qr: decodedText,
+            p_amount: Number(amount),
+            p_month: month
+          })
+        : await supabaseClient.rpc('fn_scan_attendance', {
+            p_grade: currentGrade,
+            p_qr: decodedText
+          });
+
+      sending = false;
+      if(error) throw error;
+
+      const result = data || {};
+      if(result.success){
+        const s = result.student || {};
+        if(!s.time) s.time = new Date().toLocaleTimeString();
         renderResultCard(currentMode, s, { month, amount }, true);
         pushHistory(s.name || s.full_name || "Student", s.time || "", true);
         beep("success");
       } else {
-        const msg = data.message || t('status_generic_error');
-        const alreadyRecorded = data.already_recorded || /already|مسجل|مدفوع/i.test(msg);
+        const msg = result.message || t('status_generic_error');
+        const alreadyRecorded = result.already_recorded || /already|مسجل|مدفوع/i.test(msg);
         setStatus((alreadyRecorded ? "🔴 " : "⚠️ ") + msg, alreadyRecorded ? "error" : "warning", false);
         document.getElementById("scanFrame").classList.add("locked");
         beep(alreadyRecorded ? "error" : "duplicate");
-        pushHistory(data.student?.name || "Unknown", new Date().toLocaleTimeString(), false);
+        pushHistory(result.student?.name || "Unknown", new Date().toLocaleTimeString(), false);
         armAutoResume(false);
       }
-    })
-    .catch(error => {
+    }catch(error){
       console.error(error);
       sending = false;
-      setStatus(t('status_cant_connect'), "error", false);
+      if(isNetworkError(error)){
+        queueScanOffline(decodedText, month, amount);
+        return;
+      }
+      // مؤقتًا: وريله رسالة الخطأ الحقيقية من Postgres/الشبكة بدل الرسالة
+      // العامة، عشان نعرف السبب الفعلي. رجّعها لـ t('status_cant_connect')
+      // بعد ما نحدد المشكلة.
+      const realMsg = (error && (error.message || error.details || error.hint)) || t('status_cant_connect');
+      setStatus(t('status_cant_connect') + " — " + realMsg, "error", false);
       document.getElementById("scanFrame").classList.add("locked");
       beep("error");
       armAutoResume(false);
-    });
+    }
   }
+
+  // Manual entry: same pipeline as a camera scan (cooldown, session check, offline queue ...)
+  function submitManualCode(){
+    const inp = document.getElementById("manualCode");
+    const code = (inp.value || "").trim().toUpperCase().replace(/\s+/g, "");
+    if(!code){ showToast(t('manual_empty')); inp.focus(); return; }
+    if(sending) return;
+    inp.value = "";
+    onScanSuccess(code);
+    inp.focus();
+  }
+  document.getElementById("manualCode").addEventListener("keydown", e => {
+    if(e.key === "Enter"){ e.preventDefault(); submitManualCode(); }
+  });
 
   function onScanFailure(){}
 
@@ -1972,6 +2248,8 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
   renderThemeOptions();
   renderLangButtons();
   setLanguage(currentLang);
+  loadGroupsFromServer();
+  setInterval(loadGroupsFromServer, 60000);
 
   refreshSessionState();
   resumeSessionSync();
@@ -1979,6 +2257,7 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
   document.addEventListener('visibilitychange', ()=>{
     if(document.visibilityState === 'visible'){
       refreshSessionState();
+      loadGroupsFromServer();
     }
   });
 
@@ -1987,6 +2266,13 @@ mask-image:url("logo.png");    mask-repeat:no-repeat;
       refreshSessionState();
     }
   });
+</script>
+
+<!-- MilEX EDU PWA: installable on Android/iOS when served over HTTPS -->
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
 </script>
 </body>
 </html>
