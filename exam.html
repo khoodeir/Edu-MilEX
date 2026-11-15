@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<meta name="theme-color" content="#0B4DA6">
+<meta name="theme-color" content="#0B3A87">
 <meta name="robots" content="noindex">
 <title>الامتحان</title>
 <link rel="manifest" href="./manifest.json">
@@ -18,8 +18,8 @@
 <style>
   :root{
     color-scheme:light;
-    --paper:#FFFFFF; --soft:#F5F8FC; --card:#FFFFFF; --ink:#101B33; --muted:#5C6A80;
-    --brand:#0B4DA6; --brand-d:#072A5E; --brand-soft:#E8EFFA;
+    --paper:#FFFFFF; --soft:#F2F6FB; --card:#FFFFFF; --ink:#101B33; --muted:#5C6A80;
+    --brand:#0B3A87; --brand-d:#061F55; --brand-soft:#E8EFFA;
     --line:#DCE3ED; --line-d:#C6D2E3;
     --ok:#1F8A5B; --ok-soft:#E8F6EF; --err:#C0392B; --err-soft:#FDECEA; --warn:#B7791F; --warn-soft:#FDF5E3;
     --shadow:0 1px 2px rgba(16,27,51,.05), 0 4px 14px rgba(16,27,51,.04);
@@ -54,7 +54,7 @@
   .info-row{ display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
   .pill{ background:var(--soft); border:1px solid var(--line); color:var(--ink); padding:5px 14px; border-radius:99px; font-size:13px; font-weight:600; }
   #reader{ width:100%; margin-top:12px; border-radius:12px; overflow:hidden; display:none; border:1px solid var(--line); }
-  /* exam */
+
   .timerbar{ position:fixed; top:0; left:0; right:0; z-index:20; background:rgba(255,255,255,.96); border-bottom:1px solid var(--line);
     padding:calc(8px + env(safe-area-inset-top)) 16px 8px; display:none; backdrop-filter:blur(8px); }
   .timerbar.on{ display:block; }
@@ -67,7 +67,7 @@
   .bar{ height:4px; background:var(--soft); border-radius:99px; margin:6px auto 0; overflow:hidden; max-width:680px; }
   .bar i{ display:block; height:100%; width:100%; background:var(--brand); transition:width .3s linear; }
   .bar i.low{ background:var(--err); }
-  /* question navigator */
+
   .qnav{ max-width:680px; margin:8px auto 0; display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
   .qnav::-webkit-scrollbar{ display:none; }
   .qnav .dot{ flex:0 0 auto; min-width:32px; height:30px; padding:0 6px; border-radius:8px; border:1.5px solid var(--line-d); background:#fff; font:700 12.5px 'Space Grotesk',sans-serif; color:var(--muted); cursor:pointer; }
@@ -90,7 +90,7 @@
   .submitbar{ position:fixed; bottom:0; left:0; right:0; z-index:20; padding:10px 16px calc(10px + env(safe-area-inset-bottom)); background:rgba(255,255,255,.96); border-top:1px solid var(--line); display:none; backdrop-filter:blur(8px); }
   .submitbar.on{ display:block; }
   .submitbar .btn{ max-width:680px; margin:0 auto; }
-  /* result */
+
   .ring{ position:relative; width:170px; height:170px; border-radius:50%; margin:6px auto 14px; display:flex; align-items:center; justify-content:center; flex-direction:column; }
   .ring::before{ content:''; position:absolute; inset:14px; border-radius:50%; background:var(--card); }
   .ring b, .ring span{ position:relative; z-index:1; line-height:1.25; }
@@ -115,6 +115,8 @@
   .lock.on{ display:flex; }
   .foot{ text-align:center; font-size:12px; color:var(--muted); margin-top:24px; } .foot a{ color:inherit; }
 </style>
+<link rel="stylesheet" href="milex-theme.css">
+<script src="milex-motion.js" defer></script>
 </head>
 <body>
 <div class="timerbar" id="timerbar">
@@ -126,10 +128,10 @@
 <div class="wrap">
   <img class="logo" src="logo.png" alt="MilEX EDU" onerror="this.style.display='none'">
 
-  <!-- loading / error -->
+  
   <div class="screen on" id="sLoad"><div class="card"><div class="sub" id="loadTxt" style="margin:0;">جاري تحميل الامتحان…</div></div></div>
 
-  <!-- gate -->
+  
   <div class="screen" id="sGate">
     <div class="card">
       <h1 id="gTitle">الامتحان</h1>
@@ -144,13 +146,13 @@
     </div>
   </div>
 
-  <!-- exam -->
+  
   <div class="screen" id="sExam">
     <div class="card" style="text-align:center; padding:14px;"><b id="eName"></b><div class="sub" style="margin:4px 0 0;" id="eTitle"></div></div>
     <div id="qList"></div>
   </div>
 
-  <!-- result -->
+  
   <div class="screen" id="sRes">
     <div class="card" style="text-align:center;">
       <h1 id="rTitle">النتيجة</h1>
@@ -189,7 +191,6 @@ const isAns = v => v != null && String(v).trim() !== '';
 const isEssay = q => q && q.type === 'essay';
 const numFmt = n => { n = Number(n) || 0; return Number.isInteger(n) ? String(n) : String(Math.round(n * 100) / 100); };
 
-/* ---------- boot ---------- */
 (async function boot(){
   if(!TOKEN){ $('loadTxt').textContent = 'لينك الامتحان ناقص. اطلب اللينك من المدرس.'; return; }
   try{
@@ -208,7 +209,6 @@ const numFmt = n => { n = Number(n) || 0; return Number.isInteger(n) ? String(n)
   }catch(e){ console.error(e); $('loadTxt').textContent = 'مشكلة في الاتصال بالنت. جرّب تحدّث الصفحة.'; }
 })();
 
-/* ---------- gate ---------- */
 $('code').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/\s+/g,''); gErr(''); });
 $('code').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); begin(); } });
 $('startBtn').addEventListener('click', begin);
@@ -246,7 +246,6 @@ async function begin(){
   finally{ b.disabled = false; b.textContent = 'ابدأ الامتحان'; }
 }
 
-/* ---------- exam ---------- */
 function startExam(r){
   QS = r.questions || []; ANS = Object.assign({}, r.answers || {});
   try{ const loc = JSON.parse(localStorage.getItem(lsKey()) || '{}'); Object.assign(ANS, loc); }catch(_){}
@@ -336,7 +335,6 @@ function afterSubmit(r, auto){
   showResult(r, false, auto);
 }
 
-/* ---------- essay grading (by meaning, done server-side) ---------- */
 const essayWait = r => !!r && (r.essay_state === 'pending' || r.essay_state === 'grading');
 async function settleEssays(r){
   $('lockTxt').textContent = 'جاري تصحيح الإجابات المقالية… ممكن ياخد لحظات ⏳'; $('lock').classList.add('on');
@@ -353,7 +351,6 @@ async function settleEssays(r){
   return cur;
 }
 
-/* ---------- result ---------- */
 function gradeOf(p){
   if(p >= 90) return ['ممتاز','good']; if(p >= 80) return ['جيد جدًا','good']; if(p >= 65) return ['جيد','mid'];
   if(p >= 50) return ['مقبول','mid']; return ['محتاج مذاكرة أكتر','low'];
@@ -378,7 +375,6 @@ async function showResult(r, fromStart, auto){
   }
   const hasReview = Array.isArray(review) && review.length;
 
-  // ---- stats ----
   const qcount = hasReview ? review.length : (r._qcount != null ? r._qcount : (r.question_count || null));
   const stats = [];
   stats.push(['', numFmt(score) + ' / ' + numFmt(total), 'الدرجة']);
@@ -395,7 +391,6 @@ async function showResult(r, fromStart, auto){
   }
   $('rStats').innerHTML = stats.map(s => `<div class="stat ${s[0]}"><b>${esc(s[1])}</b><span>${s[2]}</span></div>`).join('');
 
-  // ---- per-question details ----
   if(hasReview){
     const h = document.createElement('h1'); h.style.cssText = 'font-size:18px; margin:6px 0 12px;'; h.textContent = 'تفاصيل الأسئلة'; rv.appendChild(h);
     review.forEach((q, i) => {

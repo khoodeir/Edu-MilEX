@@ -13,13 +13,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Cairo:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-main:#F5F8FC; --bg-secondary:#DEE8F7; --bg-dark-beige:#D2E1F4;
+    --bg-main:#F2F6FB; --bg-secondary:#E3EBF7; --bg-dark-beige:#D5E2F4;
     --card-bg:#FFFFFF; --text-main:#101B33; --text-secondary:#5C6A80;
-    --petrol:#0B4DA6; --petrol-dark:#072A5E; --wood:#4A80D6; --wood-light:#9DBBEA;
+    --petrol:#0B3A87; --petrol-dark:#061F55; --wood:#2D5FB8; --wood-light:#9DB8E8;
     --border:#DCE3ED;
     --ink:var(--text-main); --ink-2:var(--petrol-dark); --paper:var(--bg-main); --card:var(--card-bg); --line:var(--border);
-    --gold:var(--petrol); --gold-2:var(--petrol-dark); --gold-soft:rgba(11,77,166,0.09);
-    --success:#5B8C6E; --success-soft:rgba(91,140,110,0.14);
+    --gold:var(--petrol); --gold-2:var(--petrol-dark); --gold-soft:rgba(11,58,135,0.09);
+    --success:#5E8F00; --success-soft:rgba(110,155,0,0.14);
     --warning:#B98A4A; --warning-soft:rgba(185,138,74,0.14);
     --error:#B5555A; --error-soft:rgba(181,85,90,0.14);
     --muted:var(--text-secondary); --cream-bg-1:var(--bg-main); --cream-bg-2:var(--bg-secondary);
@@ -30,8 +30,8 @@
   body{
     font-family:'Cairo','Inter',sans-serif;
     background:
-      radial-gradient(circle at 15% 10%, rgba(7,42,94,0.05), transparent 45%),
-      radial-gradient(circle at 85% 90%, rgba(74,128,214,0.03), transparent 45%),
+      radial-gradient(circle at 15% 10%, rgba(6,31,85,0.05), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(45,95,184,0.03), transparent 45%),
       linear-gradient(160deg, var(--cream-bg-1), var(--cream-bg-2));
     color:var(--ink); min-height:100vh; padding:32px 20px 64px;
   }
@@ -39,7 +39,6 @@
   .num{ font-family:'Space Grotesk',sans-serif; }
   .wrap{ max-width:880px; margin:0 auto; position:relative; }
 
-  /* Language switcher */
   .lang-switch{
     position:absolute; top:0; left:0; display:flex; gap:5px;
     background:var(--card); border:1px solid var(--line); border-radius:11px; padding:5px; box-shadow:var(--shadow-sm);
@@ -54,10 +53,9 @@
   .lang-switch button:hover{ color:var(--ink); }
   .lang-switch button.active{
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#FFF;
-    box-shadow:0 4px 10px rgba(7,42,94,0.18);
+    box-shadow:0 4px 10px rgba(6,31,85,0.18);
   }
 
-  /* Back-to-home button (top, opposite corner from language switcher) */
   .back-top-btn{
     position:absolute; top:0; z-index:5;
     display:inline-flex; align-items:center; gap:6px;
@@ -73,7 +71,6 @@
   .back-top-btn svg{ width:16px; height:16px; transform:scaleX(-1); flex-shrink:0; }
   [dir="rtl"] .back-top-btn svg{ transform:none; }
 
-  /* Header */
   .topbar{ display:flex; align-items:center; gap:14px; margin-bottom:28px; justify-content:center; text-align:center; flex-direction:column; padding-top:6px; }
   .brand-mark{
     height:78px; background:transparent;
@@ -84,7 +81,6 @@
   [dir="ltr"] .topbar h1{ font-family:'Cormorant Garamond',serif; }
   .topbar p{ font-size:13px; color:var(--muted); margin-top:4px; }
 
-  /* Search card */
   .search-card{
     background:var(--card); border:1px solid var(--line); border-radius:16px;
     padding:24px; box-shadow:var(--shadow-lg); margin-bottom:24px;
@@ -104,9 +100,9 @@
   }
   .search-btn{
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#FFF;
-    box-shadow:0 6px 16px rgba(7,42,94,0.22);
+    box-shadow:0 6px 16px rgba(6,31,85,0.22);
   }
-  .search-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(7,42,94,0.28); }
+  .search-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(6,31,85,0.28); }
   .search-btn:disabled{ opacity:.6; cursor:default; transform:none; }
   .scan-btn{
     background:var(--paper); color:var(--gold-2); border:1px solid var(--line);
@@ -114,7 +110,6 @@
   .scan-btn:hover{ border-color:var(--gold); background:var(--gold-soft); }
   .search-hint{ font-size:11.5px; color:var(--muted); margin-top:10px; }
 
-  /* States */
   .state-msg{
     display:none; align-items:center; justify-content:center; gap:10px;
     padding:48px 10px; color:var(--muted); font-size:14px; text-align:center; flex-direction:column;
@@ -122,12 +117,11 @@
   .state-msg.show{ display:flex; }
   .state-msg.err{ color:var(--error); }
   .spinner{
-    width:20px; height:20px; border-radius:50%; border:2px solid rgba(7,42,94,0.12);
+    width:20px; height:20px; border-radius:50%; border:2px solid rgba(6,31,85,0.12);
     border-top-color:var(--gold); animation:spin .7s linear infinite;
   }
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
-  /* Multi-match picker */
   .picker{ display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
   .picker-item{
     background:var(--card); border:1px solid var(--line); border-radius:13px; padding:16px 18px;
@@ -139,7 +133,6 @@
   .picker-item .pgrade{ font-size:12px; color:var(--muted); margin-top:3px; }
   .picker-item .arrow{ font-size:18px; color:var(--gold); }
 
-  /* Report */
   .report{ display:none; }
   .report.show{ display:block; }
   .report-head{
@@ -161,7 +154,7 @@
     padding:10px 18px; border-radius:9px; border:none; cursor:pointer;
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%); color:#FFF;
     font-family:inherit; font-weight:700; font-size:12.5px; display:flex; align-items:center; gap:7px;
-    box-shadow:0 6px 14px rgba(7,42,94,0.2);
+    box-shadow:0 6px 14px rgba(6,31,85,0.2);
   }
   .head-actions{ display:flex; gap:10px; flex-wrap:wrap; }
 
@@ -225,7 +218,6 @@
   }
   .footer-note::before{ content:"🔒"; font-size:11px; }
 
-  /* QR scan modal */
   .modal-overlay{
     display:none; position:fixed; inset:0; background:rgba(16,27,51,0.50); z-index:80;
     align-items:center; justify-content:center; padding:20px;
@@ -238,7 +230,7 @@
   .modal-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
   .modal-close{ border:none; background:none; font-size:22px; cursor:pointer; color:var(--muted); line-height:1; }
   .modal-close:hover{ color:var(--ink); }
-  #qrReaderBox{ border-radius:12px; overflow:hidden; background:#08162F; min-height:260px; }
+  #qrReaderBox{ border-radius:12px; overflow:hidden; background:#050F2B; min-height:260px; }
   .qr-hint{ font-size:11.5px; color:var(--muted); margin-top:10px; text-align:center; }
   .qr-error{ font-size:12.5px; color:var(--error); margin-top:10px; text-align:center; display:none; }
   .qr-error.show{ display:block; }
@@ -263,15 +255,16 @@
   width:auto;
 }
 
-
 </style>
 <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0B4DA6">
+<meta name="theme-color" content="#0B3A87">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="MilEX EDU">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="stylesheet" href="milex-theme.css">
+<script src="milex-motion.js" defer></script>
 </head>
 <body>
 <div class="wrap">
@@ -296,7 +289,7 @@
   </div>
 
   <div id="milexDownloadRow" style="text-align:center;margin:-8px 0 18px;">
-    <button type="button" id="milexDlBtn" onclick="MILEX_DL.start('parent', this)" style="background:none;border:1px solid var(--line,#1A3563);color:var(--muted,#8EA1BF);border-radius:10px;padding:8px 16px;font:600 13px Cairo,sans-serif;cursor:pointer;">⬇ <span data-i18n="downloadPage">تحميل الصفحة</span></button>
+    <button type="button" id="milexDlBtn" onclick="MILEX_DL.start('parent', this)" style="background:none;border:1px solid var(--line,#183168);color:var(--muted,#8EA1BF);border-radius:10px;padding:8px 16px;font:600 13px Cairo,sans-serif;cursor:pointer;">⬇ <span data-i18n="downloadPage">تحميل الصفحة</span></button>
   </div>
 
   <div class="search-card" id="searchCard">
@@ -421,7 +414,7 @@
 
 </div>
 
-<!-- QR scanner modal -->
+
 <div class="modal-overlay" id="scanModalOverlay" onclick="if(event.target===this) closeScanner()">
   <div class="modal-box">
     <div class="modal-head">
@@ -435,19 +428,11 @@
 </div>
 
 <script>
-  /* ============================================================
-     SUPABASE CONNECTION (same project/credentials as the main dashboard)
-     ============================================================ */
+
   const SUPABASE_URL = "https://evbjulsahncllewwvlxp.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2Ymp1bHNhaG5jbGxld3d2bHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NzE5MjUsImV4cCI6MjA5OTI0NzkyNX0.Xg9sU6ZenUU3kC2RNIbvZmK19KvE28MM2oyGcKNn8UA";
   const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  /* ----------------------------------------------------------------
-     GRADE MODEL: every grade is "<level>_<stage>"
-     level: first | second | third   (أولى / تانية / تالتة)
-     stage: prep | secondary          (إعدادي / ثانوي)
-     Real Arabic table names in Supabase follow: حضور_<level>_<stage> / دفع_<level>_<stage>
-     ---------------------------------------------------------------- */
   const LEVEL_AR = { first: "أولى", second: "تانية", third: "تالتة" };
   const STAGE_AR = { prep: "إعدادي", secondary: "ثانوي" };
   function splitGrade(g){ const i = g.indexOf("_"); return { level: g.slice(0,i), stage: g.slice(i+1) }; }
@@ -481,9 +466,6 @@
   };
   function monthName(m){ return MONTH_NAMES[currentLang][Number(m)] || m; }
 
-  /* ============================================================
-     I18N (Arabic / English)
-     ============================================================ */
   const I18N = {
     ar: {
       title: "بوابة ولي الأمر", subtitle: "اطّلع على تقرير الحضور والدرجات والمدفوعات لابنك",
@@ -569,7 +551,7 @@
       b.classList.toggle("active", b.dataset.lang === currentLang);
     });
     applyTranslations();
-    // Re-render whichever dynamic view is currently visible so generated text updates too.
+
     if(currentStudent && document.getElementById("reportView").classList.contains("show")){
       renderReport();
     } else if(window.__pickerMatches && document.getElementById("pickerList").style.display === "flex"){
@@ -578,8 +560,8 @@
   }
 
   let currentStudent = null;
-  let currentExamRows = []; // [{name, maxScore, score}]
-  let currentPaymentHistory = []; // [{month, year, amountPaid}]
+  let currentExamRows = [];
+  let currentPaymentHistory = [];
   let reportCharts = { att: null, exam: null };
 
   function isPaid(status){
@@ -593,13 +575,13 @@
   }
   function fmtEGP(n){ return `EGP ${Number(n || 0).toLocaleString('en-US')}`; }
   function getScoreColor(score){
-    if(score >= 90) return "rgba(7,42,94,1)";
-    if(score >= 75) return "rgba(11,77,166,1)";
-    if(score >= 60) return "rgba(143,178,232,1)";
-    return "rgba(74,128,214,1)";
+    if(score >= 90) return "rgba(6,31,85,1)";
+    if(score >= 75) return "rgba(11,58,135,1)";
+    if(score >= 60) return "rgba(157,184,232,1)";
+    return "rgba(45,95,184,1)";
   }
 
-  function setState(state){ // 'idle' | 'loading' | 'error' | 'empty' | 'picker' | 'report'
+  function setState(state){
     document.getElementById("searchCard").style.display = (state === "report") ? "none" : "block";
     document.getElementById("loadingMsg").classList.toggle("show", state === "loading");
     document.getElementById("errorMsg").classList.toggle("show", state === "error");
@@ -614,7 +596,6 @@
     document.getElementById("lookupInput").focus();
   }
 
-  /* ---------- Search across all grades (prep + secondary) by phone or QR code ---------- */
   async function runSearch(){
     const raw = document.getElementById("lookupInput").value.trim();
     if(!raw){ document.getElementById("lookupInput").focus(); return; }
@@ -632,7 +613,7 @@
           .from(SCHEMA.attendanceTable(grade))
           .select("*")
           .or(`${col.studentPhone}.eq.${raw},${col.parentPhone}.eq.${raw},${col.qrCode}.eq.${raw}`);
-        if(error) continue; // table might not exist / RLS — just skip this grade
+        if(error) continue;
         (data || []).forEach(row => matches.push({ grade, row }));
       }
 
@@ -674,13 +655,12 @@
     await openStudentReport(m.grade, m.row);
   }
 
-  /* ---------- Build the full report for one student ---------- */
   async function openStudentReport(grade, attRow){
     setState("loading");
     const col = SCHEMA.col;
 
     try{
-      // Payment record for this student
+
       const { data: payData } = await supa
         .from(SCHEMA.paymentsTable(grade)).select("*").eq(col.qrCode, attRow[col.qrCode]).limit(1);
       const pay = (payData && payData[0]) || {};
@@ -701,10 +681,8 @@
         lastPaymentDate: pay[col.lastPaymentDate] ?? ""
       };
 
-      // Exam scores for this student's grade
       currentExamRows = await fetchStudentExamScores(grade, attRow[col.qrCode]);
 
-      // Monthly payment history for this student
       currentPaymentHistory = await fetchPaymentHistory(attRow[col.qrCode]);
 
       renderReport();
@@ -762,7 +740,6 @@
     }
   }
 
-  /* ---------- Render the report UI ---------- */
   function renderReport(){
     const s = currentStudent;
     document.getElementById("repName").textContent = s.name || "—";
@@ -848,7 +825,7 @@
       type: "doughnut",
       data: {
         labels: [t('present'), t('absent')],
-        datasets: [{ data: [s.attendanceCount, s.absenceCount], backgroundColor: ["rgba(11,77,166,0.75)", "rgba(74,128,214,0.70)"], borderWidth: 0 }]
+        datasets: [{ data: [s.attendanceCount, s.absenceCount], backgroundColor: ["rgba(11,58,135,0.75)", "rgba(45,95,184,0.70)"], borderWidth: 0 }]
       },
       options: {
         maintainAspectRatio: false, cutout: "68%",
@@ -873,24 +850,21 @@
         datasets: [{
           label: t('colScore'),
           data: points.map(p => Math.round((p.score / p.maxScore) * 100)),
-          borderColor: "rgba(7,42,94,0.85)", backgroundColor: "rgba(7,42,94,0.10)",
-          fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: "rgba(7,42,94,1)"
+          borderColor: "rgba(6,31,85,0.85)", backgroundColor: "rgba(6,31,85,0.10)",
+          fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: "rgba(6,31,85,1)"
         }]
       },
       options: {
         maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw}%` } } },
         scales: {
-          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(7,42,94,0.05)" } },
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "rgba(6,31,85,0.05)" } },
           x: { ticks: { font: { size: 10, family: currentLang === 'ar' ? "Cairo" : "Inter" } }, grid: { display: false } }
         }
       }
     });
   }
 
-  /* ============================================================
-     QR CODE SCANNER (camera-based, via html5-qrcode)
-     ============================================================ */
   let qrScannerInstance = null;
 
   function openScanner(){
@@ -906,7 +880,7 @@
     qrScannerInstance = new Html5Qrcode("qrReader");
     Html5Qrcode.getCameras().then(cameras => {
       if(!cameras || !cameras.length){ throw new Error("no-camera"); }
-      // Prefer a back/rear camera on phones if one is reported.
+
       const back = cameras.find(c => /back|rear|environment/i.test(c.label));
       const cameraId = back ? back.id : cameras[0].id;
 
@@ -918,7 +892,7 @@
           closeScanner();
           runSearch();
         },
-        () => { /* per-frame scan failures are normal — ignore */ }
+        () => {  }
       ).catch(err => {
         console.error(err);
         document.getElementById("qrErrorMsg").textContent = t('cameraErr');
@@ -941,8 +915,6 @@
     }
   }
 
-
-  /* ---------- Startup ---------- */
   setLanguage(currentLang);
   setState("idle");
 </script>
@@ -951,7 +923,7 @@
     Powered by <a href="milex.html" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:underline; font-weight:600;">MilEX</a>
   </footer>
 
-<!-- MilEX EDU PWA: installable on Android/iOS when served over HTTPS -->
+
 <script>
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));

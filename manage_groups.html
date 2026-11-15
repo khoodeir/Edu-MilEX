@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <script>
-// ---- MilEX access guard: teacher only ----
+
 (function(){
   try{
     var raw = (sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession'));
@@ -25,16 +25,16 @@
 
 <style>
   :root{
-    --paper:#F5F8FC; --paper2:#DEE8F7; --card:#FFFFFF; --ink:#101B33; --muted:#5C6A80;
-    --brand:#0B4DA6; --brand-d:#072A5E; --brand-soft:rgba(11,77,166,.10);
+    --paper:#F2F6FB; --paper2:#E3EBF7; --card:#FFFFFF; --ink:#101B33; --muted:#5C6A80;
+    --brand:#0B3A87; --brand-d:#061F55; --brand-soft:rgba(11,58,135,.10);
     --line:#DCE3ED; --ok:#2E7D5B; --ok-soft:rgba(46,125,91,.12); --err:#B5424A; --err-soft:rgba(181,66,74,.12);
     --warn:#B7791F; --warn-soft:rgba(183,121,31,.12);
     --shadow:0 12px 32px rgba(16,27,51,.10);
   }
   body.dark{
-    --paper:#08162F; --paper2:#0A1C3C; --card:#0D2146; --ink:#DEE8F7; --muted:#8CA0BA;
-    --brand:#4A86DE; --brand-d:#9DBBEA; --brand-soft:rgba(59,130,246,.18);
-    --line:rgba(220,232,251,.14); --ok:#6FA98A; --ok-soft:rgba(111,169,138,.18); --err:#D8808A; --err-soft:rgba(216,128,138,.18);
+    --paper:#050F2B; --paper2:#071535; --card:#0A1B40; --ink:#E3EBF7; --muted:#8CA0BA;
+    --brand:#2D5FB8; --brand-d:#9DB8E8; --brand-soft:rgba(59,130,246,.18);
+    --line:rgba(220,232,251,.14); --ok:#8AB800; --ok-soft:rgba(111,169,138,.18); --err:#D8808A; --err-soft:rgba(216,128,138,.18);
     --warn:#E0B060; --warn-soft:rgba(224,176,96,.16);
     --shadow:0 12px 32px rgba(0,0,0,.45);
   }
@@ -53,7 +53,7 @@
     cursor:pointer; text-decoration:none; transition:all .15s;
   }
   .btn:hover{ border-color:var(--brand); color:var(--brand-d); }
-  .btn.primary{ background:linear-gradient(135deg,var(--brand-d),var(--brand)); color:#fff; border-color:transparent; box-shadow:0 6px 16px rgba(11,77,166,.28); }
+  .btn.primary{ background:linear-gradient(135deg,var(--brand-d),var(--brand)); color:#fff; border-color:transparent; box-shadow:0 6px 16px rgba(11,58,135,.28); }
   .btn.primary:hover{ color:#fff; transform:translateY(-1px); }
   .btn.danger{ color:var(--err); }
   .btn.danger:hover{ border-color:var(--err); color:var(--err); }
@@ -96,6 +96,8 @@
     .g-row .preview{ grid-column:1 / -1; order:5; }
   }
 </style>
+<link rel="stylesheet" href="milex-theme.css">
+<script src="milex-motion.js" defer></script>
 </head>
 <body>
 <div class="wrap">
@@ -145,7 +147,6 @@ const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const CONFIG_KEY = 'reg_form_data';
 const LS_KEY = 'regFormData';
 
-/* Same defaults the registration page ships with (only used if the server has no config yet). */
 const DEFAULT_STAGES = [
   { key:"Preparatory", labelEn:"Preparatory", labelAr:"المرحلة الإعدادية", grades:[
     { value:"First Prep", labelEn:"First Grade", labelAr:"الصف الأول الإعدادي", groups:[{value:"prep1-sattue-3",dayEn:"Sat & Tue",dayAr:"سبت وتلات",time:"3:00"}] },
@@ -157,7 +158,6 @@ const DEFAULT_STAGES = [
     { value:"Third Grade", labelEn:"Third Grade", labelAr:"الصف الثالث الثانوي", groups:[{value:"sec3-sunwed-12",dayEn:"Sun & Wed",dayAr:"حد واربع",time:"12:00"},{value:"sec3-sunwed-5",dayEn:"Sun & Wed",dayAr:"حد واربع",time:"5:00"}] } ] }
 ];
 
-/* Quick day presets (type anything else if you need it). English label is kept in sync for the English UI. */
 const DAY_PRESETS = [
   ["سبت وتلات","Sat & Tue"], ["حد واربع","Sun & Wed"], ["حد وتلات","Sun & Tue"], ["اتنين وخميس","Mon & Thu"],
   ["سبت وتلات وخميس","Sat, Tue & Thu"], ["الجمعة","Friday"], ["السبت","Saturday"], ["الأحد","Sunday"],
@@ -165,8 +165,8 @@ const DAY_PRESETS = [
 ];
 const dayEnFor = ar => { const p = DAY_PRESETS.find(x => x[0] === ar); return p ? p[1] : ar; };
 
-let cfg = null;          // full server config (we only ever touch stages[].grades[].groups)
-let original = null;     // snapshot at load, to detect renames
+let cfg = null;
+let original = null;
 let dirty = false;
 
 const $ = id => document.getElementById(id);
@@ -185,7 +185,7 @@ function normTime(raw){
   const [hh, mm=''] = v.split(':');
   return `${hh.trim()}:${(mm.trim() || '00').padStart(2,'0')}`;
 }
-/* What the registration page writes into group_name for a group. */
+
 const groupName = g => `${(g.dayAr||'').trim()} ${String(g.time||'').replace(':00','')}`.trim();
 
 function setDirty(v){
@@ -207,7 +207,7 @@ async function loadConfig(){
     try{ const l = JSON.parse(localStorage.getItem(LS_KEY)); if(l && Array.isArray(l.stages)) value = l; }catch(_){}
   }
   cfg = value || { stages: JSON.parse(JSON.stringify(DEFAULT_STAGES)), governorates: [] };
-  // make sure every group has a stable id
+
   cfg.stages.forEach(st => (st.grades||[]).forEach(gr => { gr.groups = gr.groups || []; gr.groups.forEach(g => { if(!g.value) g.value = mkSlug(); }); }));
   original = JSON.parse(JSON.stringify(cfg.stages));
   $('loading').style.display = 'none'; $('savebar').style.display = 'flex';
@@ -252,7 +252,7 @@ function render(){
     card.querySelector('[data-add]').addEventListener('click', () => {
       gr.groups.push({ value: mkSlug(), dayAr:'', dayEn:'', time:'' }); setDirty(true);
       const pos = myIdx; render();
-      const days = $('gradesBox').children[pos].querySelectorAll('[data-day]');   // focus the new row
+      const days = $('gradesBox').children[pos].querySelectorAll('[data-day]');
       if(days.length) days[days.length - 1].focus();
     });
     box.appendChild(card);
@@ -263,7 +263,7 @@ function validate(){
   const problems = [];
   cfg.stages.forEach(st => (st.grades||[]).forEach(gr => {
     const seen = new Set();
-    gr.groups = gr.groups.filter(g => (g.dayAr||'').trim() || (g.time||'').trim());   // drop fully empty rows
+    gr.groups = gr.groups.filter(g => (g.dayAr||'').trim() || (g.time||'').trim());
     gr.groups.forEach(g => {
       g.dayAr = (g.dayAr||'').trim(); g.dayEn = g.dayEn || dayEnFor(g.dayAr); g.time = normTime(g.time);
       if(!g.dayAr || !g.time) problems.push(`${gr.labelAr}: مجموعة ناقصة (اليوم أو الميعاد)`);
@@ -276,7 +276,6 @@ function validate(){
   return problems;
 }
 
-/* Students already registered under the OLD name are moved to the NEW one (only for groups whose id is unchanged). */
 async function migrateStudents(){
   const byValue = {};
   original.forEach(st => (st.grades||[]).forEach(gr => (gr.groups||[]).forEach(g => { byValue[gr.value + '|' + g.value] = { old: groupName(g) }; })));
@@ -305,12 +304,12 @@ async function save(){
   $('msg').style.whiteSpace = '';
   const btn = $('saveBtn'); btn.disabled = true; btn.textContent = 'جاري الحفظ…';
   try{
-    // merge into the LATEST server copy so governorates / cities edited elsewhere are never overwritten
+
     let latest = null;
     try{ const { data } = await supa.from('app_config').select('value').eq('key', CONFIG_KEY).maybeSingle(); if(data && data.value) latest = data.value; }catch(_){}
     const out = latest && Array.isArray(latest.stages) ? latest : { stages: [], governorates: (cfg.governorates || []) };
     if(!Array.isArray(out.governorates)) out.governorates = cfg.governorates || [];
-    // replace each grade's groups (matched by stage key + grade value); add stages/grades only if missing on server
+
     cfg.stages.forEach(st => {
       let os = out.stages.find(x => x.key === st.key);
       if(!os){ out.stages.push(JSON.parse(JSON.stringify(st))); return; }

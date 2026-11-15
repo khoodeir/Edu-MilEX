@@ -1,7 +1,4 @@
-/* MilEX install helper: "⬇ Install app" button on the role hubs (index.html).
-   - Android / desktop Chrome & Edge: opens the browser's real install prompt.
-   - iPhone / iPad (Safari): shows the Share -> "Add to Home Screen" steps.
-   - Anything else: shows a short how-to. Works with manifest.json + sw.js (HTTPS only). */
+
 (function(){
   var deferred = null;
   window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred = e; });
@@ -20,14 +17,14 @@
     var old = document.getElementById('milexInstallModal'); if(old) old.remove();
     var wrap = document.createElement('div'); wrap.id = 'milexInstallModal';
     wrap.setAttribute('dir', lang() === 'en' ? 'ltr' : 'rtl');
-    wrap.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(7,42,94,.55);backdrop-filter:blur(3px)';
+    wrap.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(6,31,85,.55);backdrop-filter:blur(3px)';
     var card = document.createElement('div');
-    card.style.cssText = 'background:var(--card,#fff);color:var(--ink,#101B33);max-width:380px;width:100%;border-radius:18px;padding:22px 22px 18px;box-shadow:0 24px 60px rgba(7,42,94,.35);border-top:5px solid #A8D400;font-family:Cairo,Inter,system-ui,sans-serif';
-    var h = document.createElement('h3'); h.textContent = title; h.style.cssText = 'margin:0 0 12px;font-size:18px;color:var(--ink-2,#072A5E)';
+    card.style.cssText = 'background:var(--card,#fff);color:var(--ink,#101B33);max-width:380px;width:100%;border-radius:18px;padding:22px 22px 18px;box-shadow:0 24px 60px rgba(6,31,85,.35);border-top:5px solid #A8D400;font-family:Cairo,Inter,system-ui,sans-serif';
+    var h = document.createElement('h3'); h.textContent = title; h.style.cssText = 'margin:0 0 12px;font-size:18px;color:var(--ink-2,#061F55)';
     var ol = document.createElement('ol'); ol.style.cssText = 'margin:0 0 16px;padding-inline-start:22px;line-height:1.9;font-size:14.5px';
     steps.forEach(function(s){ var li = document.createElement('li'); li.textContent = s; ol.appendChild(li); });
     var b = document.createElement('button'); b.type = 'button'; b.textContent = t('تمام', 'Got it');
-    b.style.cssText = 'width:100%;padding:12px;border:0;border-radius:12px;cursor:pointer;font:700 15px Cairo,Inter,sans-serif;background:#0B4DA6;color:#fff';
+    b.style.cssText = 'width:100%;padding:12px;border:0;border-radius:12px;cursor:pointer;font:700 15px Cairo,Inter,sans-serif;background:#0B3A87;color:#fff';
     b.onclick = function(){ wrap.remove(); };
     wrap.onclick = function(e){ if(e.target === wrap) wrap.remove(); };
     card.appendChild(h); card.appendChild(ol); card.appendChild(b); wrap.appendChild(card); document.body.appendChild(wrap);

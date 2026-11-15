@@ -9,12 +9,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Cairo:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Deep Red / Off-White / Gray palette */
-  --bg-0:#f7f5f1; --bg-1:#f1eee8; --bg-2:#e9e3da;
+
+  --bg-0:#F2F6FB; --bg-1:#f1eee8; --bg-2:#e9e3da;
   --card:rgba(253,252,250,0.78); --card-border:rgba(139,30,30,0.22);
-  --gold:#8b1e1e; --gold-light:#7a1f1f; --gold-deep:#5e1414; --bronze:#7c7873;
-  --text:#2b2b2b; --muted:#7c7873; --border:rgba(139,30,30,0.20);
-  --error:#c4485a; --success:#2f9e73; --radius:14px;
+  --gold:#8b1e1e; --gold-light:#7a1f1f; --gold-deep:#5e1414; --bronze:#5C6A80;
+  --text:#2b2b2b; --muted:#5C6A80; --border:rgba(139,30,30,0.20);
+  --error:#c4485a; --success:#6E9B00; --radius:14px;
 }
 *{box-sizing:border-box;}
 body{
@@ -42,7 +42,6 @@ body{
 @keyframes cardIn{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
 @media (prefers-reduced-motion: reduce){ .card{ animation:none; } }
 
-/* ===== Language toggle ===== */
 .lang-toggle{
   position:absolute; top:18px; right:18px; display:flex; gap:3px;
   background:rgba(139,30,30,0.07); border:1px solid var(--border);
@@ -140,7 +139,7 @@ select{
   background-position:left 16px center; padding-right:15px; padding-left:40px;
 }
 select:invalid{ color:#a89a94; }
-select option{ color:var(--text); background:#f7f5f1; }
+select option{ color:var(--text); background:#F2F6FB; }
 select option:checked, select option:hover{ background:var(--gold-deep); color:#f5f0e4; }
 .group-time{ font-size:10.5px; color:rgba(139,30,30,0.38); font-weight:400; letter-spacing:0; text-transform:none; margin-left:8px; }
 [dir="rtl"] .group-time{ margin-left:0; margin-right:8px; }
@@ -252,8 +251,6 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 }
 .powered-by span{ color:var(--gold); font-weight:600; }
 
-
-/* ===== Admin panel addition ===== */
 #adminOverlay{display:none;width:100%;max-width:700px;}
 .admin-card{background:var(--card);-webkit-backdrop-filter:blur(16px) saturate(110%);backdrop-filter:blur(16px) saturate(110%);border-radius:20px;padding:32px;box-shadow:0 18px 40px rgba(60,30,30,.14);border:1px solid var(--card-border)}
 .admin-gate{max-width:360px;margin:0 auto;text-align:center}.admin-gate h2,.admin-top h2{font-family:'Cormorant Garamond','Poppins',serif;color:var(--gold-light);font-size:23px;margin:0 0 18px}.admin-gate input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:15px;background:rgba(255,255,255,.6);outline:none;text-align:center;letter-spacing:2px}.admin-gate button{margin-top:14px}.admin-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:10px;flex-wrap:wrap}.admin-link,.btn-mini{font-size:12.5px;font-weight:700;color:var(--gold-light);text-decoration:none;cursor:pointer;background:rgba(139,30,30,.08);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-family:inherit}.stage-block{border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;background:rgba(255,255,255,.4)}.stage-head,.grade-head,.group-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.stage-head{margin-bottom:12px}.stage-head input,.grade-head input,.group-row input{padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;background:rgba(255,255,255,.8)}.stage-head input{flex:1;min-width:130px;font-weight:700;color:var(--gold-deep)}.grade-block{border:1px dashed var(--border);border-radius:10px;padding:12px;margin:10px 0;background:rgba(255,255,255,.5)}.grade-head input{flex:1;min-width:120px}.group-row{margin:7px 0}.group-row input.day{flex:1;min-width:110px}.group-row input.time{width:78px}.btn-x{border:none;background:rgba(196,72,90,.12);color:var(--error);width:25px;height:25px;border-radius:50%;cursor:pointer;font-weight:700}.btn-add-inline{border:1px dashed var(--gold-light);background:transparent;color:var(--gold-light);font-weight:700;font-size:12px;border-radius:8px;padding:6px 11px;cursor:pointer;margin-top:4px}.admin-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}.admin-actions button{flex:1;min-width:140px}.btn-secondary{background:transparent;color:var(--gold-light);border:1.5px solid var(--gold-light);padding:12px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}.pw-change{margin-top:26px;padding-top:18px;border-top:1px solid var(--border)}.pw-change h3{font-size:13.5px;color:var(--gold-deep);margin:0 0 10px}.pw-change-row{display:flex;gap:8px;flex-wrap:wrap}.pw-change-row input{flex:1;min-width:130px;padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:rgba(255,255,255,.7)}.admin-status{margin-top:14px;text-align:center;font-size:13px;font-weight:600;padding:10px;border-radius:8px;display:none}.admin-status.show-success{display:block;color:var(--success);background:rgba(47,158,115,.1);border:1px solid rgba(47,158,115,.28)}.admin-status.show-error{display:block;color:var(--error);background:rgba(196,72,90,.08);border:1px solid rgba(196,72,90,.28)}
@@ -261,6 +258,8 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 .gov-editor{border-top:1px solid var(--border);margin-top:24px;padding-top:18px}.gov-editor h3{font-family:'Cormorant Garamond','Poppins',serif;color:var(--gold-light);font-size:20px;margin:0 0 12px}.gov-picker{border:1.5px solid var(--border);border-radius:12px;padding:14px;background:rgba(255,255,255,.5);margin-bottom:14px}.gov-picker-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}.gov-picker-title{font-weight:700;color:var(--gold-deep);font-size:13px;flex:1;min-width:150px}.gov-picker-list{max-height:230px;overflow-y:auto;padding-inline-end:4px}.gov-picker-item{display:flex;align-items:center;gap:9px;padding:10px 4px;border-bottom:1px dashed var(--border);cursor:pointer;border-radius:8px}.gov-picker-item:last-child{border-bottom:none}.gov-picker-item:hover{background:rgba(139,30,30,.04)}.gov-picker-item.selected{background:rgba(139,30,30,.08)}.gov-picker-item span{font-weight:600;color:var(--text);flex:1}.gov-picker-item input[type="checkbox"]{width:19px;height:19px;accent-color:var(--gold-deep);cursor:pointer;flex:0 0 auto}.gov-name-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}.gov-name-input{flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-weight:700;color:var(--gold-deep);background:rgba(255,255,255,.85);font-size:15px}.gov-name-input:disabled{opacity:.5}.btn-x:disabled{opacity:.4;cursor:not-allowed}.city-row{display:flex;gap:7px;align-items:center;margin:7px 0;flex-wrap:wrap}.city-row input{flex:1;min-width:130px;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:inherit;background:rgba(255,255,255,.85)}
 
 </style>
+<link rel="stylesheet" href="milex-theme.css">
+<script src="milex-motion.js" defer></script>
 </head>
 <body>
 <div class="card">
@@ -405,9 +404,7 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 </div>
 
 <script>
-/* ============================================================
-   LANGUAGE (English / Arabic) — UI text only.
-   ============================================================ */
+
 const I18N = {
   en: {
     title: "Student Registration",
@@ -521,11 +518,6 @@ function t(key){
   return (I18N[currentLang] && I18N[currentLang][key] != null) ? I18N[currentLang][key] : (I18N.en[key] || key);
 }
 
-/* ============================================================
-   STAGE -> GRADE mapping
-   Preparatory only offers "Third Prep" (per request).
-   Secondary keeps its three grades.
-   ============================================================ */
 let GRADE_OPTIONS = {
   Preparatory: [
     { value: "First Prep", i18n: "gradeFirstPrep" },
@@ -539,9 +531,6 @@ let GRADE_OPTIONS = {
   ]
 };
 
-/* ============================================================
-   GRADE -> GROUP mapping (fixed days & times per grade)
-   ============================================================ */
 let GROUP_OPTIONS = {
   "First Prep":   [ { value: "prep1-sattue-3",  dayEn: "Sat & Tue", dayAr: "سبت وتلات", time: "3:00" } ],
   "Second Prep":  [ { value: "prep2-sattue-4",  dayEn: "Sat & Tue", dayAr: "سبت وتلات", time: "4:00" } ],
@@ -640,7 +629,7 @@ gradeSelect.addEventListener('change', () => populateGroupOptions(false));
 
 function applyTranslations(){
   document.querySelectorAll("[data-i18n]").forEach(el => {
-    if (el.tagName === 'OPTION' && (el.closest('#grade') || el.closest('#group'))) return; // handled by populate functions
+    if (el.tagName === 'OPTION' && (el.closest('#grade') || el.closest('#group'))) return;
     el.textContent = t(el.dataset.i18n);
   });
   document.querySelectorAll("[data-i18n-ph]").forEach(el => {
@@ -669,12 +658,9 @@ setLanguage(currentLang);
 populateGradeOptions(false);
 populateGroupOptions(false);
 
-/* ============================================================
-   FORM VALIDATION + SUBMISSION (n8n integration)
-   ============================================================ */
 const WEBHOOK_URL = "https://students.milestones-tech.com/webhook/Student_Registration_AS";
 
-const phoneRegex = /^01[0-9]{9}$/; // 11 digits total, starts with 01
+const phoneRegex = /^01[0-9]{9}$/;
 
 const form = document.getElementById('regForm');
 const submitBtn = document.getElementById('submitBtn');
@@ -708,7 +694,7 @@ function setupPhoneField(inputId, fieldId){
 const validateStudentPhone = setupPhoneField('studentPhone', 'studentPhoneField');
 const validateParentPhone = setupPhoneField('parentPhone', 'parentPhoneField');
 
-const nameRegex = /^[A-Za-z\u0600-\u06FF\s]+$/; // English or Arabic letters and spaces only
+const nameRegex = /^[A-Za-z\u0600-\u06FF\s]+$/;
 const nameInput = document.getElementById('fullName');
 const nameField = document.getElementById('fullNameField');
 
@@ -724,7 +710,7 @@ function validateFullName(){
 }
 nameInput.addEventListener('blur', validateFullName);
 
-const cityRegex = /^[A-Za-z\u0600-\u06FF\s]+$/; // English or Arabic letters and spaces only
+const cityRegex = /^[A-Za-z\u0600-\u06FF\s]+$/;
 const cityInput = document.getElementById('city');
 const cityField = document.getElementById('cityField');
 
@@ -861,7 +847,6 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-
 function syncPublicGovernorates(){
   const gov=document.getElementById('governorate'), city=document.getElementById('city');
   if(!gov || !city || typeof adminGovernorates==='undefined') return;
@@ -876,10 +861,6 @@ function syncPublicGovernorates(){
 
 document.getElementById('governorate').addEventListener('change',syncPublicGovernorates);
 
-/* ============================================================
-   ADMIN PANEL — added without changing the existing form layout
-   Open with: page-url#admin
-   ============================================================ */
 const ADMIN_DATA_KEY = 'regAdminData';
 const ADMIN_PASSWORD_KEY = 'regAdminPassword_v2';
 const DEFAULT_ADMIN_PASSWORD = '2026';

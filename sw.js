@@ -1,8 +1,7 @@
-// Bump this number on EVERY release so installed phones fetch the new files.
-const CACHE = "milex-edu-shell-v1";
-const SHELL = ["./", "./manifest.json", "./logo.png", "./logo-dark.png", "./favicon.png", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png", "./audit_log.html", "./dashboard.html", "./exam.html", "./exam_builder.html", "./index.html", "./manage_exams.html", "./manage_groups.html", "./parent_portal.html", "./scanner.html", "./student_delete.html", "./student_edit.html", "./student_registration.html", "./student_serch.html", "./milex.html", "./milex-common.js", "./milex-install.js", "./milex-download.js", "./logo-mark.png"];
-// Third-party libraries the pages need (QR scanner, Supabase client, charts).
-// Cached after the first online visit so the scanner can open with no internet.
+
+const CACHE = "milex-edu-shell-v2";
+const SHELL = ["./", "./manifest.json", "./logo.png", "./logo-dark.png", "./favicon.png", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png", "./audit_log.html", "./dashboard.html", "./exam.html", "./exam_builder.html", "./index.html", "./manage_exams.html", "./manage_groups.html", "./parent_portal.html", "./scanner.html", "./student_delete.html", "./student_edit.html", "./student_registration.html", "./student_serch.html", "./milex.html", "./milex-common.js", "./milex-theme.css", "./milex-motion.js", "./milex-install.js", "./milex-download.js", "./logo-mark.png"];
+
 const CDN_HOSTS = ["cdn.jsdelivr.net", "unpkg.com", "cdnjs.cloudflare.com"];
 
 self.addEventListener("install", event => {
@@ -16,7 +15,6 @@ self.addEventListener("fetch", event => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // CDN scripts: cache-first, refresh in the background. Opaque responses are fine to cache.
   if (CDN_HOSTS.includes(url.hostname) && (req.destination === "script" || req.destination === "style" || url.pathname.endsWith(".js"))) {
     event.respondWith(
       caches.match(req).then(cached => {
@@ -37,10 +35,10 @@ self.addEventListener("fetch", event => {
     return response;
   };
   if (isPage) {
-    // pages + our own scripts: network first so new versions show immediately; fall back to cache when offline
+
     event.respondWith(fetch(req).then(save).catch(() => caches.match(req).then(r => r || caches.match("./index.html"))));
   } else {
-    // images / manifest: cache first for speed
+
     event.respondWith(caches.match(req).then(r => r || fetch(req).then(save)));
   }
 });

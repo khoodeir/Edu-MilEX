@@ -1,5 +1,4 @@
-/* MilEX shared helpers: who is logged in, audit log, grades, shared groups.
-   Loaded by student_edit.html, student_delete.html, dashboard.html, ... */
+
 (function(){
   const GRADES = {
     first_prep:       { ar:"الصف الأول الإعدادي",  att:"حضور_أولى_إعدادي", pay:"دفع_أولى_إعدادي", scanner:"prep1",  reg:"First Prep"   },
@@ -10,7 +9,6 @@
     third_secondary:  { ar:"الصف الثالث الثانوي",  att:"حضور_تالتة_ثانوي",  pay:"دفع_تالتة_ثانوي",  scanner:"third",  reg:"Third Grade"  }
   };
 
-  // The 8 original groups keep the exact id the scanner / DB functions know.
   const LEGACY = {
     "prep1-sattue-3": {id:"سبت وثلاث 3",        dayAr:"سبت وتلات", time:"3:00"},
     "prep2-sattue-4": {id:"سبت وثلاث 4",        dayAr:"سبت وتلات", time:"4:00"},
@@ -36,7 +34,6 @@
     }catch(e){ return false; }
   }
 
-  // Assistant: local password session created by index.html (same idea as the teacher session).
   function assistantOk(){
     try{
       const raw = localStorage.getItem('milexAssistantSession');
@@ -50,9 +47,7 @@
     GRADES,
     teacherOk,
     assistantOk,
-    /* Who is acting RIGHT NOW. index.html records the role whose hub was opened last
-       (milexActiveRole, per tab first, then per device). A leftover teacher session on a
-       shared device must not make the assistant's changes look like the teacher's. */
+
     actor(){
       let r = null;
       try{ r = sessionStorage.getItem('milexActiveRole') || localStorage.getItem('milexActiveRole'); }catch(e){}
@@ -62,7 +57,7 @@
       if(a && !t) return { role:'assistant', name:'المساعد' };
       return t ? { role:'teacher', name:'المدرس' } : { role:'assistant', name:'المساعد' };
     },
-    /* Fire-and-forget audit entry. Never throws, never blocks the real action. */
+
     async audit(supa, entry){
       try{
         const a = this.actor();
@@ -75,8 +70,7 @@
         if(error) console.warn('audit_log insert failed', error.message);
       }catch(e){ console.warn('audit_log insert failed', e); }
     },
-    /* Groups per grade key (first_prep, ...) from the registration admin
-       config (Supabase app_config). Falls back to the 8 built-in groups. */
+
     async loadGroups(supa){
       const out = {};
       Object.keys(GRADES).forEach(k => out[k] = []);

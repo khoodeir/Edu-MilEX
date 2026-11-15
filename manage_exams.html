@@ -4,12 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
-// ---- MilEX access guard ----
-// This page is for teachers/admins only. If there is no valid, non-expired
-// login session (created by index.html after the correct password is
-// entered), redirect immediately back to the login page before any content
-// is shown. The session lives in sessionStorage (per-tab, auto-expires),
-// not in a permanent flag, so it can't just be set once and forgotten.
+
 (function(){
   try{
     var raw = (sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession'));
@@ -35,16 +30,16 @@
 <link rel="preconnect" href="https://evbjulsahncllewwvlxp.supabase.co">
 <style>
   :root{
-    --bg-main:#F5F8FC; --bg-secondary:#DEE8F7; --bg-dark-beige:#D2E1F4;
+    --bg-main:#F2F6FB; --bg-secondary:#E3EBF7; --bg-dark-beige:#D5E2F4;
     --card-bg:#FFFFFF; --text-main:#101B33; --text-secondary:#5C6A80;
-    --petrol:#0B4DA6; --petrol-dark:#072A5E; --wood:#4A80D6; --wood-light:#9DBBEA;
+    --petrol:#0B3A87; --petrol-dark:#061F55; --wood:#2D5FB8; --wood-light:#9DB8E8;
     --border:#DCE3ED;
 
     --ink:var(--text-main); --ink-2:var(--petrol-dark);
     --paper:var(--bg-main); --card:var(--card-bg);
     --line:#DCE3ED;
-    --gold:var(--petrol); --gold-2:var(--petrol-dark); --gold-soft:rgba(11,77,166,0.09);
-    --success:#5B8C6E; --success-soft:rgba(91,140,110,0.13);
+    --gold:var(--petrol); --gold-2:var(--petrol-dark); --gold-soft:rgba(11,58,135,0.09);
+    --success:#5E8F00; --success-soft:rgba(110,155,0,0.13);
     --error:#B5555A; --error-soft:rgba(181,85,90,0.12);
     --muted:var(--text-secondary);
     --cream-bg-1:var(--bg-main); --cream-bg-2:var(--bg-secondary);
@@ -54,14 +49,14 @@
     --shadow-lg:0 20px 50px rgba(16,27,51,0.14);
   }
   body.dark{
-    --ink:#DEE8F7; --ink-2:#9DBBEA;
-    --paper:#08162F; --card:#0D2146;
+    --ink:#E3EBF7; --ink-2:#9DB8E8;
+    --paper:#050F2B; --card:#0A1B40;
     --line:rgba(222,232,247,0.14);
-    --gold:#4A86DE; --gold-2:#9DBBEA; --gold-soft:rgba(74,134,222,0.20);
-    --success:#6FA98A; --success-soft:rgba(111,169,138,0.18);
+    --gold:#2D5FB8; --gold-2:#9DB8E8; --gold-soft:rgba(45,95,184,0.20);
+    --success:#8AB800; --success-soft:rgba(111,169,138,0.18);
     --error:#C77378; --error-soft:rgba(199,115,120,0.18);
     --muted:#8EA1BF;
-    --cream-bg-1:#08162F; --cream-bg-2:#0A1C3C;
+    --cream-bg-1:#050F2B; --cream-bg-2:#071535;
     --on-accent:#FFFFFF;
     --shadow-sm:0 1px 2px rgba(0,0,0,0.30);
     --shadow-md:0 8px 24px rgba(0,0,0,0.40);
@@ -73,8 +68,8 @@
   body{
     font-family:'Inter',sans-serif;
     background:
-      radial-gradient(circle at 15% 10%, rgba(11,77,166,0.05), transparent 45%),
-      radial-gradient(circle at 85% 90%, rgba(74,128,214,0.04), transparent 45%),
+      radial-gradient(circle at 15% 10%, rgba(11,58,135,0.05), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(45,95,184,0.04), transparent 45%),
       linear-gradient(160deg, var(--cream-bg-1), var(--cream-bg-2));
     color:var(--ink);
     min-height:100vh;
@@ -84,7 +79,6 @@
   [dir="rtl"] body{ font-family:'Cairo','Inter',sans-serif; }
   .num{ font-family:'Space Grotesk',sans-serif; }
 
-  /* ===== Header ===== */
   .topbar{
     max-width:1100px; margin:0 auto 26px;
     display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
@@ -111,12 +105,12 @@
     padding:11px 18px; border-radius:10px;
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
     color:var(--on-accent); font-family:'Inter',sans-serif; font-size:13px; font-weight:700;
-    text-decoration:none; box-shadow:0 6px 16px rgba(7,42,94,0.28);
+    text-decoration:none; box-shadow:0 6px 16px rgba(6,31,85,0.28);
     transition:transform .15s ease, box-shadow .15s ease;
     white-space:nowrap;
   }
   [dir="rtl"] .back-btn{ font-family:'Cairo','Inter',sans-serif; }
-  .back-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(7,42,94,0.35); }
+  .back-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(6,31,85,0.35); }
   .back-btn svg{ width:16px; height:16px; flex-shrink:0; }
 
   .icon-toggle-btn{
@@ -163,12 +157,12 @@
     padding:11px 18px; border-radius:10px; border:none;
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
     color:var(--on-accent); font-family:'Inter',sans-serif; font-size:13px; font-weight:700;
-    cursor:pointer; box-shadow:0 6px 16px rgba(7,42,94,0.28);
+    cursor:pointer; box-shadow:0 6px 16px rgba(6,31,85,0.28);
     transition:transform .15s ease, box-shadow .15s ease;
     white-space:nowrap;
   }
   [dir="rtl"] .add-exam-btn{ font-family:'Cairo','Inter',sans-serif; }
-  .add-exam-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(7,42,94,0.35); }
+  .add-exam-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(6,31,85,0.35); }
   .add-exam-btn:disabled{ opacity:.6; cursor:default; transform:none; }
 
   .result-count{ font-size:12px; color:var(--muted); margin-bottom:12px; }
@@ -180,7 +174,7 @@
   .state-msg.show{ display:flex; }
   .state-msg.err{ color:var(--error); flex-direction:column; gap:9px; }
   .state-msg .spinner{
-    width:18px; height:18px; border-radius:50%; border:2px solid rgba(7,42,94,0.18);
+    width:18px; height:18px; border-radius:50%; border:2px solid rgba(6,31,85,0.18);
     border-top-color:var(--gold); animation:spin .7s linear infinite; flex-shrink:0;
   }
   @keyframes spin{ to{ transform:rotate(360deg); } }
@@ -188,7 +182,6 @@
   .content{ display:none; }
   .content.show{ display:block; }
 
-  /* ===== Score Entry Panel ===== */
   .chart-card{
     background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:19px;
     margin-bottom:22px;
@@ -225,11 +218,11 @@
     padding:11px 18px; border-radius:10px; border:none;
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
     color:var(--on-accent); font-family:'Inter',sans-serif; font-weight:700; font-size:13px;
-    cursor:pointer; box-shadow:0 6px 16px rgba(7,42,94,0.28);
+    cursor:pointer; box-shadow:0 6px 16px rgba(6,31,85,0.28);
     transition:transform .15s ease, box-shadow .15s ease;
   }
   [dir="rtl"] .save-btn{ font-family:'Cairo','Inter',sans-serif; }
-  .save-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(7,42,94,0.35); }
+  .save-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(6,31,85,0.35); }
   .save-btn:disabled{ opacity:.6; cursor:default; transform:none; }
 
   .cancel-btn{
@@ -240,7 +233,6 @@
   [dir="rtl"] .cancel-btn{ font-family:'Cairo','Inter',sans-serif; }
   .cancel-btn:hover{ border-color:var(--gold); color:var(--gold-2); }
 
-  /* ===== Table ===== */
   .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:12px; }
   .hist-table-note{ font-size:11px; color:var(--muted); margin-bottom:12px; }
 
@@ -254,18 +246,17 @@
   tbody td{ padding:11px 14px; border-bottom:1px solid var(--line); color:var(--ink); white-space:nowrap; }
   tbody tr:last-child td{ border-bottom:none; }
   tbody tr{ transition:background .12s ease; }
-  tbody tr:hover{ background:rgba(7,42,94,0.06); }
+  tbody tr:hover{ background:rgba(6,31,85,0.06); }
   .empty-note{ text-align:center; color:var(--muted); font-size:12.5px; padding:20px 0; }
 
   .unpaid-link{
-    border:none; background:rgba(7,42,94,0.09); color:var(--gold-2); cursor:pointer;
+    border:none; background:rgba(6,31,85,0.09); color:var(--gold-2); cursor:pointer;
     font-family:'Inter',sans-serif; font-weight:700; font-size:11.5px; padding:6px 11px; border-radius:8px;
     transition:all .15s ease;
   }
   [dir="rtl"] .unpaid-link{ font-family:'Cairo','Inter',sans-serif; }
   .unpaid-link:hover{ background:var(--gold-soft); }
 
-  /* ===== Modal ===== */
   .modal-overlay{
     display:none; position:fixed; inset:0; background:rgba(16,27,51,0.5); z-index:80;
     align-items:center; justify-content:center; padding:20px;
@@ -302,12 +293,14 @@
   .app-footer a{ color:inherit; text-decoration:underline; font-weight:600; }
 </style>
 <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0B4DA6">
+<meta name="theme-color" content="#0B3A87">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="MilEX EDU">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="stylesheet" href="milex-theme.css">
+<script src="milex-motion.js" defer></script>
 </head>
 <body>
 
@@ -378,7 +371,7 @@
   <div class="footer-note" id="t_footerNote">يتم حفظ التغييرات مباشرة على Supabase</div>
 </div>
 
-<!-- Add exam modal -->
+
 <div class="modal-overlay" id="addExamModalOverlay" onclick="if(event.target===this) closeAddExamModal()">
   <div class="modal-box">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -406,9 +399,7 @@
 <div class="app-footer">Powered by <a href="milex.html" target="_blank" rel="noopener noreferrer">MilEX</a></div>
 
 <script>
-  /* ============================================================
-     SUPABASE CONNECTION — same project as the dashboard
-     ============================================================ */
+
  const SUPABASE_URL = "https://evbjulsahncllewwvlxp.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2Ymp1bHNhaG5jbGxld3d2bHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NzE5MjUsImV4cCI6MjA5OTI0NzkyNX0.Xg9sU6ZenUU3kC2RNIbvZmK19KvE28MM2oyGcKNn8UA";
   const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -890,7 +881,7 @@ function goBack(){
     window.location.href = "index.html";
   }
 }
-  // init
+
   applyTheme();
   populateGradeSelects();
   examGrade = document.getElementById("examManageGradeSelect").value;
@@ -898,7 +889,7 @@ function goBack(){
   loadExamGrades();
 </script>
 
-<!-- MilEX EDU PWA: installable on Android/iOS when served over HTTPS -->
+
 <script>
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));

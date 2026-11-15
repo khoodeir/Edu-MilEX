@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
-// ---- MilEX access guard: teacher only ----
+
 (function(){
   try{
     var raw = sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession');
@@ -18,8 +18,8 @@
 <script src="milex-common.js"></script>
 <link rel="icon" type="image/png" href="./icon-192.png">
 <style>
-  :root{ --bg:#F5F8FC; --card:#fff; --ink:#101B33; --muted:#5C6A80; --line:#DCE3ED; --gold:#0B4DA6; --bad:#c0392b; --ok:#1f8a4c; }
-  @media (prefers-color-scheme: dark){ :root{ --bg:#08162F; --card:#0D2146; --ink:#E6EEFB; --muted:#8EA1BF; --line:#1A3563; --gold:#B6DC1F; } }
+  :root{ --bg:#F2F6FB; --card:#fff; --ink:#101B33; --muted:#5C6A80; --line:#DCE3ED; --gold:#0B3A87; --bad:#c0392b; --ok:#1f8a4c; }
+  @media (prefers-color-scheme: dark){ :root{ --bg:#050F2B; --card:#0A1B40; --ink:#E6EEFB; --muted:#8EA1BF; --line:#183168; --gold:#B6DC1F; } }
   *{ box-sizing:border-box; }
   body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Cairo','Segoe UI',Tahoma,sans-serif; padding:18px; }
   .wrap{ max-width:1100px; margin:0 auto; }
@@ -39,6 +39,8 @@
   .pill.danger{ background:rgba(192,57,43,.14); color:var(--bad); } .pill.sec{ background:rgba(31,138,76,.14); color:var(--ok); }
   .msg{ padding:14px; text-align:center; color:var(--muted); } .msg.err{ color:var(--bad); }
 </style>
+<link rel="stylesheet" href="milex-theme.css">
+<script src="milex-motion.js" defer></script>
 </head>
 <body>
 <div class="wrap">

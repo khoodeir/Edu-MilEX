@@ -5,12 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Student Attendance Scanner</title>
 <script>
-  // Hide the page immediately until the access guard below confirms a
-  // valid teacher or assistant session; avoids flashing protected content.
+
   document.documentElement.style.visibility = 'hidden';
 </script>
 <script>
-  // Apply saved theme + language before first paint to avoid a flash of the wrong look.
+
   (function(){
     try{
       var theme = localStorage.getItem('scannerTheme') || 'light';
@@ -35,16 +34,11 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://evbjulsahncllewwvlxp.supabase.co">
 <style>
-  /*
-    Design: "The Register" — a class-attendance ledger.
-    Palette: parchment paper + deep forest ink + brass stamp accent.
-    Signature: the scan result reads like an ink stamp landing on a ledger page,
-    and the card carries a faint ruled-paper texture instead of a plain flat surface.
-  */
+
   :root{
-    --bg-main:#F5F8FC; --bg-secondary:#DEE8F7; --bg-dark-beige:#D2E1F4;
+    --bg-main:#F2F6FB; --bg-secondary:#E3EBF7; --bg-dark-beige:#D5E2F4;
     --card-bg:#FFFFFF; --text-main:#101B33; --text-secondary:#5C6A80;
-    --petrol:#0B4DA6; --petrol-dark:#072A5E; --wood:#4A80D6; --wood-light:#9DBBEA;
+    --petrol:#0B3A87; --petrol-dark:#061F55; --wood:#2D5FB8; --wood-light:#9DB8E8;
     --border:#DCE3ED;
 
     --ink:var(--text-main);
@@ -83,12 +77,12 @@
   }
 
   :root[data-theme="dark"]{
-    --ink:#DEE8F7;
-    --ink-2:#F5F8FC;
+    --ink:#E3EBF7;
+    --ink-2:#F2F6FB;
     --muted:#8EA1BF;
-    --paper:#08162F;
-    --card:#0D2146;
-    --field:#0D2146;
+    --paper:#050F2B;
+    --card:#0A1B40;
+    --field:#0A1B40;
     --line:rgba(255,255,255,0.08);
     --gold-rgb:59,130,246;
     --gold-2-rgb:127,178,245;
@@ -100,9 +94,9 @@
     --success-soft:rgba(var(--success-rgb),0.16);
     --warning-soft:rgba(var(--warning-rgb),0.16);
     --error-soft:rgba(var(--error-rgb),0.16);
-    --cream-bg-1:#08162F;
-    --cream-bg-2:#0A1C3C;
-    --surface-off:#0A1C3C;
+    --cream-bg-1:#050F2B;
+    --cream-bg-2:#071535;
+    --surface-off:#071535;
     --scrim:rgba(16,27,51,0.6);
     --shadow-sm:0 1px 3px rgba(16,27,51,0.35);
     --shadow-md:0 8px 24px rgba(16,27,51,0.4);
@@ -377,7 +371,7 @@
   .scan-frame{
     position:relative; border-radius:14px; overflow:hidden;
     border:1px solid var(--glass-border);
-    background:#08162F;
+    background:#050F2B;
     transition:opacity .2s ease, background .2s ease;
   }
   .scan-frame.hidden{ display:none; }
@@ -598,8 +592,8 @@
   .theme-option:hover{ transform:translateY(-2px); }
   .theme-option.selected{ border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-soft); }
   .theme-swatch{ height:34px; border-radius:7px; margin-bottom:6px; }
-  .theme-swatch.light{ background:linear-gradient(135deg,#F5F8FC,#DEE8F7); border:1px solid rgba(16,27,51,0.16); }
-  .theme-swatch.dark{ background:linear-gradient(135deg,#0D2146,#08162F); border:1px solid rgba(255,255,255,0.1); }
+  .theme-swatch.light{ background:linear-gradient(135deg,#F2F6FB,#E3EBF7); border:1px solid rgba(16,27,51,0.16); }
+  .theme-swatch.dark{ background:linear-gradient(135deg,#0A1B40,#050F2B); border:1px solid rgba(255,255,255,0.1); }
   .theme-option-label{ font-size:12px; font-weight:600; color:var(--ink); }
   html[dir="rtl"] .theme-option-label{ font-family:'Tajawal',sans-serif; }
   .lang-toggle{
@@ -691,12 +685,14 @@
   }
 </style>
 <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0B4DA6">
+<meta name="theme-color" content="#0B3A87">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="MilEX EDU">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="stylesheet" href="milex-theme.css">
+<script src="milex-motion.js" defer></script>
 </head>
 <body>
 
@@ -887,10 +883,6 @@
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2Ymp1bHNhaG5jbGxld3d2bHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NzE5MjUsImV4cCI6MjA5OTI0NzkyNX0.Xg9sU6ZenUU3kC2RNIbvZmK19KvE28MM2oyGcKNn8UA";
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ---- MilEX access guard ----
-  // Only a teacher (password session from index.html) or an assistant
-  // (real Supabase email/password login) may use the scanner. Anyone else
-  // is sent back to the login page before the page becomes visible.
   (async function milexGuardScanner(){
     let teacherOk = false;
     try{
@@ -909,8 +901,6 @@
       }catch(e){}
     }
 
-    // Offline: supabase-js can't refresh an expired token without internet, so trust the
-    // saved login on this device instead of kicking the assistant out mid-session.
     if(!teacherOk && !assistantOk && !navigator.onLine && localStorage.getItem('mgAssistantOk') === '1'){
       assistantOk = Object.keys(localStorage).some(k => /^sb-.+-auth-token$/.test(k));
     }
@@ -971,9 +961,6 @@
   };
   function gradeLabel(grade){ return (GRADE_LABELS_I18N[currentLang] || GRADE_LABELS_I18N.en)[grade] || grade; }
 
-  // Groups per grade, per the requested mapping:
-  //  prep1 -> Sat & Tue 3:00 | prep2 -> Sat & Tue 4:00 | prep3 -> Sat & Tue 2:00
-  //  first -> Sun & Wed 2:00 | second -> Sun & Wed 3:00 & 6:00 | third -> Sun & Wed 12:00 & 5:00
   let GRADE_GROUPS = {
     prep3: [
       { id: "سبت وثلاث 2", en: "Sat & Tue - 2:00", ar: "السبت والثلاثاء - الساعة 2" }
@@ -1008,14 +995,11 @@
     return GRADE_GROUPS[grade] || [];
   }
 
-  // ---- Groups come from the registration admin panel (Supabase app_config) ----
-  // The hardcoded GRADE_GROUPS above is only the fallback if the server is unreachable.
   const REG_GRADE_TO_SCANNER = {
     "First Prep":"prep1", "Second Prep":"prep2", "Third Prep":"prep3",
     "First Grade":"first", "Second Grade":"second", "Third Grade":"third"
   };
-  // The 8 original groups keep the exact id the DB functions already know,
-  // as long as the admin hasn't changed their day/time.
+
   const LEGACY_GROUP_IDS = {
     "prep1-sattue-3": {id:"سبت وثلاث 3", dayAr:"سبت وتلات", time:"3:00"},
     "prep2-sattue-4": {id:"سبت وثلاث 4", dayAr:"سبت وتلات", time:"4:00"},
@@ -1031,12 +1015,12 @@
     const out = { prep1:[], prep2:[], prep3:[], first:[], second:[], third:[] };
     (cfg.stages || []).forEach(stage => (stage.grades || []).forEach(grade => {
       const key = REG_GRADE_TO_SCANNER[grade.value];
-      if(!key) return; // custom grades have no attendance tables yet
+      if(!key) return;
       (grade.groups || []).forEach(g => {
         const time = String(g.time || "");
         const shortTime = time.replace(":00", "");
         const legacy = LEGACY_GROUP_IDS[g.value];
-        // same string the registration page writes into group_name
+
         const id = (legacy && legacy.dayAr === g.dayAr && legacy.time === time)
           ? legacy.id : `${g.dayAr} ${shortTime}`;
         out[key].push({
@@ -1055,7 +1039,7 @@
         .from('app_config').select('value').eq('key', 'reg_form_data').maybeSingle();
       if(error || !data || !data.value || !Array.isArray(data.value.stages)) return;
       GRADE_GROUPS = buildGroupsFromConfig(data.value);
-      if(typeof sessionActive !== 'undefined' && sessionActive) return; // don't change groups mid-session
+      if(typeof sessionActive !== 'undefined' && sessionActive) return;
       const groups = groupsForGrade(currentGrade);
       if(!groups.some(g => g.id === currentGroup)) currentGroup = groups[0] ? groups[0].id : "";
       renderGroupOptions();
@@ -1327,7 +1311,7 @@
         if(joinedId !== String(row.id)){
           activeSessionRow = row;
           showJoinSessionPrompt(row);
-          return; // Wait for the user's decision — don't touch their local grade/group choice.
+          return;
         }
       }
 
@@ -1461,8 +1445,8 @@
   let currentGroup = "";
   let settingsInitialized = false;
   let scanner;
-  let cameraActive = false;   // true once getUserMedia has succeeded and the camera is live
-  let scannerPaused = false;  // true while the camera is live but decoding is paused
+  let cameraActive = false;
+  let scannerPaused = false;
   let sending = false;
   let resumeTimer = null;
   let lastScanTimes = {};
@@ -1661,8 +1645,6 @@
     document.getElementById("groupLockHint").classList.add("show");
     document.getElementById("groupLockOverlay").classList.add("show");
 
-    // Calls fn_session_start directly in Postgres (marks the whole group
-    // "Absent" as a baseline for this session) — no n8n involved.
     supabaseClient.rpc('fn_session_start', {
       p_grade: currentGrade,
       p_group_raw: currentGroup
@@ -1707,9 +1689,7 @@
     sessionStorage.removeItem('dismissedSessionId');
 
     try{
-      // Calls fn_session_end directly: whoever is still "Absent" in this
-      // group gets absence_count +1, and the group's last session date is
-      // recorded. No n8n involved.
+
       await supabaseClient.rpc('fn_session_end', {
         p_grade: endedGrade,
         p_group_raw: endedGroup
@@ -1816,13 +1796,12 @@
 
     let statsHtml = "";
     if(kind === "attendance"){
-      // payment_status comes back as "Paid" / "Unpaid" (case-insensitive).
+
       const isPaid = String(s.payment_status ?? "").toLowerCase() === "paid";
       const hasPaymentInfo = s.payment_status != null && s.payment_status !== "";
       const paymentChipClass = hasPaymentInfo ? (isPaid ? "paid" : "unpaid") : "";
       const paymentChipLabel = hasPaymentInfo ? (isPaid ? t('chip_paid') : t('chip_unpaid')) : t('chip_unknown');
 
-      // previous_session_status comes back as "Present" / "Absent" (case-insensitive).
       const hasLastSessionInfo = s.previous_session_status != null && s.previous_session_status !== "";
       const wasPresent = String(s.previous_session_status ?? "").toLowerCase() === "present";
       const lastSessionChipClass = hasLastSessionInfo ? (wasPresent ? "paid" : "unpaid") : "";
@@ -1910,9 +1889,6 @@
     }, 1000);
   }
 
-  // Single auto-resume timer used both after a full result card (showNote=true,
-  // updates the countdown note in the card) and after a plain status message
-  // (showNote=false, just resumes scanning after RESULT_DISPLAY_MS).
   function armAutoResume(showNote){
     if(resumeTimer) clearTimeout(resumeTimer);
 
@@ -1943,9 +1919,6 @@
     startScanner();
   }
 
-  // ================= OFFLINE QUEUE =================
-  // When there is no internet, scans are saved on this device and sent to
-  // Supabase automatically as soon as the connection is back.
   const QUEUE_KEY = "scannerOfflineQueue";
   let flushing = false;
 
@@ -1981,7 +1954,6 @@
       : supabaseClient.rpc('fn_scan_attendance', { p_grade: item.grade, p_qr: item.qr });
   }
 
-  // Scans the server refused (already recorded / invalid) are kept so the assistant can see WHO they were.
   const REJ_KEY = "scannerOfflineRejected";
   function loadRejected(){ try{ return JSON.parse(localStorage.getItem(REJ_KEY)) || []; }catch(e){ return []; } }
   function addRejected(item, why){
@@ -2016,8 +1988,8 @@
         try{
           const { data, error } = await callScanRpc(item);
           if(error){
-            if(isNetworkError(error)) break;      // still offline -> keep it, try later
-            rejected++; addRejected(item, error.message); done = true;   // real DB error -> don't loop forever
+            if(isNetworkError(error)) break;
+            rejected++; addRejected(item, error.message); done = true;
           } else if(data && data.success){ sent++; done = true; }
           else { rejected++; addRejected(item, data && data.message); done = true; }
         }catch(e){
@@ -2061,7 +2033,6 @@
   window.addEventListener("offline", renderQueueBadge);
   setInterval(() => { if(loadQueue().length) flushQueue(false); }, 15000);
   setTimeout(() => { renderQueueBadge(); renderRejectedBadge(); flushQueue(false); }, 1500);
-  // ================= /OFFLINE QUEUE =================
 
   async function onScanSuccess(decodedText){
     if(sending) return;
@@ -2093,7 +2064,6 @@
     sending = true;
     pauseScanner();
 
-    // No connection at all: save the scan on this device, sync later.
     if(!navigator.onLine){
       queueScanOffline(decodedText, month, amount);
       return;
@@ -2101,8 +2071,6 @@
 
     setLoadingStatus(currentMode === "payment" ? t('status_confirming_payment') : t('status_sending_attendance'));
 
-    // Calls the Postgres RPC functions directly (fn_scan_attendance /
-    // fn_scan_payment) — no n8n involved.
     try{
       const { data, error } = currentMode === "payment"
         ? await supabaseClient.rpc('fn_scan_payment', {
@@ -2142,9 +2110,7 @@
         queueScanOffline(decodedText, month, amount);
         return;
       }
-      // مؤقتًا: وريله رسالة الخطأ الحقيقية من Postgres/الشبكة بدل الرسالة
-      // العامة، عشان نعرف السبب الفعلي. رجّعها لـ t('status_cant_connect')
-      // بعد ما نحدد المشكلة.
+
       const realMsg = (error && (error.message || error.details || error.hint)) || t('status_cant_connect');
       setStatus(t('status_cant_connect') + " — " + realMsg, "error", false);
       document.getElementById("scanFrame").classList.add("locked");
@@ -2153,7 +2119,6 @@
     }
   }
 
-  // Manual entry: same pipeline as a camera scan (cooldown, session check, offline queue ...)
   function submitManualCode(){
     const inp = document.getElementById("manualCode");
     const code = (inp.value || "").trim().toUpperCase().replace(/\s+/g, "");
@@ -2169,21 +2134,15 @@
 
   function onScanFailure(){}
 
-  // Pause decoding but leave the camera stream running — this is what makes
-  // back-to-back scans fast. The old code fully destroyed and recreated the
-  // camera (clear() + render()) after every single scan, which re-triggers
-  // camera acquisition/init each time and is the main source of the lag.
   function pauseScanner(){
     if(scanner && cameraActive && !scannerPaused){
       try{
-        scanner.pause(true); // true = also freeze the visible video frame
+        scanner.pause(true);
       }catch(e){}
       scannerPaused = true;
     }
   }
 
-  // Fully release the camera. Only used when the camera should actually turn
-  // off (session ended, leaving payment mode with no session, no active session).
   function stopScannerFully(){
     scannerPaused = false;
     if(scanner && cameraActive){
@@ -2203,8 +2162,6 @@
     idleStatusKey = "status_wait_scanning";
     setStatus(t('status_wait_scanning'), "wait");
 
-    // Camera already warm from a previous scan — just resume decoding instead
-    // of tearing the camera down and re-requesting it. This is the fast path.
     if(scanner && cameraActive){
       if(scannerPaused){
         try{
@@ -2212,11 +2169,11 @@
           scannerPaused = false;
           return;
         }catch(e){
-          // Resume failed for some reason — fall through to a full restart.
+
           await stopScannerFully();
         }
       } else {
-        return; // already running
+        return;
       }
     }
 
@@ -2268,7 +2225,7 @@
   });
 </script>
 
-<!-- MilEX EDU PWA: installable on Android/iOS when served over HTTPS -->
+
 <script>
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="pageTitle">بوابة الدخول | MilEX </title>
 <script>
-  // Apply saved theme before first paint to avoid a flash of the wrong look.
+
   (function(){
     try{
       var theme = localStorage.getItem('mgTheme') || 'light';
@@ -28,20 +28,16 @@
 <link rel="prefetch" href="student_delete.html">
 <link rel="prefetch" href="audit_log.html">
 <style>
-  /*
-    Design: MilEX. The role cards sit under the brand mark; choosing one launches
-    a short orbit-ring pulse before the door opens. Palette is drawn from the
-    MilEX mark: deep navy blue, lime green accent, and a clean navy-black ink.
-  */
+
   :root{
-    --bg-main:#F5F8FC;
+    --bg-main:#F2F6FB;
     --bg-secondary:#E3ECF8;
     --bg-dark-beige:#D5E1F3;
     --card-bg:#FFFFFF;
     --text-main:#101B33;
     --text-secondary:#5C6A80;
-    --petrol:#0B4DA6;
-    --petrol-dark:#072A5E;
+    --petrol:#0B3A87;
+    --petrol-dark:#061F55;
     --wood:#A8D400;
     --wood-light:#C4E34D;
     --border:#DCE3ED;
@@ -54,10 +50,10 @@
     --line:var(--border);
     --gold:var(--petrol);
     --gold-2:var(--petrol-dark);
-    --gold-soft:rgba(11,77,166,0.08);
-    --gold-soft-2:rgba(11,77,166,0.16);
-    --success:#1FA971;
-    --success-soft:rgba(31,169,113,0.14);
+    --gold-soft:rgba(11,58,135,0.08);
+    --gold-soft-2:rgba(11,58,135,0.16);
+    --success:#6E9B00;
+    --success-soft:rgba(110,155,0,0.14);
     --error:#E14B4B;
     --error-soft:rgba(225,75,75,0.13);
     --on-accent:#ffffff;
@@ -67,17 +63,17 @@
   }
   [data-theme="dark"]{
     --ink:#E6EEFB;
-    --ink-2:#9DBBEA;
+    --ink-2:#9DB8E8;
     --muted:#8EA1BF;
-    --paper:#08162F;
-    --card:#0D2146;
-    --line:#1A3563;
+    --paper:#050F2B;
+    --card:#0A1B40;
+    --line:#183168;
     --gold:#5B93E6;
-    --gold-2:#9DBBEA;
-    --gold-soft:rgba(74,134,222,0.16);
-    --gold-soft-2:rgba(74,134,222,0.26);
-    --success:#3FC98A;
-    --success-soft:rgba(63,201,138,0.16);
+    --gold-2:#9DB8E8;
+    --gold-soft:rgba(45,95,184,0.16);
+    --gold-soft-2:rgba(45,95,184,0.26);
+    --success:#B4DC1E;
+    --success-soft:rgba(168,212,0,0.16);
     --error:#FF7A7A;
     --error-soft:rgba(255,122,122,0.16);
     --on-accent:#071021;
@@ -94,7 +90,7 @@
     background-image:
       radial-gradient(circle at 12% 8%, var(--gold-soft-2), transparent 42%),
       radial-gradient(circle at 88% 92%, var(--gold-soft-2), transparent 42%),
-      repeating-radial-gradient(circle at 50% 0%, rgba(11,77,166,0.05) 0px, rgba(11,77,166,0.05) 1px, transparent 1px, transparent 90px),
+      repeating-radial-gradient(circle at 50% 0%, rgba(11,58,135,0.05) 0px, rgba(11,58,135,0.05) 1px, transparent 1px, transparent 90px),
       linear-gradient(165deg, var(--paper) 0%, var(--card) 100%);
     background-size:auto, auto, auto, auto;
     background-attachment:fixed, fixed, fixed, fixed;
@@ -128,7 +124,7 @@
     background-repeat:no-repeat;
     background-position:center;
     background-size:contain;
-    filter:drop-shadow(0 8px 18px rgba(11,77,166,0.18));
+    filter:drop-shadow(0 8px 18px rgba(11,58,135,0.18));
 }
   [data-theme="dark"] .brand-mark{ background-image:url("logo-dark.png"); filter:drop-shadow(0 8px 22px rgba(0,0,0,0.45)); }
   .eyebrow{
@@ -142,7 +138,7 @@
     letter-spacing:-0.01em;
   }
   [dir="rtl"] h1{ font-family:'Cairo',sans-serif; font-weight:800; letter-spacing:0; }
-  .hero h1::after{ content:""; display:block; width:64px; height:4px; border-radius:4px; margin:14px auto 0; background:linear-gradient(90deg,#0B4DA6,#A8D400); }
+  .hero h1::after{ content:""; display:block; width:64px; height:4px; border-radius:4px; margin:14px auto 0; background:linear-gradient(90deg,#0B3A87,#A8D400); }
   .subtitle{ color:var(--muted); font-size:15px; max-width:420px; margin:0 auto; line-height:1.6; }
 
   .roles{
@@ -167,7 +163,7 @@
     display:block; overflow:hidden; isolation:isolate;
     transition:transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease;
   }
-  /* Top accent bar */
+
   .role-card::after{
     content:""; position:absolute; top:0; left:0; right:0; height:4px;
     background:linear-gradient(90deg, var(--gold) 0%, var(--wood) 100%);
@@ -196,7 +192,7 @@
     display:flex; align-items:center; justify-content:center;
     background:linear-gradient(135deg, var(--gold) 0%, var(--gold-2) 100%);
     color:var(--on-accent);
-    box-shadow:0 8px 18px rgba(11,77,166,0.28);
+    box-shadow:0 8px 18px rgba(11,58,135,0.28);
   }
   .role-icon::after{
     content:""; position:absolute; inset:-8px; border-radius:24px;
@@ -251,7 +247,6 @@
   #hubScreen, #assistantHubScreen{ display:none; width:100%; }
   #hubScreen .hero, #assistantHubScreen .hero{ margin-bottom:28px; }
 
-  /* Overlays (password / change-password) */
   .overlay{
     position:fixed; inset:0; background:rgba(10,18,32,0.5);
     display:none; align-items:center; justify-content:center; padding:20px;
@@ -290,15 +285,12 @@
   }
   .btn-primary{
     background:linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
-    color:var(--on-accent); box-shadow:0 6px 16px rgba(7,42,94,0.24);
+    color:var(--on-accent); box-shadow:0 6px 16px rgba(6,31,85,0.24);
   }
   .btn-primary:hover{ filter:brightness(1.05); }
   .btn-primary:disabled{ opacity:0.7; cursor:default; }
   .btn-ghost{ background:transparent; color:var(--muted); border:1px solid var(--line); }
 
-  /* ============ Professional animation layer ============ */
-
-  /* --- Page intro / splash --- */
   .page-intro{
     position:fixed; inset:0; z-index:300;
     background:var(--paper);
@@ -326,7 +318,6 @@
     .page-intro{ display:none; }
   }
 
-  /* --- Generic entrance keyframes --- */
   @keyframes fadeInUp{
     from{ opacity:0; transform:translateY(16px); }
     to{ opacity:1; transform:translateY(0); }
@@ -344,22 +335,18 @@
     to{ opacity:0; transform:translateY(-10px); }
   }
 
-  /* --- Hero staggered entrance --- */
   .hero .brand-mark{ opacity:0; animation:fadeInDown .6s ease .05s both; }
   .hero .eyebrow{ opacity:0; animation:fadeInUp .5s ease .15s both; }
   .hero h1{ opacity:0; animation:fadeInUp .55s ease .22s both; }
   .hero .subtitle{ opacity:0; animation:fadeInUp .55s ease .3s both; }
 
-  /* --- Topbar entrance --- */
   .topbar{ opacity:0; animation:fadeInDown .5s ease both; }
 
-  /* --- Screens crossfade (whole-section transition) --- */
   #roleScreen, #hubScreen, #assistantHubScreen{ animation:screenIn .45s ease both; }
   #roleScreen.screen-exit, #hubScreen.screen-exit, #assistantHubScreen.screen-exit{
     animation:screenOut .2s ease forwards;
   }
 
-  /* --- Role card entrance stagger + refined interactions --- */
   .role-card{ opacity:0; animation:fadeInUp .5s ease both; will-change:transform; }
   .roles .role-card:nth-child(1){ animation-delay:.32s; }
   .roles .role-card:nth-child(2){ animation-delay:.4s; }
@@ -376,17 +363,15 @@
   .role-card.danger:hover .role-icon{ transform:scale(1.1) rotate(6deg); }
   .role-card h2, .role-card p{ transition:color .2s ease; }
 
-  /* --- Buttons: micro-interactions --- */
   .icon-toggle-btn, .back-top-btn{ transition:transform .18s ease, box-shadow .18s ease, background .2s ease; }
   .icon-toggle-btn:active, .back-top-btn:active{ transform:translateY(0) scale(.94); }
   .link-btn{ transition:color .2s ease, transform .15s ease; display:inline-block; }
   .link-btn:active{ transform:scale(.96); }
   .btn{ transition:transform .16s ease, filter .2s ease, box-shadow .2s ease; }
   .btn:active{ transform:scale(.97); }
-  .btn-primary:not(:disabled):hover{ box-shadow:0 8px 20px rgba(7,42,94,0.3); transform:translateY(-1px); }
+  .btn-primary:not(:disabled):hover{ box-shadow:0 8px 20px rgba(6,31,85,0.3); transform:translateY(-1px); }
   .btn-ghost:hover{ border-color:var(--gold); color:var(--gold); }
 
-  /* --- Overlays: smooth scale + fade instead of instant toggle --- */
   .overlay{
     display:flex; opacity:0; visibility:hidden; pointer-events:none;
     transition:opacity .25s ease, visibility .25s ease;
@@ -398,10 +383,8 @@
   }
   .overlay.open .auth-card{ transform:scale(1) translateY(0); }
 
-  /* --- Message banners: soft pop-in --- */
   .msg-text.show{ animation:fadeInUp .3s ease both; }
 
-  /* --- Field focus micro-lift --- */
   .field input{ transition:border-color .2s ease, box-shadow .2s ease, transform .15s ease; }
   .field input:focus{ transform:translateY(-1px); }
 
@@ -410,12 +393,14 @@
   }
 </style>
 <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0B4DA6">
+<meta name="theme-color" content="#0B3A87">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="MilEX EDU">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="stylesheet" href="milex-theme.css">
+<script src="milex-motion.js" defer></script>
 </head>
 <body>
 
@@ -427,7 +412,7 @@
     </div>
   </div>
 
-  <!-- ROLE SELECTION SCREEN -->
+  
   <div id="roleScreen">
     <div class="hero">
       <div class="brand-mark">
@@ -476,7 +461,7 @@
     <div class="footer">Powered by <a href="milex.html" target="_blank" rel="noopener noreferrer" style="color:inherit;">MilEX</a></div>
   </div>
 
-  <!-- TEACHER HUB SCREEN (shown after correct password) -->
+  
   <div id="hubScreen">
     <div class="back-top-row">
       <button class="back-top-btn" onclick="showRoleScreen()">
@@ -617,7 +602,7 @@
     <div class="footer">Powered by <a href="milex.html" target="_blank" rel="noopener noreferrer" style="color:inherit;">MilEX</a></div>
   </div>
 
-  <!-- ASSISTANT HUB SCREEN -->
+  
   <div id="assistantHubScreen">
     <div class="back-top-row">
       <button class="back-top-btn" onclick="showRoleScreen()">
@@ -703,7 +688,7 @@
     <div class="footer">Powered by <a href="milex.html" target="_blank" rel="noopener noreferrer" style="color:inherit;">MilEX</a></div>
   </div>
 
-  <!-- Teacher login overlay -->
+  
   <div class="overlay" id="teacherOverlay">
     <div class="auth-card">
       <div class="role-icon" style="margin-inline:auto;">
@@ -726,7 +711,7 @@
     </div>
   </div>
 
-  <!-- Assistant login overlay (real Supabase auth) -->
+  
   <div class="overlay" id="assistantOverlay">
     <div class="auth-card">
       <div class="role-icon" style="margin-inline:auto;">
@@ -751,7 +736,7 @@
     </div>
   </div>
 
-  <!-- Change password overlay -->
+  
   <div class="overlay" id="changePasswordOverlay">
     <div class="auth-card">
       <h3 data-i18n="changePasswordTitle">تغيير كلمة المرور</h3>
@@ -780,22 +765,9 @@
 <script src="milex-common.js"></script>
 <script src="milex-install.js"></script>
 <script>
-  // ============================================================
-  // MilEX Security Layer
-  // - Passwords are never stored or compared in plaintext: only
-  //   their SHA-256 hash is kept in localStorage / compared.
-  // - "Logged in" state is a session token with an expiry (4h),
-  //   stored in sessionStorage (cleared when the browser tab closes),
-  //   not a permanent flag that never expires.
-  // - Repeated wrong password attempts trigger a temporary lockout
-  //   to slow down brute-force guessing.
-  // NOTE: This hardens the UI gate on this browser. It does NOT
-  // replace real access control: the Supabase table data itself must
-  // be protected with Row Level Security (RLS) policies on the
-  // Supabase project, since the anon key is public by design.
-  // ============================================================
+
   const MILEX_SESSION_KEY = 'milexTeacherSession';
-  const MILEX_SESSION_DURATION_MS = 4 * 60 * 60 * 1000; // 4 hours
+  const MILEX_SESSION_DURATION_MS = 4 * 60 * 60 * 1000;
   const MILEX_LOCK_KEY = 'milexTeacherLoginAttempts';
   const MILEX_MAX_ATTEMPTS = 5;
 
@@ -831,7 +803,7 @@
     const a = milexGetAttempts(key);
     a.count = (a.count || 0) + 1;
     if(a.count >= MILEX_MAX_ATTEMPTS){
-      // Progressive lockout: 1 min, growing with repeated failures, capped at 10 min.
+
       const minutes = Math.min(a.count - MILEX_MAX_ATTEMPTS + 1, 10);
       a.until = Date.now() + minutes * 60 * 1000;
     }
@@ -845,8 +817,6 @@
     return a.until && Date.now() < a.until ? (a.until - Date.now()) : 0;
   }
 
-  // ---- Assistant: same local password check as the teacher (no Supabase login) ----
-  // Session is kept on this device for 30 days (the scanner must keep working offline at the centre).
   const MILEX_ASSISTANT_SESSION_KEY = 'milexAssistantSession';
   const MILEX_ASSISTANT_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
   function milexStartAssistantSession(){
@@ -865,7 +835,7 @@
       return ok;
     }catch(e){ return false; }
   }
-  // Default assistant password = 2026 (SHA-256 below). A different hash can be stored under mgAssistantPasswordHash.
+
   const DEFAULT_ASSISTANT_PASSWORD_HASH = "158a323a7ba44870f23d96f1516dd70aa48e9a72db4ebb026b0a89e212a208ab";
   function getAssistantPasswordHash(){
     return localStorage.getItem('mgAssistantPasswordHash') || DEFAULT_ASSISTANT_PASSWORD_HASH;
@@ -877,9 +847,6 @@
     return localStorage.getItem('mgTeacherPasswordHash') || DEFAULT_TEACHER_PASSWORD_HASH;
   }
 
-  // One-time migration: if an older version of this site left a plaintext
-  // password saved in localStorage, convert it to a hash and delete the
-  // plaintext copy so it never sits on disk unencrypted.
   (async function milexMigrateLegacyPlaintextPassword(){
     const legacy = localStorage.getItem('mgTeacherPassword');
     if(legacy){
@@ -889,17 +856,10 @@
     }
   })();
 
-  // ---- Supabase client (used for real email/password login for the Assistant role) ----
   const SUPABASE_URL = "https://evbjulsahncllewwvlxp.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2Ymp1bHNhaG5jbGxld3d2bHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NzE5MjUsImV4cCI6MjA5OTI0NzkyNX0.Xg9sU6ZenUU3kC2RNIbvZmK19KvE28MM2oyGcKNn8UA";
   const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // The assistant logs in with a PASSWORD ONLY. Behind the scenes it is one
-  // Supabase Auth user with this fixed email. Create that user in
-  // Supabase > Authentication > Users (Auto Confirm ON) and set the password
-  // the assistant will type. To use an existing assistant account instead,
-  // just put its email here.
-  
   const translations = {
     ar:{
       pageTitle:"بوابة الدخول | MilEX",
@@ -1015,7 +975,7 @@
     }
 
     if(role === 'assistant'){
-      // Remembered on this device: skip the login form while the local session is valid.
+
       if(milexIsAssistantSessionValid()){
         setTimeout(showAssistantHub, 180);
       } else {
@@ -1034,7 +994,6 @@
     }
   }
 
-  // Remember who is using the app now, so audit entries name the right person.
   function milexSetActiveRole(role){
     try{ sessionStorage.setItem('milexActiveRole', role); localStorage.setItem('milexActiveRole', role); }catch(e){}
   }
@@ -1046,7 +1005,7 @@
   }
   function showAssistantHub(){
     milexSetActiveRole('assistant');
-    milexClearSession();   // a leftover teacher session on this device must not be used for the assistant's actions
+    milexClearSession();
     document.getElementById('roleScreen').style.display = 'none';
     document.getElementById('hubScreen').style.display = 'none';
     document.getElementById('assistantHubScreen').style.display = 'block';
@@ -1057,16 +1016,14 @@
     document.getElementById('roleScreen').style.display = 'block';
   }
 
-  // Teacher: session stays valid for 4 hours on this device/tab, or until logout.
   function logoutTeacher(){
     milexClearSession();
     showRoleScreen();
   }
 
-  // Assistant: remembered on this device (local session) until logout.
   async function logoutAssistant(){
     milexClearAssistantSession();
-    try{ localStorage.removeItem('mgAssistantOk'); await supa.auth.signOut(); }catch(e){}   // clean up any old Supabase login
+    try{ localStorage.removeItem('mgAssistantOk'); await supa.auth.signOut(); }catch(e){}
     showRoleScreen();
   }
 
@@ -1110,7 +1067,6 @@
     }
   }
 
-  // ---- Assistant login (local password, like the teacher) ----
   function openAssistantOverlay(){
     document.getElementById('assistantOverlay').classList.add('open');
     document.getElementById('assistantError').classList.remove('show');
@@ -1188,14 +1144,13 @@
     setTimeout(closeChangePasswordOverlay, 1200);
   }
 
-  // init
   applyLanguage('ar');
   if(document.documentElement.getAttribute('data-theme') === 'dark'){
     document.getElementById('themeBtn').textContent = '☀️';
   }
 </script>
 
-<!-- MilEX EDU PWA: installable on Android/iOS when served over HTTPS -->
+
 <script>
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));

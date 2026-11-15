@@ -1,16 +1,7 @@
-/* MilEX standalone download.
-   Adds "download my page" for Teacher / Assistant / Parent.
-   - Parent    -> one self-contained .html file (logo inlined).
-   - Teacher   -> .zip with the teacher pages; opens straight into the hub (no password).
-   - Assistant -> .zip with the assistant pages; the password is asked once here and
-                  baked in so the downloaded copy signs in by itself.
-   SECURITY: the file is a "key" - whoever has it gets in without a password, so every copy
-   (a) expires after COPY_DAYS days without being opened online (every online open renews it), (b) is rejected once the teacher presses "revoke copies"
-   (checked whenever the copy is opened with internet), and (c) is logged in audit_log.
-   This is a client-side gate: it stops casual sharing, not a determined developer. */
+
 (function(){
   var JSZIP_URL = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
-  var COMMON = ['milex-common.js','logo.png','logo-dark.png','icon-192.png','icon-512.png','apple-touch-icon.png'];
+  var COMMON = ['milex-common.js','milex-theme.css','milex-motion.js','logo.png','logo-dark.png','icon-192.png','icon-512.png','apple-touch-icon.png'];
   var BUNDLES = {
     teacher:   { zip:'MilEX-Teacher',   pages:['dashboard.html','student_serch.html','student_edit.html','manage_exams.html','student_registration.html','scanner.html','student_delete.html','audit_log.html'] },
     assistant: { zip:'MilEX-Assistant', pages:['scanner.html','student_registration.html','manage_exams.html','student_serch.html','student_edit.html'] }
@@ -39,42 +30,38 @@
   }
   function b64(s){ return btoa(unescape(encodeURIComponent(s))); }
 
-  /* ---------- Parent: single self-contained file ---------- */
   async function buildParent(){
     var html = await getText('parent_portal.html');
     var logo = await toDataURI(await getBlob('logo.png'));
-    html = html.replace(/<a class="back-top-btn" href="index\.html">[\s\S]*?<\/a>/, '');   // no "back to login"
-    html = html.replace(/<div id="milexDownloadRow"[\s\S]*?<\/div>\s*(?=<div class="search-card")/, ''); // no download button inside the copy
+    html = html.replace(/<a class="back-top-btn" href="index\.html">[\s\S]*?<\/a>/, '');
+    html = html.replace(/<div id="milexDownloadRow"[\s\S]*?<\/div>\s*(?=<div class="search-card")/, '');
     html = html.replace(/src="logo\.png"/g, 'src="' + logo + '"');
     html = html.replace(/<link rel="(?:icon|apple-touch-icon|manifest)"[^>]*>\s*/g, '');
     html = html.replace(/<script src="milex-download\.js"><\/script>\s*/, '');
     return new Blob([html], {type:'text/html;charset=utf-8'});
   }
 
-  /* ---------- Teacher / Assistant: zip bundle ---------- */
-
-  /* code that runs inside the downloaded copy: expiry (renewed on every online open) + revocation check */
   function gateJs(issued, role, site){
     return 'var ISSUED=' + issued + ',DAYS=' + COPY_DAYS + ',ROLE="' + role + '",SITE=' + JSON.stringify(site) + ',SEEN="milexBundleSeen_"+ROLE;' +
       'function milexBlock(m){try{sessionStorage.removeItem("milexTeacherSession");localStorage.removeItem("milexTeacherSession");}catch(e){}' +
-      'document.documentElement.classList.add("milex-bundle");document.body.innerHTML=\'<div style="min-height:100vh;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;padding:24px;text-align:center;font:600 18px Cairo,sans-serif;line-height:1.9"><div>\'+m+\'</div>\'+(SITE?\'<a href="\'+SITE+\'index.html?renew=\'+ROLE+\'" style="background:#0B4DA6;color:#fff;text-decoration:none;padding:12px 26px;border-radius:12px">⬇ تحديث النسخة</a>\':"")+\'</div>\';}' +
+      'document.documentElement.classList.add("milex-bundle");document.body.innerHTML=\'<div style="min-height:100vh;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;padding:24px;text-align:center;font:600 18px Cairo,sans-serif;line-height:1.9"><div>\'+m+\'</div>\'+(SITE?\'<a href="\'+SITE+\'index.html?renew=\'+ROLE+\'" style="background:#0B3A87;color:#fff;text-decoration:none;padding:12px 26px;border-radius:12px">⬇ تحديث النسخة</a>\':"")+\'</div>\';}' +
       'async function milexGate(){var seen=0;try{seen=Number(localStorage.getItem(SEEN))||0;}catch(e){}' +
       'if(Date.now()>Math.max(seen,ISSUED)+DAYS*86400000)return "انتهت صلاحية النسخة دي. اضغط تحديث وحمّل نسخة جديدة.";' +
       'try{var r=await supa.from("app_config").select("value").eq("key","' + REVOKE_KEY + '").maybeSingle();if(r.error)throw r.error;' +
       'var v=r.data&&r.data.value;var ts=v&&typeof v==="object"?Number(v.ts):Number(v);if(ts&&ts>ISSUED)return "النسخة دي اتلغت من المدرس. اضغط تحديث وحمّل نسخة جديدة.";' +
-      'try{localStorage.setItem(SEEN,String(Date.now()));}catch(e){}' +   // online + valid -> renew another DAYS days
+      'try{localStorage.setItem(SEEN,String(Date.now()));}catch(e){}' +
       '}catch(e){}' +
       'return "";}';
   }
 
   function bootTeacher(issued, site){
-    return '<script>/* MilEX bundle: teacher goes straight in */(async function(){document.documentElement.classList.add("milex-bundle");' + gateJs(issued, 'teacher', site) +
+    return '<script>(async function(){document.documentElement.classList.add("milex-bundle");' + gateJs(issued, 'teacher', site) +
       'var bad=await milexGate();if(bad){milexBlock(bad);return;}' +
       'try{var v=JSON.stringify({exp:Date.now()+4*60*60*1000});sessionStorage.setItem("milexTeacherSession",v);localStorage.setItem("milexTeacherSession",v);}catch(e){}' +
       'showHub();})();<\/script>\n';
   }
   function bootAssistant(pw, issued, site){
-    return '<script>/* MilEX bundle: assistant signs in by itself */(async function(){document.documentElement.classList.add("milex-bundle");' + gateJs(issued, 'assistant', site) +
+    return '<script>(async function(){document.documentElement.classList.add("milex-bundle");' + gateJs(issued, 'assistant', site) +
       'var bad=await milexGate();if(bad){try{await supa.auth.signOut();}catch(e){}localStorage.removeItem("mgAssistantOk");milexBlock(bad);return;}' +
       'var PW=decodeURIComponent(escape(atob("' + b64(pw) + '")));' +
       'try{var s=await supa.auth.getSession();' +
@@ -111,7 +98,6 @@
     return zip.generateAsync({type:'blob'});
   }
 
-  /* ---------- UI ---------- */
   function setBusy(btn, on){
     if(!btn) return;
     if(on){ btn.dataset.old = btn.textContent; btn.textContent = t('جاري التحميل...', 'Preparing...'); btn.disabled = true; }
@@ -158,7 +144,7 @@
       err.classList.remove('show');
       if(!pw){ err.classList.add('show'); return; }
       try{
-        // verify the password is right before baking it in
+
         var chk = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth:{ persistSession:false, autoRefreshToken:false } });
         var r = await chk.auth.signInWithPassword({ email: ASSISTANT_EMAIL, password: pw });
         if(r.error) throw r.error;
@@ -168,7 +154,6 @@
     }
   };
 
-  /* ---------- "Update copy" link from an expired copy: index.html?renew=teacher|assistant ---------- */
   window.addEventListener('load', function(){
     var role = new URLSearchParams(location.search).get('renew');
     if(role !== 'teacher' && role !== 'assistant') return;
@@ -178,7 +163,7 @@
       if(done) return; done = true;
       var b = document.createElement('button'); b.type = 'button';
       b.textContent = t('⬇ اضغط هنا لتحميل النسخة الجديدة', '⬇ Tap to download the new copy');
-      b.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;background:#0B4DA6;color:#fff;border:0;border-radius:12px;padding:12px 22px;font:700 15px Cairo,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.3);cursor:pointer';
+      b.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;background:#0B3A87;color:#fff;border:0;border-radius:12px;padding:12px 22px;font:700 15px Cairo,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.3);cursor:pointer';
       b.onclick = function(){ window.MILEX_DL.start(role, b); setTimeout(function(){ if(role==='teacher') b.remove(); }, 800); };
       document.body.appendChild(b);
     }

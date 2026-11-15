@@ -8,9 +8,9 @@
 <script src="milex-common.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{ --ink:#101B33; --paper:#EEF3FA; --card:#fff; --line:rgba(16,27,51,.15); --accent:#0B4DA6; --accent-2:#072A5E;
-         --ok:#2F9E73; --err:#A94442; --muted:#5C6A80; --warn:#B87A1E; }
-  body.dark{ --ink:#DEE8F7; --paper:#08162F; --card:#0D2146; --line:rgba(180,205,240,.16); --accent:#6AA0EA; --accent-2:#A5C4F0; --muted:#9FB3D4; }
+  :root{ --ink:#101B33; --paper:#EEF3FA; --card:#fff; --line:rgba(16,27,51,.15); --accent:#0B3A87; --accent-2:#061F55;
+         --ok:#6E9B00; --err:#A94442; --muted:#5C6A80; --warn:#B87A1E; }
+  body.dark{ --ink:#E3EBF7; --paper:#050F2B; --card:#0A1B40; --line:rgba(180,205,240,.16); --accent:#6AA0EA; --accent-2:#A5C4F0; --muted:#9FB3D4; }
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:'Cairo',sans-serif; background:var(--paper); color:var(--ink); min-height:100vh; }
   .topbar{ display:flex; align-items:center; gap:10px; padding:14px 18px; background:var(--card); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:5; }
@@ -43,6 +43,8 @@
   .status{ margin-top:10px; font-size:13.5px; min-height:20px; } .status.ok{ color:var(--ok); } .status.err{ color:var(--err); }
   .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#101B33; color:#fff; padding:10px 18px; border-radius:10px; display:none; z-index:50; }
 </style>
+<link rel="stylesheet" href="milex-theme.css">
+<script src="milex-motion.js" defer></script>
 </head>
 <body>
 <div class="topbar">
@@ -108,8 +110,6 @@
   const GRADES = MILEX.GRADES;
   const GRADE_KEYS = Object.keys(GRADES);
 
-  /* ---- access guard: teacher session OR assistant (Supabase session) ----
-     (called at the END of this script: init() uses $ / students, declared below) */
   async function guard(){
     let ok = MILEX.teacherOk();
     if(!ok){
@@ -123,9 +123,9 @@
     init();
   }
 
-  let students = [];       // merged attendance + payment rows
-  let groupsByGrade = {};  // from shared config
-  let editing = null;      // the student being edited (original snapshot)
+  let students = [];
+  let groupsByGrade = {};
+  let editing = null;
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -178,7 +178,6 @@
       </div>`).join('') || '<div class="state">مفيش نتائج</div>';
   }
 
-  /* ---------- edit modal ---------- */
   function fillGroupSelect(gradeKey, current){
     const sel = $('fGroup'); sel.innerHTML = '';
     const list = groupsByGrade[gradeKey] || [];
@@ -247,7 +246,6 @@
     if(sp && !phoneRe.test(sp)){ st.className='status err'; st.textContent='هاتف الطالب لازم يكون 11 رقم ويبدأ بـ 01'; return; }
     if(pp && !phoneRe.test(pp)){ st.className='status err'; st.textContent='هاتف ولي الأمر لازم يكون 11 رقم ويبدأ بـ 01'; return; }
 
-    // --- build attendance + payment diffs ---
     const attNew = {
       full_name: newName,
       student_phone: sp || null, parent_phone: pp || null,
@@ -303,7 +301,7 @@
           if(error) throw new Error(`(الدفع) ${error.message}`);
         }
       } else {
-        // MOVE to another grade: copy rows to the new tables, then remove the old ones.
+
         const ng = GRADES[newGrade];
         const attRow = { ...a, ...attNew }; delete attRow.id;
         const payRow = { ...(s.pay || { qr_code: qr }), ...payNew, qr_code: qr }; delete payRow.id;
@@ -317,7 +315,6 @@
         if(d1.error || d2.error) throw new Error('اتنقل الطالب بس مسح الصف القديم فشل — راجع الجداول القديمة: ' + ((d1.error||d2.error).message));
       }
 
-      // --- audit log (one row per kind of change) ---
       const base = { grade: newGrade, student_name: newName, qr_code: String(qr) };
       const rest = { ...attChanges }; const restPay = { ...payChanges };
       if(attChanges.group_name){
