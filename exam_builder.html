@@ -170,7 +170,7 @@
       <div class="grid2" style="margin-top:12px;">
         <div><label class="lbl" for="edCloses">آخر وقت لانتهاء الامتحان (اختياري)</label><input type="datetime-local" id="edCloses">
           <div class="hintline">لو حددته، أي طالب هيتسلّم امتحانه تلقائي عند الوقت ده حتى لو لسه مخلّصش مدته.</div></div>
-        <div style="display:flex; align-items:center;"><label class="chk"><input type="checkbox" id="edShow"> اعرض الإجابات الصح للطالب بعد التسليم</label></div>
+        <div style="display:flex; align-items:center;"><label class="chk"><input type="checkbox" id="edShow" checked> اعرض الإجابات الصح للطالب بعد التسليم</label></div>
       </div>
       <div class="totalrow">
         <div><label class="lbl" for="edTotal">الدرجة الكلية للامتحان</label><input type="number" id="edTotal" min="1" max="1000" value="10"></div>
@@ -400,7 +400,7 @@ const sameTiers = (a,b) => a.length === b.length && [...a].sort((x,y)=>y.min-x.m
 function blankQ(type){
   return type === 'essay'
     ? { type:'essay', text:'', options:[], correct:0, points:1, model_answer:'', tiers:defTiers() }
-    : { type:'mcq', text:'', options:['',''], correct:0, points:1 };
+    : { type:'mcq', text:'', options:['','','',''], correct:0, points:1 };
 }
 function normQ(q){
   q.type = q.type === 'essay' ? 'essay' : 'mcq';
@@ -436,7 +436,7 @@ async function openEditor(id){
   clearMsg();
   $('edGrade').innerHTML = GRADES.map(g => `<option value="${g[0]}">${g[1]}</option>`).join('');
   if(id == null){
-    ed = { id:null, title:'', grade:'first_prep', duration_min:30, closes_at:'', show_answers:false, status:'draft', questions:[blankQ('mcq')], has_submissions:false };
+    ed = { id:null, title:'', grade:'first_prep', duration_min:30, closes_at:'', show_answers:true, status:'draft', questions:[blankQ('mcq')], has_submissions:false };
   } else {
     try{
       const r = await rpc('fn_exam_admin_get', { p_pin: PIN, p_id: id });

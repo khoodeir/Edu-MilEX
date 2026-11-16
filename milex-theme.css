@@ -21,7 +21,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy-mid)!important;b
 .modal-box{animation:mxUp .3s var(--ease) both}
 
 body.dash-pro{background:linear-gradient(180deg,#EDF2FA 0,#F4F7FC 320px,#F2F6FB 100%);padding-top:24px}
-[data-theme="dark"] body.dash-pro{background:linear-gradient(180deg,#050F2B,#071535)}
+[data-theme="dark"] body.dash-pro{background:linear-gradient(180deg,#171717,#1E1E1E)}
 .dash-pro .topbar{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 22px;box-shadow:0 6px 24px rgba(6,31,85,.06);position:relative;overflow:hidden;margin-bottom:22px}
 .dash-pro .topbar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--navy),var(--navy-mid) 55%,var(--lime))}
 .dash-pro .brand-eyebrow{color:var(--lime-deep);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px}
@@ -81,7 +81,7 @@ body.dash-pro{background:linear-gradient(180deg,#EDF2FA 0,#F4F7FC 320px,#F2F6FB 
 .dash-pro .search-box input{border-radius:12px;background:var(--card)}
 .dash-pro .table-wrap{border-radius:14px;border:1px solid var(--line)}
 .dash-pro thead th{background:linear-gradient(180deg,#EAF0FA,#E2EAF7);color:var(--navy-deep);font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;position:sticky;top:0;z-index:2}
-[data-theme="dark"] .dash-pro thead th{background:#0F2552;color:#DDE8FA}
+[data-theme="dark"] .dash-pro thead th{background:#2B2B2B;color:#E0E0E0}
 .dash-pro tbody tr{transition:background .15s ease}
 .dash-pro tbody tr:nth-child(even) td{background:rgba(11,58,135,.025)}
 .dash-pro tbody tr:hover td{background:rgba(168,212,0,.10)}
