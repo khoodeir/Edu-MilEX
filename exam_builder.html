@@ -272,7 +272,7 @@ $('aiGenerateBtn').addEventListener('click', async () => {
   const btn=$('aiGenerateBtn'); btn.disabled=true; status.textContent='جاري إعداد الأسئلة…';
   try{
     const src=await readAiFile(file);
-    const {data,error}=await supa.functions.invoke('generate-exam-content',{body:{instruction, ...src, count:Math.min(30, Math.max(1, ed.questions.length || 10))}});
+    const {data,error}=await supa.functions.invoke('generate-exam-content',{body:{instruction, ...src, p_pin:PIN, count:Math.min(30, Math.max(1, ed.questions.length || 10))}});
     if(error) throw error;
     if(!data || !data.ok || !Array.isArray(data.questions) || !data.questions.length) throw new Error(data?.error || 'لم يتم توليد أسئلة');
     ed.questions=data.questions.map(q=>({
