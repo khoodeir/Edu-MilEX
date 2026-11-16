@@ -709,9 +709,9 @@
   .sc-layout{ display:grid; grid-template-columns:minmax(320px,400px) 1fr; gap:18px; align-items:start; }
   .sc-side{ display:flex; flex-direction:column; gap:18px; min-width:0; }
   .sc-card{
-    background:var(--card); border:1px solid var(--line); border-radius:16px;
-    padding:18px; box-shadow:var(--shadow-sm); min-width:0;
-  }
+  background:var(--card); border:1px solid var(--line); border-radius:16px;
+  padding:18px; box-shadow:var(--shadow-sm); min-width:0; box-sizing:border-box;
+}
   .sc-card-head{
     display:flex; align-items:center; gap:10px; margin-bottom:14px;
     font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; color:var(--ink-2);
@@ -757,15 +757,15 @@
   .footer{ margin-top:22px; }
 
   /* تابلت وموبايل: عمود واحد بالترتيب (إعداد ← كاميرا ← آخر المسحات) */
-  @media (max-width:900px){
-    .container{ max-width:520px; }
-    .sc-layout{ display:flex; flex-direction:column; gap:14px; }
-    .sc-side{ display:contents; }
-    .sc-config{ order:1; }
-    .sc-camera{ order:2; }
-    .sc-history{ order:3; }
-    .sc-card{ padding:16px; border-radius:14px; }
-  }
+ @media (max-width:900px){
+  .container{ max-width:520px; }
+  .sc-layout{ display:flex; flex-direction:column; gap:14px; align-items:stretch; }
+  .sc-side{ display:contents; }
+  .sc-config{ order:1; }
+  .sc-camera{ order:2; }
+  .sc-history{ order:3; }
+  .sc-card{ width:100%; padding:16px; border-radius:14px; }
+}
   @media (max-width:560px){
     body{ padding:12px 10px 28px; }
     .sc-top{ flex-wrap:wrap; row-gap:6px; }
