@@ -2649,6 +2649,7 @@ function goBack(){
     const contentEl = document.getElementById("dashContent");
     const btn = document.getElementById("refreshBtn");
 
+    const mySeq = ++dashSeq;
     btn.classList.add("loading");
     loadingEl.classList.add("show");
     errorEl.classList.remove("show");
@@ -2673,17 +2674,16 @@ function goBack(){
         throw new Error("Could not load any data. Check if tables exist in Supabase.\n" + errors.join("\n"));
       }
 
+      if(mySeq !== dashSeq) return;   // المستخدم ضغط على تاب تاني — اتجاهل الرد القديم
       combined.students = results.flat();
       const examData = await fetchExamData(gradesToFetch);
+      if(mySeq !== dashSeq) return;
       combined.examAverages = examData.perExam;
       combined.examStudentAverages = examData.perStudent;
 
-      // FIX: show the content BEFORE drawing charts. Chart.js measures its container
-      // on creation; if #dashContent is still display:none the canvases get 0x0 size
-      // and the charts stay blank (intermittently, depending on timing).
-      contentEl.classList.add("show");
+      contentEl.classList.add("show");   // لازم يظهر قبل رسم الرسومات
       renderAll();
-      resizeAllCharts();
+      fixCharts();
 
       if (errors.length > 0 && currentGrade === "all") {
         console.warn("Some grades failed to load:", errors);
@@ -2708,8 +2708,10 @@ function goBack(){
         </div>`;
       errorEl.classList.add("show");
     }finally{
-      loadingEl.classList.remove("show");
-      btn.classList.remove("loading");
+      if(mySeq === dashSeq){
+        loadingEl.classList.remove("show");
+        btn.classList.remove("loading");
+      }
     }
   }
 
@@ -2786,21 +2788,35 @@ function goBack(){
     renderRoster();
   }
 
-  // Force every live chart to re-measure its container and repaint.
-  // Runs now, on the next frame, and once more shortly after (covers layout/fonts/animation settling).
-  function resizeAllCharts(){
+  /* ===== إصلاح ظهور الرسومات عند التنقل (الرسم كان بيتبني والصفحة مخفية فحجمه يطلع صفر) ===== */
+  let dashSeq = 0, histSeq = 0, examSeq = 0;
+  function fixCharts(){
+    if(typeof Chart === "undefined") return;
     const run = () => {
-      [charts, histCharts].forEach(group => {
-        Object.values(group || {}).forEach(c => {
-          try{ if(c && typeof c.resize === "function"){ c.resize(); c.update("none"); } }catch(e){}
-        });
+      Object.values(Chart.instances || {}).forEach(c => {
+        try{ if(c && c.canvas && c.canvas.offsetParent !== null){ c.resize(); c.update("none"); } }catch(e){}
       });
     };
-    run();
-    requestAnimationFrame(run);
-    setTimeout(run, 250);
+    requestAnimationFrame(() => requestAnimationFrame(run));
+    setTimeout(run, 150);
+    setTimeout(run, 500);
   }
-  window.addEventListener("resize", () => { try{ resizeAllCharts(); }catch(e){} });
+  (function watchCharts(){
+    const ro = (typeof ResizeObserver !== "undefined") ? new ResizeObserver(entries => {
+      entries.forEach(en => {
+        const cv = en.target.querySelector("canvas");
+        const ch = cv && typeof Chart !== "undefined" && Chart.getChart ? Chart.getChart(cv) : null;
+        if(ch && en.contentRect.width > 0){ try{ ch.resize(); }catch(e){} }
+      });
+    }) : null;
+    const hook = () => { if(ro) document.querySelectorAll(".chart-box").forEach(b => { if(!b.__ro){ b.__ro = 1; ro.observe(b); } }); };
+    hook();
+    new MutationObserver(hook).observe(document.body, { childList:true, subtree:true });
+    document.addEventListener("click", e => { if(e.target.closest && e.target.closest(".tab, summary, #langSwitch, .refresh-btn")) fixCharts(); }, true);
+    document.addEventListener("toggle", fixCharts, true);
+    window.addEventListener("resize", fixCharts);
+    document.addEventListener("visibilitychange", () => { if(!document.hidden) fixCharts(); });
+  })();
 
   function destroyChart(key){ if(charts[key]){ charts[key].destroy(); charts[key] = null; } }
   function destroyChartSafe(key){ if(typeof charts !== 'undefined' && charts[key]){ charts[key].destroy(); charts[key] = null; } }
@@ -3646,6 +3662,7 @@ function goBack(){
     const loadingEl = document.getElementById("histLoadingMsg");
     const errorEl = document.getElementById("histErrorMsg");
     const contentEl = document.getElementById("histContent");
+    const mySeq = ++histSeq;
     loadingEl.classList.add("show");
     errorEl.classList.remove("show");
     contentEl.classList.remove("show");
@@ -3653,9 +3670,11 @@ function goBack(){
     try{
       const { data, error } = await supa.from(HIST_SCHEMA.table).select("*");
       if(error) throw error;
+      if(mySeq !== histSeq) return;
       historyRows = data || [];
-      renderHistory();
       contentEl.classList.add("show");
+      renderHistory();
+      fixCharts();
     }catch(err){
       console.error(err);
       errorEl.innerHTML = `
@@ -3668,7 +3687,7 @@ function goBack(){
         </div>`;
       errorEl.classList.add("show");
     }finally{
-      loadingEl.classList.remove("show");
+      if(mySeq === histSeq) loadingEl.classList.remove("show");
     }
   }
 
@@ -3891,6 +3910,7 @@ function deltaBadge(curr, prev, suffix = ""){
     const loadingEl = document.getElementById("examLoadingMsg");
     const errorEl = document.getElementById("examErrorMsg");
     const contentEl = document.getElementById("examContent");
+    const mySeq = ++examSeq;
     loadingEl.classList.add("show");
     errorEl.classList.remove("show");
     contentEl.classList.remove("show");
@@ -3913,10 +3933,12 @@ function deltaBadge(curr, prev, suffix = ""){
         if(scoresErr) throw scoresErr;
         scores = scoreRows || [];
       }
+      if(mySeq !== examSeq) return;
       examScores = scores;
 
-      renderExamTable();
       contentEl.classList.add("show");
+      renderExamTable();
+      fixCharts();
     }catch(err){
       console.error(err);
       errorEl.innerHTML = `
@@ -3928,7 +3950,7 @@ function deltaBadge(curr, prev, suffix = ""){
         </div>`;
       errorEl.classList.add("show");
     }finally{
-      loadingEl.classList.remove("show");
+      if(mySeq === examSeq) loadingEl.classList.remove("show");
     }
   }
 
@@ -4176,6 +4198,7 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
     document.querySelectorAll('#gradeTabs .tab').forEach(t => t.classList.remove('active'));
     $(tabId).classList.add('active');
     ALL_VIEWS.forEach(v => { const el = $(v); if(el) el.style.display = (v === viewId) ? '' : 'none'; });
+    if(typeof fixCharts === 'function') fixCharts();
     if(typeof closeSidebarOnMobileNav === 'function') closeSidebarOnMobileNav();
   }
 
