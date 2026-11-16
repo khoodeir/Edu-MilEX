@@ -4,7 +4,7 @@
   var COMMON = ['milex-common.js','milex-theme.css','milex-motion.js','logo.png','logo-dark.png','icon-192.png','icon-512.png','apple-touch-icon.png'];
   var BUNDLES = {
     teacher:   { zip:'MilEX-Teacher',   pages:['dashboard.html','student_serch.html','student_edit.html','manage_exams.html','student_registration.html','scanner.html','student_delete.html','audit_log.html'] },
-    assistant: { zip:'MilEX-Assistant', pages:['scanner.html','student_registration.html','manage_exams.html','student_serch.html','student_edit.html'] }
+    assistant: { zip:'MilEX-Assistant', pages:['scanner.html','student_registration.html','manage_exams.html','exam_builder.html','manage_groups.html','student_delete.html','student_serch.html','student_edit.html'] }
   };
   var COPY_DAYS = 30;
   var REVOKE_KEY = 'bundle_revoked_before';

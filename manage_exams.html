@@ -4,21 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
-
+/* MilEX guard: المدرس أو المساعد */
 (function(){
-  try{
-    var raw = (sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession'));
-    var valid = false;
-    if(raw){
-      var data = JSON.parse(raw);
-      valid = !!(data && data.exp && Date.now() < data.exp);
-    }
-    if(!valid){
-      window.location.replace('index.html');
-    }
-  }catch(e){
-    window.location.replace('index.html');
+  function valid(k, useSession){
+    try{
+      var raw = (useSession ? sessionStorage.getItem(k) : null) || localStorage.getItem(k);
+      if(!raw) return false;
+      var d = JSON.parse(raw);
+      return !!(d && d.exp && Date.now() < d.exp);
+    }catch(e){ return false; }
   }
+  var allowed = valid('milexTeacherSession', true) || valid('milexAssistantSession', false);
+  if(!allowed){
+    try{
+      allowed = localStorage.getItem('mgAssistantOk') === '1' &&
+        Object.keys(localStorage).some(function(k){ return /^sb-.+-auth-token$/.test(k); });
+    }catch(e){}
+  }
+  if(!allowed) window.location.replace('index.html');
 })();
 </script>
 

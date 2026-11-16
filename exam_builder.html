@@ -2,14 +2,24 @@
 <html lang="ar" dir="rtl">
 <head>
 <script>
-
+/* MilEX guard: المدرس أو المساعد */
 (function(){
-  try{
-    var raw = (sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession'));
-    var ok = false;
-    if(raw){ var d = JSON.parse(raw); ok = !!(d && d.exp && Date.now() < d.exp); }
-    if(!ok) window.location.replace('index.html');
-  }catch(e){ window.location.replace('index.html'); }
+  function valid(k, useSession){
+    try{
+      var raw = (useSession ? sessionStorage.getItem(k) : null) || localStorage.getItem(k);
+      if(!raw) return false;
+      var d = JSON.parse(raw);
+      return !!(d && d.exp && Date.now() < d.exp);
+    }catch(e){ return false; }
+  }
+  var allowed = valid('milexTeacherSession', true) || valid('milexAssistantSession', false);
+  if(!allowed){
+    try{
+      allowed = localStorage.getItem('mgAssistantOk') === '1' &&
+        Object.keys(localStorage).some(function(k){ return /^sb-.+-auth-token$/.test(k); });
+    }catch(e){}
+  }
+  if(!allowed) window.location.replace('index.html');
 })();
 </script>
 <title>الامتحانات الأونلاين</title>
@@ -113,6 +123,7 @@
 </style>
 <link rel="stylesheet" href="milex-theme.css">
 <script src="milex-motion.js" defer></script>
+<script src="milex-ai.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -579,8 +590,10 @@ function renderResults(){
     const st = r.in_progress ? '<span class="chip draft">بيمتحن</span>' : (r.auto ? '<span class="chip closed">اتسلّم تلقائي</span>' : '<span class="chip published">سلّم</span>');
     tr.innerHTML = `<td>${i+1}</td><td>${esc(r.name||'')}</td><td style="direction:ltr; text-align:right;">${esc(r.code)}</td>
       <td>${r.in_progress ? '—' : `${r.score} / ${r.total}`}</td><td>${r.in_progress ? '—' : pct(r)+'%'}</td><td>${st}</td>
-      <td><button class="btn sm danger" title="يسمح له يدخل تاني">إعادة</button></td>`;
-    tr.querySelector('button').onclick = async () => {
+      <td style="white-space:nowrap">${r.in_progress ? '' : '<button class="btn sm" data-ai title="تقييم الذكاء الاصطناعي">🤖 تقييم</button> '}<button class="btn sm danger" data-reset title="يسمح له يدخل تاني">إعادة</button></td>`;
+    const aiBtn = tr.querySelector('[data-ai]');
+    if(aiBtn) aiBtn.onclick = () => MILEX_AI.openModal(supa, resExam.token, r.code, r.name);
+    tr.querySelector('[data-reset]').onclick = async () => {
       if(!confirm(`تمسح محاولة ${r.name||r.code} وتسمح له يدخل الامتحان من الأول؟`)) return;
       try{ await rpc('fn_exam_admin_reset', { p_pin: PIN, p_id: resExam.id, p_code: r.code }); refreshResults(); }catch(e){ showMsg('خطأ: '+(e.message||e),'err'); }
     };

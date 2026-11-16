@@ -12,6 +12,7 @@
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
+<script src="milex-ai.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -424,6 +425,7 @@ async function showResult(r, fromStart, auto){
     });
   }
   screen('sRes');
+  if(!essayWait(r) && CODE && window.MILEX_AI){ MILEX_AI.mountForStudent(supa, TOKEN, CODE, rv); }
 }
 </script>
 <script>

@@ -111,7 +111,7 @@
   const GRADE_KEYS = Object.keys(GRADES);
 
   async function guard(){
-    let ok = MILEX.teacherOk();
+    let ok = MILEX.teacherOk() || MILEX.assistantOk();
     if(!ok){
       try{
         const { data } = await supa.auth.getSession();

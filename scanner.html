@@ -894,7 +894,11 @@
     }catch(e){}
 
     let assistantOk = false;
-    if(!teacherOk){
+    try{
+      const ra = localStorage.getItem('milexAssistantSession');
+      if(ra){ const da = JSON.parse(ra); assistantOk = !!(da && da.exp && Date.now() < da.exp); }
+    }catch(e){}
+    if(!teacherOk && !assistantOk){
       try{
         const { data: sessData } = await supabaseClient.auth.getSession();
         assistantOk = !!(sessData && sessData.session) && localStorage.getItem('mgAssistantOk') === '1';
