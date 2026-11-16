@@ -733,6 +733,10 @@
       <h3 data-i18n="teacherAuthTitle">دخول المدرس</h3>
       <div class="hint" data-i18n="teacherAuthHint">من فضلك أدخل كلمة المرور للمتابعة</div>
       <div class="field">
+        <label for="teacherEmail" data-i18n="emailLabel">الإيميل</label>
+        <input type="email" id="teacherEmail" autocomplete="username" onkeydown="if(event.key==='Enter') submitTeacherPassword()">
+      </div>
+      <div class="field">
         <label for="teacherPassword" data-i18n="passwordLabel">كلمة المرور</label>
         <input type="password" id="teacherPassword" autocomplete="current-password" onkeydown="if(event.key==='Enter') submitTeacherPassword()">
       </div>
@@ -757,6 +761,10 @@
       </div>
       <h3 data-i18n="assistantAuthTitle">دخول المساعد</h3>
       <div class="hint" data-i18n="assistantAuthHint">أدخل كلمة المرور للمتابعة</div>
+      <div class="field">
+        <label for="assistantEmail" data-i18n="emailLabel">الإيميل</label>
+        <input type="email" id="assistantEmail" autocomplete="username" onkeydown="if(event.key==='Enter') submitAssistantLogin()">
+      </div>
       <div class="field">
         <label for="assistantPassword" data-i18n="passwordLabel">كلمة المرور</label>
         <input type="password" id="assistantPassword" autocomplete="current-password" onkeydown="if(event.key==='Enter') submitAssistantLogin()">
@@ -924,7 +932,7 @@
       save:"حفظ",
       errCurrentWrong:"كلمة المرور الحالية غير صحيحة",
       errMismatch:"كلمة المرور الجديدة وتأكيدها مش متطابقين",
-      errTooShort:"لازم تكون كلمة المرور 4 حروف/أرقام على الأقل",
+      errTooShort:"لازم تكون كلمة المرور 8 حروف/أرقام على الأقل",
       assistantAuthTitle:"دخول المساعد",
       assistantAuthHint:"أدخل كلمة المرور للمتابعة",
       emailLabel:"الإيميل",
@@ -962,7 +970,7 @@
       save:"Save",
       errCurrentWrong:"Current password is incorrect",
       errMismatch:"New password and confirmation don't match",
-      errTooShort:"Password must be at least 4 characters",
+      errTooShort:"Password must be at least 8 characters",
       assistantAuthTitle:"Assistant sign in",
       assistantAuthHint:"Enter your password to continue",
       emailLabel:"Email",
@@ -1049,8 +1057,9 @@
     document.getElementById('roleScreen').style.display = 'block';
   }
 
-  function logoutTeacher(){
+  async function logoutTeacher(){
     milexClearSession();
+    try{ await supa.auth.signOut(); }catch(e){}
     showRoleScreen();
   }
 
@@ -1063,81 +1072,44 @@
   function openTeacherOverlay(){
     document.getElementById('teacherOverlay').classList.add('open');
     document.getElementById('teacherError').classList.remove('show');
+    document.getElementById('teacherEmail').value = '';
     document.getElementById('teacherPassword').value = '';
-    document.getElementById('teacherPassword').focus();
+    document.getElementById('teacherEmail').focus();
   }
   function closeTeacherOverlay(){
     document.getElementById('teacherOverlay').classList.remove('open');
   }
   async function submitTeacherPassword(){
-    const dict = translations[currentLang];
-    const errEl = document.getElementById('teacherError');
-    const card = document.querySelector('#teacherOverlay .auth-card');
-
-    const lockMs = milexLockRemainingMs();
-    if(lockMs > 0){
-      const mins = Math.ceil(lockMs / 60000);
-      errEl.textContent = (dict.tooManyAttempts || 'Too many attempts. Try again in a few minutes.') + ' (' + mins + ' ' + (dict.minutesShort || 'min') + ')';
-      errEl.classList.add('show');
-      card.style.animation = 'none';
-      requestAnimationFrame(()=>{ card.style.animation = 'stamp .38s ease'; });
-      return;
-    }
-
-    const val = document.getElementById('teacherPassword').value;
-    const inputHash = await milexSha256(val);
-    if(inputHash === getTeacherPasswordHash()){
-      milexRegisterSuccess();
-      milexStartSession();
-      closeTeacherOverlay();
-      showHub();
-    } else {
-      milexRegisterFailedAttempt();
-      errEl.textContent = dict.wrongPassword;
-      errEl.classList.add('show');
-      card.style.animation = 'none';
-      requestAnimationFrame(()=>{ card.style.animation = 'stamp .38s ease'; });
-    }
+    const dict = translations[currentLang], errEl = document.getElementById('teacherError');
+    const email = document.getElementById('teacherEmail').value.trim(), password = document.getElementById('teacherPassword').value;
+    if(!email || !password){ errEl.textContent = dict.wrongCredentials || 'أدخل الإيميل وكلمة المرور'; errEl.classList.add('show'); return; }
+    try{
+      const { error } = await supa.auth.signInWithPassword({ email, password });
+      if(error) throw error;
+      errEl.classList.remove('show'); milexStartSession(); closeTeacherOverlay(); showHub();
+    }catch(e){ console.error(e); errEl.textContent = dict.wrongCredentials || 'بيانات الدخول غير صحيحة'; errEl.classList.add('show'); }
   }
 
   function openAssistantOverlay(){
     document.getElementById('assistantOverlay').classList.add('open');
     document.getElementById('assistantError').classList.remove('show');
-    document.getElementById('assistantPassword').value = '';
+    document.getElementById('assistantEmail').value = '';
     document.getElementById('assistantPassword').focus();
   }
   function closeAssistantOverlay(){
     document.getElementById('assistantOverlay').classList.remove('open');
   }
   async function submitAssistantLogin(){
-    const dict = translations[currentLang];
-    const errEl = document.getElementById('assistantError');
-    const card = document.querySelector('#assistantOverlay .auth-card');
-    const shake = () => { card.style.animation = 'none'; requestAnimationFrame(()=>{ card.style.animation = 'stamp .38s ease'; }); };
-    errEl.classList.remove('show');
-
-    const lockMs = milexLockRemainingMs(MILEX_ASSISTANT_LOCK_KEY);
-    if(lockMs > 0){
-      const mins = Math.ceil(lockMs / 60000);
-      errEl.textContent = (dict.tooManyAttempts || 'Too many attempts. Try again in a few minutes.') + ' (' + mins + ' ' + (dict.minutesShort || 'min') + ')';
-      errEl.classList.add('show'); shake();
-      return;
-    }
-
-    const val = document.getElementById('assistantPassword').value;
-    if(!val){ errEl.textContent = dict.wrongCredentials; errEl.classList.add('show'); return; }
-
-    const inputHash = await milexSha256(val);
-    if(inputHash === getAssistantPasswordHash()){
-      milexRegisterSuccess(MILEX_ASSISTANT_LOCK_KEY);
-      milexStartAssistantSession();
-      closeAssistantOverlay();
-      showAssistantHub();
-    } else {
-      milexRegisterFailedAttempt(MILEX_ASSISTANT_LOCK_KEY);
-      errEl.textContent = dict.wrongCredentials;
-      errEl.classList.add('show'); shake();
-    }
+    const dict = translations[currentLang], errEl = document.getElementById('assistantError');
+    const email = document.getElementById('assistantEmail').value.trim(), password = document.getElementById('assistantPassword').value;
+    if(!email || !password){ errEl.textContent = dict.wrongCredentials || 'أدخل الإيميل وكلمة المرور'; errEl.classList.add('show'); return; }
+    const btn = document.getElementById('assistantSubmitBtn'); btn.disabled = true;
+    try{
+      const { error } = await supa.auth.signInWithPassword({ email, password });
+      if(error) throw error;
+      errEl.classList.remove('show'); milexStartAssistantSession(); closeAssistantOverlay(); showAssistantHub();
+    }catch(e){ console.error(e); errEl.textContent = dict.wrongCredentials || 'بيانات الدخول غير صحيحة'; errEl.classList.add('show'); }
+    finally{ btn.disabled = false; }
   }
 
   function openChangePasswordOverlay(){
@@ -1161,18 +1133,16 @@
     const okEl = document.getElementById('changePasswordSuccess');
     errEl.classList.remove('show'); okEl.classList.remove('show');
 
-    const curHash = await milexSha256(cur);
-    if(curHash !== getTeacherPasswordHash()){
-      errEl.textContent = dict.errCurrentWrong; errEl.classList.add('show'); return;
-    }
-    if(next.length < 4){
+    const { data: sessionData } = await supa.auth.getSession();
+    if(!sessionData?.session){ errEl.textContent = dict.errCurrentWrong; errEl.classList.add('show'); return; }
+    if(next.length < 8){
       errEl.textContent = dict.errTooShort; errEl.classList.add('show'); return;
     }
     if(next !== confirm){
       errEl.textContent = dict.errMismatch; errEl.classList.add('show'); return;
     }
-    const nextHash = await milexSha256(next);
-    localStorage.setItem('mgTeacherPasswordHash', nextHash);
+    const { error: updateError } = await supa.auth.updateUser({ password: next });
+    if(updateError){ errEl.textContent = updateError.message || dict.errCurrentWrong; errEl.classList.add('show'); return; }
     okEl.classList.add('show');
     setTimeout(closeChangePasswordOverlay, 1200);
   }

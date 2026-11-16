@@ -712,7 +712,7 @@
     body.innerHTML = rowsToShow.map(st => {
       let sumPct = 0, cnt = 0;
       const cells = examList.map(e => {
-        const row = examScores.find(sc => sc[scol.examId] === e[ecol.id] && sc[scol.studentCode] === st.qrCode);
+        const row = examScores.find(sc => String(sc[scol.examId]) === String(e[ecol.id]) && String(sc[scol.studentCode]) === String(st.qrCode));
         if(!row){ return `<td style="color:var(--muted); text-align:center;">☐</td>`; }
         const sc = Number(row[scol.score]);
         const mx = Number(e[ecol.maxScore]) || 100;
@@ -730,7 +730,7 @@
 
   function confirmDeleteExam(examId){
     const ecol = EXAMS_SCHEMA.col;
-    const exam = examList.find(e => e[ecol.id] === examId);
+    const exam = examList.find(e => String(e[ecol.id]) === String(examId));
     const name = exam ? exam[ecol.name] : "";
     const ok = confirm(t().confirmDelete(name));
     if(ok) deleteExam(examId);
@@ -801,7 +801,7 @@
 
   function openScoreEntryById(examId){
     const ecol = EXAMS_SCHEMA.col;
-    const exam = examList.find(e => e[ecol.id] === examId);
+    const exam = examList.find(e => String(e[ecol.id]) === String(examId));
     if(exam) openScoreEntry(exam);
   }
 
@@ -813,7 +813,7 @@
     const panel = document.getElementById("examEntryPanel");
     document.getElementById("examEntryTitle").textContent = s.enterGradesTitle(exam[ecol.name], maxScore);
     document.getElementById("examEntryBody").innerHTML = examStudents.map(st => {
-      const existing = examScores.find(sc => sc[scol.examId] === exam[ecol.id] && sc[scol.studentCode] === st.qrCode);
+      const existing = examScores.find(sc => String(sc[scol.examId]) === String(exam[ecol.id]) && String(sc[scol.studentCode]) === String(st.qrCode));
       return `
       <div class="list-row">
         <div class="list-name"><span class="name">${st.name || "—"}</span></div>

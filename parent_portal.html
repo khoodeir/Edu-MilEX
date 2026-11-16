@@ -707,11 +707,11 @@
 
       const ids = examRows.map(e => e[ecol.id]);
       const { data: scores, error: scoresErr } = await supa
-        .from(SCORES_SCHEMA.table).select("*").in(scol.examId, ids).eq(scol.studentCode, qrCode);
-      const scoreRows = scoresErr ? [] : (scores || []);
+        .from(SCORES_SCHEMA.table).select("*").in(scol.examId, ids);
+      const scoreRows = scoresErr ? [] : (scores || []).filter(s => String(s[scol.studentCode]) === String(qrCode));
 
       return examRows.map(e => {
-        const row = scoreRows.find(s => s[scol.examId] === e[ecol.id]);
+        const row = scoreRows.find(s => String(s[scol.examId]) === String(e[ecol.id]));
         return { name: e[ecol.name], maxScore: Number(e[ecol.maxScore]) || 100, score: row ? Number(row[scol.score]) : null };
       });
     }catch(err){

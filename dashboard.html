@@ -2512,7 +2512,7 @@ function goBack(){
     const rows = examStudents.map(s => {
       let sumPct = 0, cnt = 0;
       const cells = examList.map(e => {
-        const row = examScores.find(sc => sc[scol.examId] === e[ecol.id] && sc[scol.studentCode] === s.qrCode);
+        const row = examScores.find(sc => String(sc[scol.examId]) === String(e[ecol.id]) && String(sc[scol.studentCode]) === String(s.qrCode));
         if(!row) return "—";
         const sc = Number(row[scol.score]);
         const mx = Number(e[ecol.maxScore]) || 100;
@@ -2604,7 +2604,7 @@ function goBack(){
         const scoreRows = scoresErr ? [] : (scores || []);
 
         perExam[g] = examRows.map(e => {
-          const rel = scoreRows.filter(s => s[scol.examId] === e[ecol.id]);
+          const rel = scoreRows.filter(s => String(s[scol.examId]) === String(e[ecol.id]));
           const pcts = rel
             .map(s => (Number(s[scol.score]) / (Number(e[ecol.maxScore]) || 100)) * 100)
             .filter(v => !isNaN(v));
@@ -3938,7 +3938,7 @@ function deltaBadge(curr, prev, suffix = ""){
     body.innerHTML = rowsToShow.map(s => {
       let sumPct = 0, cnt = 0;
       const cells = examList.map(e => {
-        const row = examScores.find(sc => sc[scol.examId] === e[ecol.id] && sc[scol.studentCode] === s.qrCode);
+        const row = examScores.find(sc => String(sc[scol.examId]) === String(e[ecol.id]) && String(sc[scol.studentCode]) === String(s.qrCode));
         if(!row){ return `<td style="color:var(--muted); text-align:center;">☐</td>`; }
         const sc = Number(row[scol.score]);
         const mx = Number(e[ecol.maxScore]) || 100;
@@ -3965,7 +3965,7 @@ function deltaBadge(curr, prev, suffix = ""){
     if(!student) return;
 
     const points = examList.map(e => {
-      const row = examScores.find(sc => sc[scol.examId] === e[ecol.id] && sc[scol.studentCode] === qrCode);
+      const row = examScores.find(sc => String(sc[scol.examId]) === String(e[ecol.id]) && String(sc[scol.studentCode]) === String(qrCode));
       if(!row) return null;
       const sc = Number(row[scol.score]);
       const mx = Number(e[ecol.maxScore]) || 100;
