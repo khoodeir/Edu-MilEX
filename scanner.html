@@ -683,6 +683,103 @@
   .session-ended-countdown{
     margin-top:14px; font-size:12px; color:var(--muted);
   }
+
+  /* ================= MilEX Scanner — تنظيم الواجهة ================= */
+  body{ padding:20px 16px 36px; }
+  .container{
+    max-width:1060px; background:transparent; border:0; box-shadow:none; padding:0; text-align:start;
+    animation:containerIn .4s ease;
+  }
+  .container::before{ display:none; }
+
+  /* الهيدر */
+  .sc-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+  .sc-top-side{ display:flex; align-items:center; gap:8px; flex:1 1 0; min-width:0; }
+  .sc-top-end{ justify-content:flex-end; }
+  .sc-brand{ flex:0 1 auto; text-align:center; display:flex; flex-direction:column; align-items:center; }
+  .sc-brand .brand-logo{ max-width:190px; margin:0 auto 4px; }
+  .sc-brand .eyebrow{ margin:0; }
+  .sc-brand h1{ font-size:20px; line-height:1.25; margin:2px 0 0; }
+  .sc-top .toolbar{ display:block; margin:0; }
+  .sc-top .tool-btn{ padding:0 14px; height:38px; border-radius:999px; font-size:13px; box-shadow:none; }
+  .sc-top .tool-btn:hover{ transform:none; box-shadow:0 3px 8px rgba(var(--gold-rgb),0.18); }
+  .sc-top .icon-btn{ flex-shrink:0; }
+
+  /* التخطيط: عمود الإعدادات + عمود الكاميرا */
+  .sc-layout{ display:grid; grid-template-columns:minmax(320px,400px) 1fr; gap:18px; align-items:start; }
+  .sc-side{ display:flex; flex-direction:column; gap:18px; min-width:0; }
+  .sc-card{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:18px; box-shadow:var(--shadow-sm); min-width:0;
+  }
+  .sc-card-head{
+    display:flex; align-items:center; gap:10px; margin-bottom:14px;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; color:var(--ink-2);
+  }
+  html[dir="rtl"] .sc-card-head{ font-family:'Tajawal',sans-serif; font-size:15px; }
+  .sc-step{
+    width:24px; height:24px; border-radius:50%; flex-shrink:0;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700; color:var(--btn-ink,#fff);
+    background:linear-gradient(135deg,var(--gold-2),var(--gold));
+  }
+
+  /* الإعدادات */
+  .sc-config .mode-toggle{ margin-bottom:14px; }
+  .sc-selects{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+  .sc-selects .grade-field{ margin-bottom:0; }
+  .sc-selects .grade-field label{ font-size:12px; text-transform:none; letter-spacing:0; }
+  .sc-selects .grade-lock-hint{ line-height:1.4; }
+  .sc-config .payment-fields{ margin-bottom:10px; padding:12px; border-radius:12px; background:var(--gold-soft); border:1px dashed var(--line); }
+  .sc-config .payment-fields .field-group label{ text-transform:none; letter-spacing:0; font-size:12px; }
+  .sc-config .hint{ margin-bottom:6px; }
+  .sc-config .hint:empty{ display:none; }
+  .sc-config .session-bar{ margin:6px 0 0; padding-top:14px; border-top:1px solid var(--line); }
+  .sc-config .start-session-btn{ padding:15px; }
+  .sc-config .session-active-card{ flex-wrap:wrap; }
+
+  /* الكاميرا */
+  .sc-camera{ display:flex; flex-direction:column; align-items:stretch; }
+  .sc-camera .scan-frame{ width:100%; max-width:480px; margin:0 auto; }
+  .sc-camera .scan-placeholder{ padding:70px 20px; }
+  .sc-camera .scan-placeholder .icon{ font-size:42px; }
+  .sc-camera .manual-entry{ width:100%; max-width:480px; margin:14px auto 0; }
+  .sc-camera #status{ align-self:center; margin-top:16px; max-width:100%; text-align:center; }
+  .sc-camera #status.detailed{ align-self:stretch; max-width:480px; width:100%; margin-inline:auto; }
+  .sc-camera .offline-badge{ width:100%; }
+
+  /* آخر المسحات */
+  .sc-history .history{ margin-top:0; }
+  .sc-history .history-title{ font-size:13px; text-transform:none; letter-spacing:0; margin-bottom:8px; }
+  .sc-history .history-list{ max-height:300px; overflow-y:auto; }
+  .sc-history .history-item{ padding:10px 4px; }
+
+  .footer{ margin-top:22px; }
+
+  /* تابلت وموبايل: عمود واحد بالترتيب (إعداد ← كاميرا ← آخر المسحات) */
+  @media (max-width:900px){
+    .container{ max-width:520px; }
+    .sc-layout{ display:flex; flex-direction:column; gap:14px; }
+    .sc-side{ display:contents; }
+    .sc-config{ order:1; }
+    .sc-camera{ order:2; }
+    .sc-history{ order:3; }
+    .sc-card{ padding:16px; border-radius:14px; }
+  }
+  @media (max-width:560px){
+    body{ padding:12px 10px 28px; }
+    .sc-top{ flex-wrap:wrap; row-gap:6px; }
+    .sc-top-side{ flex:0 0 auto; }
+    .sc-top-end{ margin-inline-start:auto; }
+    .sc-brand{ order:3; flex:1 0 100%; }
+    .sc-brand .brand-logo{ max-width:150px; }
+    .sc-brand h1{ font-size:17px; }
+    .sc-top .tool-btn span:last-child{ display:none; }
+    .sc-top .tool-btn{ width:38px; padding:0; }
+  }
+  @media (max-width:360px){
+    .sc-selects{ grid-template-columns:1fr; }
+  }
 </style>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#0B3A87">
@@ -697,98 +794,117 @@
 <body>
 
 <div class="container" id="mainContainer">
-  <div class="header-actions">
-    <div class="header-actions-group">
+
+  <header class="sc-top">
+    <div class="sc-top-side">
       <button type="button" class="icon-btn" id="backBtn" onclick="goBack()" data-i18n-title="title_back" title="Back">↩️</button>
+    </div>
+    <div class="sc-brand">
+      <div class="brand-logo" role="img" aria-label="Logo"></div>
+      <div class="eyebrow" data-i18n="eyebrow_scanner">Live scanner</div>
+      <h1 data-i18n="title_app">Student Attendance System</h1>
+    </div>
+    <div class="sc-top-side sc-top-end">
+      <div class="toolbar">
+        <button type="button" class="tool-btn" onclick="window.location.href='student_serch.html'"><span>🔍</span> <span data-i18n="btn_search">Search</span></button>
+      </div>
       <button type="button" class="icon-btn" id="settingsBtn" onclick="openModal('settingsModal')" data-i18n-title="title_settings" title="Settings">⚙️</button>
     </div>
-  </div>
+  </header>
 
-<div class="brand-logo" role="img" aria-label="Logo"></div>  <div class="eyebrow" data-i18n="eyebrow_scanner">Live scanner</div>
-  <h1 data-i18n="title_app">Student Attendance System</h1>
+  <main class="sc-layout">
+    <div class="sc-side">
 
-  <div class="session-bar" id="sessionBar">
-    <button type="button" class="start-session-btn" id="startSessionBtn" onclick="startSession()">
-      ▶️ <span data-i18n="btn_start_session">Start Session</span>
-    </button>
-  </div>
+      <section class="sc-card sc-config">
+        <div class="sc-card-head"><span class="sc-step">1</span><span data-i18n="sec_setup">Setup</span></div>
+        <div class="mode-toggle">
+        <button type="button" class="mode-btn active" id="modeAttendance" onclick="setMode('attendance')">
+          🎓 <span data-i18n="mode_attendance">Attendance</span>
+        </button>
+        <button type="button" class="mode-btn" id="modePayment" onclick="setMode('payment')">
+          💳 <span data-i18n="mode_payment">Payment</span>
+        </button>
+      </div>
+        <div class="sc-selects">
+        <div class="grade-field">
+          <label for="gradeLevel" data-i18n="label_grade">Grade Level</label>
+          <div class="grade-select-wrap">
+            <select id="gradeLevel" onchange="setGrade(this.value)"></select>
+            <div class="grade-lock-overlay" id="gradeLockOverlay" onclick="notifyGradeLocked()"></div>
+          </div>
+          <div class="grade-lock-hint" id="gradeLockHint" data-i18n="grade_lock_hint">End the session to change grade level</div>
+        </div>
+        <div class="grade-field">
+          <label for="groupLevel" data-i18n="label_group">Group</label>
+          <div class="grade-select-wrap">
+            <select id="groupLevel" onchange="setGroup(this.value)"></select>
+            <div class="grade-lock-overlay" id="groupLockOverlay" onclick="notifyGroupLocked()"></div>
+          </div>
+          <div class="grade-lock-hint" id="groupLockHint" data-i18n="group_lock_hint">End the session to change group</div>
+        </div>
+        </div>
 
-  <div class="toolbar">
-    <button type="button" class="tool-btn" onclick="window.location.href='student_serch.html'"><span>🔍</span> <span data-i18n="btn_search">Search</span></button>
-  </div>
+        <div class="payment-fields" id="paymentFields">
+          <div class="field-group">
+            <label for="payMonth" data-i18n="label_month">Month</label>
+            <input type="month" id="payMonth">
+          </div>
+          <div class="field-group">
+            <label for="payAmount" data-i18n="label_amount">Amount (EGP)</label>
+            <input type="number" id="payAmount" placeholder="e.g. 300" min="0">
+          </div>
+        </div>
+        <div class="hint" id="paymentHint"></div>
 
-  <div class="mode-toggle">
-    <button type="button" class="mode-btn active" id="modeAttendance" onclick="setMode('attendance')">
-      🎓 <span data-i18n="mode_attendance">Attendance</span>
-    </button>
-    <button type="button" class="mode-btn" id="modePayment" onclick="setMode('payment')">
-      💳 <span data-i18n="mode_payment">Payment</span>
-    </button>
-  </div>
+        <div class="session-bar" id="sessionBar">
+          <button type="button" class="start-session-btn" id="startSessionBtn" onclick="startSession()">
+            ▶️ <span data-i18n="btn_start_session">Start Session</span>
+          </button>
+        </div>
+      </section>
 
-  <div class="grade-field">
-    <label for="gradeLevel" data-i18n="label_grade">Grade Level</label>
-    <div class="grade-select-wrap">
-      <select id="gradeLevel" onchange="setGrade(this.value)"></select>
-      <div class="grade-lock-overlay" id="gradeLockOverlay" onclick="notifyGradeLocked()"></div>
+      <section class="sc-card sc-history">
+        <div class="history">
+          <div class="history-title" data-i18n="history_title">Last Scans</div>
+          <div class="history-list" id="historyList">
+            <div class="history-empty" id="historyEmpty" data-i18n="history_empty">No scans yet</div>
+          </div>
+        </div>
+      </section>
+
     </div>
-    <div class="grade-lock-hint" id="gradeLockHint" data-i18n="grade_lock_hint">End the session to change grade level</div>
-  </div>
 
-  <div class="grade-field">
-    <label for="groupLevel" data-i18n="label_group">Group</label>
-    <div class="grade-select-wrap">
-      <select id="groupLevel" onchange="setGroup(this.value)"></select>
-      <div class="grade-lock-overlay" id="groupLockOverlay" onclick="notifyGroupLocked()"></div>
-    </div>
-    <div class="grade-lock-hint" id="groupLockHint" data-i18n="group_lock_hint">End the session to change group</div>
-  </div>
+    <section class="sc-card sc-camera">
+      <div class="sc-card-head"><span class="sc-step">2</span><span data-i18n="sec_camera">Scan</span></div>
 
-  <div class="payment-fields" id="paymentFields">
-    <div class="field-group">
-      <label for="payMonth" data-i18n="label_month">Month</label>
-      <input type="month" id="payMonth">
-    </div>
-    <div class="field-group">
-      <label for="payAmount" data-i18n="label_amount">Amount (EGP)</label>
-      <input type="number" id="payAmount" placeholder="e.g. 300" min="0">
-    </div>
-  </div>
-  <div class="hint" id="paymentHint"></div>
+      <div class="scan-frame session-off" id="scanFrame">
+        <div class="cooldown-badge" id="cooldownBadge">⏳ <span data-i18n="cooldown_wait">Wait</span> <span id="cooldownSeconds">5</span><span data-i18n="cooldown_unit">s</span></div>
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
+        <div class="scan-line"></div>
+        <div id="reader"></div>
+        <div class="scan-placeholder" id="scanPlaceholder">
+          <div class="icon">📷</div>
+          <div data-i18n="scan_placeholder">Start the session to activate the camera</div>
+        </div>
+      </div>
 
-  <div class="scan-frame session-off" id="scanFrame">
-    <div class="cooldown-badge" id="cooldownBadge">⏳ <span data-i18n="cooldown_wait">Wait</span> <span id="cooldownSeconds">5</span><span data-i18n="cooldown_unit">s</span></div>
-    <div class="corner tl"></div>
-    <div class="corner tr"></div>
-    <div class="corner bl"></div>
-    <div class="corner br"></div>
-    <div class="scan-line"></div>
-    <div id="reader"></div>
-    <div class="scan-placeholder" id="scanPlaceholder">
-      <div class="icon">📷</div>
-      <div data-i18n="scan_placeholder">Start the session to activate the camera</div>
-    </div>
-  </div>
+      <div class="manual-entry" id="manualEntry">
+        <input type="text" id="manualCode" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" data-i18n-ph="manual_placeholder" placeholder="Or type the student code (e.g. ST123456)">
+        <button type="button" id="manualBtn" onclick="submitManualCode()" data-i18n="manual_btn">Submit</button>
+      </div>
 
-  <div class="manual-entry" id="manualEntry">
-    <input type="text" id="manualCode" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" data-i18n-ph="manual_placeholder" placeholder="Or type the student code (e.g. ST123456)">
-    <button type="button" id="manualBtn" onclick="submitManualCode()" data-i18n="manual_btn">Submit</button>
-  </div>
+      <div class="offline-badge" id="offlineBadge" onclick="flushQueue(true)"></div>
+      <div class="offline-badge" id="rejectedBadge" onclick="showRejected()" style="background:rgba(192,57,43,.12);color:#c0392b;border-color:rgba(192,57,43,.4);"></div>
 
-  <div class="offline-badge" id="offlineBadge" onclick="flushQueue(true)"></div>
-  <div class="offline-badge" id="rejectedBadge" onclick="showRejected()" style="background:rgba(192,57,43,.12);color:#c0392b;border-color:rgba(192,57,43,.4);"></div>
-
-  <div id="status" class="wait">
-    <span class="dot"></span>
-    <span id="status-text" data-i18n="status_wait_no_session">Start the session to begin scanning</span>
-  </div>
-
-  <div class="history">
-    <div class="history-title" data-i18n="history_title">Last Scans</div>
-    <div class="history-list" id="historyList">
-      <div class="history-empty" id="historyEmpty" data-i18n="history_empty">No scans yet</div>
-    </div>
-  </div>
+      <div id="status" class="wait">
+        <span class="dot"></span>
+        <span id="status-text" data-i18n="status_wait_no_session">Start the session to begin scanning</span>
+      </div>
+    </section>
+  </main>
 
   <div class="footer">Powered by <a href="milex.html" target="_blank" rel="noopener noreferrer" style="color:inherit;">MilEX</a></div>
 </div>
@@ -1065,7 +1181,7 @@
   const I18N = {
     en: {
       title_settings:"Settings", title_back:"Back",
-      eyebrow_scanner:"Live scanner", title_app:"Student Attendance System",
+      eyebrow_scanner:"Live scanner", sec_setup:"Setup", sec_camera:"Scan", title_app:"Student Attendance System",
       manual_placeholder:"Or type the student code (e.g. ST123456)", manual_btn:"Submit", manual_empty:"Type the student code first",
       btn_start_session:"Start Session", btn_search:"Search", btn_exam:"Exam", btn_dash:"Dash",
       mode_attendance:"Attendance", mode_payment:"Payment",
@@ -1122,7 +1238,7 @@
     },
     ar: {
       title_settings:"الإعدادات", title_back:"رجوع",
-      eyebrow_scanner:"الماسح المباشر", title_app:"نظام حضور الطلاب",
+      eyebrow_scanner:"الماسح المباشر", sec_setup:"إعداد الجلسة", sec_camera:"المسح", title_app:"نظام حضور الطلاب",
       manual_placeholder:"أو اكتب كود الطالب (مثال: ST123456)", manual_btn:"تسجيل", manual_empty:"اكتب كود الطالب الأول",
       btn_start_session:"بدء الجلسة", btn_search:"بحث", btn_exam:"الامتحان", btn_dash:"لوحة",
       mode_attendance:"الحضور", mode_payment:"الدفع",
