@@ -2678,7 +2678,12 @@ function goBack(){
       combined.examAverages = examData.perExam;
       combined.examStudentAverages = examData.perStudent;
 
+      // FIX: show the content BEFORE drawing charts. Chart.js measures its container
+      // on creation; if #dashContent is still display:none the canvases get 0x0 size
+      // and the charts stay blank (intermittently, depending on timing).
+      contentEl.classList.add("show");
       renderAll();
+      resizeAllCharts();
 
       if (errors.length > 0 && currentGrade === "all") {
         console.warn("Some grades failed to load:", errors);
@@ -2780,6 +2785,22 @@ function goBack(){
     document.getElementById("rosterSearch").value = "";
     renderRoster();
   }
+
+  // Force every live chart to re-measure its container and repaint.
+  // Runs now, on the next frame, and once more shortly after (covers layout/fonts/animation settling).
+  function resizeAllCharts(){
+    const run = () => {
+      [charts, histCharts].forEach(group => {
+        Object.values(group || {}).forEach(c => {
+          try{ if(c && typeof c.resize === "function"){ c.resize(); c.update("none"); } }catch(e){}
+        });
+      });
+    };
+    run();
+    requestAnimationFrame(run);
+    setTimeout(run, 250);
+  }
+  window.addEventListener("resize", () => { try{ resizeAllCharts(); }catch(e){} });
 
   function destroyChart(key){ if(charts[key]){ charts[key].destroy(); charts[key] = null; } }
   function destroyChartSafe(key){ if(typeof charts !== 'undefined' && charts[key]){ charts[key].destroy(); charts[key] = null; } }
