@@ -1,8 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="visibility:hidden">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+  (function(){
+    try{
+      var teacher = JSON.parse(sessionStorage.getItem('milexTeacherSession') || 'null');
+      var assistant = JSON.parse(sessionStorage.getItem('milexAssistantSession') || 'null');
+      var allowed = (teacher && teacher.exp && Date.now() < teacher.exp) || (assistant && assistant.exp && Date.now() < assistant.exp);
+      if(!allowed) window.location.replace('index.html');
+      else document.documentElement.style.visibility = 'visible';
+    }catch(e){ window.location.replace('index.html'); }
+  })();
+</script>
 <title>Student Registration</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

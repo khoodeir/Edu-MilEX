@@ -1002,7 +1002,7 @@
   (async function milexGuardScanner(){
     let teacherOk = false;
     try{
-      const raw = (sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession'));
+      const raw = sessionStorage.getItem('milexTeacherSession');
       if(raw){
         const data = JSON.parse(raw);
         teacherOk = !!(data && data.exp && Date.now() < data.exp);
@@ -1011,19 +1011,9 @@
 
     let assistantOk = false;
     try{
-      const ra = localStorage.getItem('milexAssistantSession');
+      const ra = sessionStorage.getItem('milexAssistantSession');
       if(ra){ const da = JSON.parse(ra); assistantOk = !!(da && da.exp && Date.now() < da.exp); }
     }catch(e){}
-    if(!teacherOk && !assistantOk){
-      try{
-        const { data: sessData } = await supabaseClient.auth.getSession();
-        assistantOk = !!(sessData && sessData.session) && localStorage.getItem('mgAssistantOk') === '1';
-      }catch(e){}
-    }
-
-    if(!teacherOk && !assistantOk && !navigator.onLine && localStorage.getItem('mgAssistantOk') === '1'){
-      assistantOk = Object.keys(localStorage).some(k => /^sb-.+-auth-token$/.test(k));
-    }
     if(!teacherOk && !assistantOk){
       window.location.replace('index.html');
       return;

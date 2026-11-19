@@ -1,6 +1,6 @@
 
-const CACHE = "milex-edu-shell-v3";
-const SHELL = ["./", "./manifest.json", "./logo.png", "./logo-dark.png", "./favicon.png", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png", "./audit_log.html", "./dashboard.html", "./exam.html", "./exam_builder.html", "./index.html", "./manage_exams.html", "./manage_groups.html", "./parent_portal.html", "./scanner.html", "./student_delete.html", "./student_edit.html", "./student_registration.html", "./student_serch.html", "./milex.html", "./milex-common.js", "./milex-theme.css", "./milex-motion.js", "./milex-install.js", "./milex-download.js", "./milex-ai.js", "./logo-mark.png"];
+const CACHE = "milex-edu-shell-v4";
+const SHELL = ["./", "./manifest.json", "./manus-routes.json", "./logo.png", "./logo-dark.png", "./favicon.png", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png", "./audit_log.html", "./dashboard.html", "./exam.html", "./exam_builder.html", "./index.html", "./manage_exams.html", "./manage_groups.html", "./parent_portal.html", "./scanner.html", "./student_delete.html", "./student_edit.html", "./student_registration.html", "./student_serch.html", "./milex.html", "./test.html", "./milex-common.js", "./milex-theme.css", "./milex-motion.js", "./milex-install.js", "./milex-download.js", "./milex-ai.js", "./logo-mark.png"];
 
 const CDN_HOSTS = ["cdn.jsdelivr.net", "unpkg.com", "cdnjs.cloudflare.com"];
 
@@ -29,16 +29,16 @@ self.addEventListener("fetch", event => {
   }
 
   if (url.origin !== self.location.origin) return;
-  const isPage = req.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname.endsWith("/") || url.pathname.endsWith("sw.js") || url.pathname.endsWith(".js");
+  const isDocument = req.mode === "navigate" || req.destination === "document" || url.pathname.endsWith(".html") || url.pathname.endsWith("/");
   const save = response => {
     if (response && response.ok) { const copy = response.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
     return response;
   };
-  if (isPage) {
+  if (isDocument) {
 
     event.respondWith(fetch(req).then(save).catch(() => caches.match(req).then(r => r || caches.match("./index.html"))));
   } else {
-
+    // Never serve HTML as a substitute for a missing JS/CSS/image asset.
     event.respondWith(caches.match(req).then(r => r || fetch(req).then(save)));
   }
 });

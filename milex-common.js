@@ -1,5 +1,12 @@
 
 (function(){
+  try{
+    // Remove markers written by older releases so a stale localStorage value
+    // cannot unlock a protected page in a new browser tab.
+    localStorage.removeItem('milexTeacherSession');
+    localStorage.removeItem('milexAssistantSession');
+    localStorage.removeItem('mgAssistantOk');
+  }catch(e){}
   const GRADES = {
     first_prep:       { ar:"الصف الأول الإعدادي",  att:"حضور_أولى_إعدادي", pay:"دفع_أولى_إعدادي", scanner:"prep1",  reg:"First Prep"   },
     second_prep:      { ar:"الصف الثاني الإعدادي", att:"حضور_تانية_إعدادي", pay:"دفع_تانية_إعدادي", scanner:"prep2",  reg:"Second Prep"  },
@@ -27,7 +34,7 @@
 
   function teacherOk(){
     try{
-      const raw = sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession');
+      const raw = sessionStorage.getItem('milexTeacherSession');
       if(!raw) return false;
       const d = JSON.parse(raw);
       return !!(d && d.exp && Date.now() < d.exp);
@@ -36,7 +43,7 @@
 
   function assistantOk(){
     try{
-      const raw = localStorage.getItem('milexAssistantSession');
+      const raw = sessionStorage.getItem('milexAssistantSession');
       if(!raw) return false;
       const d = JSON.parse(raw);
       return !!(d && d.exp && Date.now() < d.exp);

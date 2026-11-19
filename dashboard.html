@@ -7,7 +7,7 @@
 
 (function(){
   try{
-    var raw = sessionStorage.getItem('milexTeacherSession') || localStorage.getItem('milexTeacherSession');
+    var raw = sessionStorage.getItem('milexTeacherSession');
     var valid = false;
     if(raw){
       var data = JSON.parse(raw);

@@ -112,12 +112,6 @@
 
   async function guard(){
     let ok = MILEX.teacherOk() || MILEX.assistantOk();
-    if(!ok){
-      try{
-        const { data } = await supa.auth.getSession();
-        ok = !!(data && data.session) && localStorage.getItem('mgAssistantOk') === '1';
-      }catch(e){}
-    }
     if(!ok){ location.replace('index.html'); return; }
     document.documentElement.style.visibility = 'visible';
     init();

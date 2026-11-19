@@ -6,19 +6,13 @@
 (function(){
   function valid(k, useSession){
     try{
-      var raw = (useSession ? sessionStorage.getItem(k) : null) || localStorage.getItem(k);
+      var raw = sessionStorage.getItem(k);
       if(!raw) return false;
       var d = JSON.parse(raw);
       return !!(d && d.exp && Date.now() < d.exp);
     }catch(e){ return false; }
   }
   var allowed = valid('milexTeacherSession', true) || valid('milexAssistantSession', false);
-  if(!allowed){
-    try{
-      allowed = localStorage.getItem('mgAssistantOk') === '1' &&
-        Object.keys(localStorage).some(function(k){ return /^sb-.+-auth-token$/.test(k); });
-    }catch(e){}
-  }
   if(!allowed) window.location.replace('index.html');
 })();
 </script>

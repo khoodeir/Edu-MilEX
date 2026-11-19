@@ -43,7 +43,7 @@
 
   function gateJs(issued, role, site){
     return 'var ISSUED=' + issued + ',DAYS=' + COPY_DAYS + ',ROLE="' + role + '",SITE=' + JSON.stringify(site) + ',SEEN="milexBundleSeen_"+ROLE;' +
-      'function milexBlock(m){try{sessionStorage.removeItem("milexTeacherSession");localStorage.removeItem("milexTeacherSession");}catch(e){}' +
+      'function milexBlock(m){try{sessionStorage.removeItem("milexTeacherSession");sessionStorage.removeItem("milexAssistantSession");localStorage.removeItem("milexTeacherSession");localStorage.removeItem("milexAssistantSession");localStorage.removeItem("mgAssistantOk");}catch(e){}' +
       'document.documentElement.classList.add("milex-bundle");document.body.innerHTML=\'<div style="min-height:100vh;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;padding:24px;text-align:center;font:600 18px Cairo,sans-serif;line-height:1.9"><div>\'+m+\'</div>\'+(SITE?\'<a href="\'+SITE+\'index.html?renew=\'+ROLE+\'" style="background:#0B3A87;color:#fff;text-decoration:none;padding:12px 26px;border-radius:12px">⬇ تحديث النسخة</a>\':"")+\'</div>\';}' +
       'async function milexGate(){var seen=0;try{seen=Number(localStorage.getItem(SEEN))||0;}catch(e){}' +
       'if(Date.now()>Math.max(seen,ISSUED)+DAYS*86400000)return "انتهت صلاحية النسخة دي. اضغط تحديث وحمّل نسخة جديدة.";' +
@@ -57,16 +57,16 @@
   function bootTeacher(issued, site){
     return '<script>(async function(){document.documentElement.classList.add("milex-bundle");' + gateJs(issued, 'teacher', site) +
       'var bad=await milexGate();if(bad){milexBlock(bad);return;}' +
-      'try{var v=JSON.stringify({exp:Date.now()+4*60*60*1000});sessionStorage.setItem("milexTeacherSession",v);localStorage.setItem("milexTeacherSession",v);}catch(e){}' +
+      'try{var v=JSON.stringify({exp:Date.now()+4*60*60*1000});sessionStorage.setItem("milexTeacherSession",v);localStorage.removeItem("milexTeacherSession");}catch(e){}' +
       'showHub();})();<\/script>\n';
   }
   function bootAssistant(pw, issued, site){
     return '<script>(async function(){document.documentElement.classList.add("milex-bundle");' + gateJs(issued, 'assistant', site) +
-      'var bad=await milexGate();if(bad){try{await supa.auth.signOut();}catch(e){}localStorage.removeItem("mgAssistantOk");milexBlock(bad);return;}' +
+      'var bad=await milexGate();if(bad){try{await supa.auth.signOut();}catch(e){}milexBlock(bad);return;}' +
       'var PW=decodeURIComponent(escape(atob("' + b64(pw) + '")));' +
       'try{var s=await supa.auth.getSession();' +
       'if(!(s.data&&s.data.session)){var r=await supa.auth.signInWithPassword({email:ASSISTANT_EMAIL,password:PW});if(r.error)throw r.error;}' +
-      'localStorage.setItem("mgAssistantOk","1");showAssistantHub();' +
+      'sessionStorage.setItem("milexAssistantSession",JSON.stringify({exp:Date.now()+4*60*60*1000}));localStorage.removeItem("milexAssistantSession");localStorage.removeItem("mgAssistantOk");showAssistantHub();' +
       '}catch(e){document.documentElement.classList.remove("milex-bundle");openAssistantOverlay();}})();<\/script>\n';
   }
   async function buildBundle(role, pw){

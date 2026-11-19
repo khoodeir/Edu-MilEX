@@ -819,14 +819,14 @@
   }
 
   function milexStartSession(){
-    try{ const value = JSON.stringify({ exp: Date.now() + MILEX_SESSION_DURATION_MS }); sessionStorage.setItem(MILEX_SESSION_KEY, value); localStorage.setItem(MILEX_SESSION_KEY, value); }catch(e){}
+    try{ const value = JSON.stringify({ exp: Date.now() + MILEX_SESSION_DURATION_MS }); sessionStorage.setItem(MILEX_SESSION_KEY, value); localStorage.removeItem(MILEX_SESSION_KEY); }catch(e){}
   }
   function milexClearSession(){
     try{ sessionStorage.removeItem(MILEX_SESSION_KEY); localStorage.removeItem(MILEX_SESSION_KEY); }catch(e){}
   }
   function milexIsSessionValid(){
     try{
-      const raw = sessionStorage.getItem(MILEX_SESSION_KEY) || localStorage.getItem(MILEX_SESSION_KEY);
+      const raw = sessionStorage.getItem(MILEX_SESSION_KEY);
       if(!raw) return false;
       const data = JSON.parse(raw);
       const valid = !!(data && data.exp && Date.now() < data.exp);
@@ -861,14 +861,14 @@
   const MILEX_ASSISTANT_SESSION_KEY = 'milexAssistantSession';
   const MILEX_ASSISTANT_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
   function milexStartAssistantSession(){
-    try{ localStorage.setItem(MILEX_ASSISTANT_SESSION_KEY, JSON.stringify({ exp: Date.now() + MILEX_ASSISTANT_SESSION_MS })); }catch(e){}
+    try{ sessionStorage.setItem(MILEX_ASSISTANT_SESSION_KEY, JSON.stringify({ exp: Date.now() + MILEX_ASSISTANT_SESSION_MS })); localStorage.removeItem(MILEX_ASSISTANT_SESSION_KEY); localStorage.removeItem('mgAssistantOk'); }catch(e){}
   }
   function milexClearAssistantSession(){
-    try{ localStorage.removeItem(MILEX_ASSISTANT_SESSION_KEY); }catch(e){}
+    try{ sessionStorage.removeItem(MILEX_ASSISTANT_SESSION_KEY); localStorage.removeItem(MILEX_ASSISTANT_SESSION_KEY); localStorage.removeItem('mgAssistantOk'); }catch(e){}
   }
   function milexIsAssistantSessionValid(){
     try{
-      const raw = localStorage.getItem(MILEX_ASSISTANT_SESSION_KEY);
+      const raw = sessionStorage.getItem(MILEX_ASSISTANT_SESSION_KEY);
       if(!raw) return false;
       const d = JSON.parse(raw);
       const ok = !!(d && d.exp && Date.now() < d.exp);
@@ -1135,6 +1135,12 @@
 
     const { data: sessionData } = await supa.auth.getSession();
     if(!sessionData?.session){ errEl.textContent = dict.errCurrentWrong; errEl.classList.add('show'); return; }
+    if(!cur){ errEl.textContent = dict.errCurrentWrong; errEl.classList.add('show'); return; }
+    const { data: userData } = await supa.auth.getUser();
+    const currentEmail = userData?.user?.email;
+    if(!currentEmail){ errEl.textContent = dict.errCurrentWrong; errEl.classList.add('show'); return; }
+    const { error: reauthError } = await supa.auth.signInWithPassword({ email: currentEmail, password: cur });
+    if(reauthError){ errEl.textContent = dict.errCurrentWrong; errEl.classList.add('show'); return; }
     if(next.length < 8){
       errEl.textContent = dict.errTooShort; errEl.classList.add('show'); return;
     }
