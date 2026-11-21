@@ -128,7 +128,7 @@
       o.classList.add('open'); document.getElementById('dlPw').focus();
     },
     revokeAll: async function(btn){
-      if(!confirm(t('تلغي كل النسخ المحمّلة (المدرس والمساعد)؟ أي نسخة قديمة هتتقفل أول ما تتفتح والنت شغال.\n\nلو النسخة عند حد مش واثق فيه، غيّر كمان باسورد المساعد من Supabase.', 'Cancel ALL downloaded copies? Any older copy will lock itself the next time it opens online.\n\nIf someone untrusted has one, also change the assistant password in Supabase.'))) return;
+      if(!confirm(t('تلغي كل النسخ المحمّلة (المدرس والمساعد)؟ أي نسخة قديمة هتتقفل أول ما تتفتح والنت شغال.\n\nلو النسخة عند حد مش واثق فيه، غيّر كمان باسورد المساعد من إعدادات النظام.', 'Cancel ALL downloaded copies? Any older copy will lock itself the next time it opens online.\n\nIf someone untrusted has one, also change the assistant password in the system settings.'))) return;
       setBusy(btn, true);
       try{
         var r = await supa.from('app_config').upsert({ key: REVOKE_KEY, value: { ts: Date.now() }, updated_at: new Date().toISOString() });

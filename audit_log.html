@@ -119,7 +119,7 @@
       const { data, error } = await q; if(error) throw error;
       rows = data || []; render();
     }catch(e){
-      $('err').textContent = /audit_log/i.test(e.message || '') ? 'جدول audit_log مش موجود — شغّل ملف milex_upgrade.sql في Supabase الأول.' : 'تعذّر التحميل: ' + (e.message || e);
+      $('err').textContent = /audit_log/i.test(e.message || '') ? 'جدول audit_log مش موجود — قاعدة البيانات محتاجة تحديث (milex_upgrade.sql) الأول.' : 'تعذّر التحميل: ' + (e.message || e);
       $('err').style.display = '';
     }finally{ $('loading').style.display = 'none'; }
   }

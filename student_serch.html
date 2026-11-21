@@ -367,7 +367,7 @@
     </div>
 
     <div class="state-msg show" id="loadingMsg">
-      <span class="spinner"></span> <span id="loadingMsgText">جاري تحميل البيانات من Supabase…</span>
+      <span class="spinner"></span> <span id="loadingMsgText">جاري تحميل البيانات…</span>
     </div>
     <div class="state-msg err" id="errorMsg"></div>
 
@@ -410,7 +410,7 @@
       </div>
     </div>
   </div>
-  <div class="footer-note"><span id="footerNoteText">يتم قراءة البيانات مباشرة من Supabase باستخدام مفتاح للقراءة فقط</span></div>
+  <div class="footer-note"><span id="footerNoteText">يتم قراءة البيانات مباشرة في وضع القراءة فقط</span></div>
 </div>
 
 
@@ -543,7 +543,7 @@
       gradeAll: "All Grades",
       searchPlaceholder: "Search by name or phone…",
       filterAll: "All", filterPaid: "Paid", filterUnpaid: "Unpaid",
-      loadingData: "Loading data from Supabase…",
+      loadingData: "Loading data…",
       resultCount: (n) => `${n} student${n === 1 ? "" : "s"} found`,
       noResults: "No matching results",
       thName: "Name", thGrade: "Grade", thCity: "City", thGroupName: "Group", thPresent: "Present", thAbsent: "Absent", thRate: "Attendance Rate",
@@ -551,7 +551,7 @@
       paid: "Paid", unpaid: "Unpaid",
       thExams: "\u00A0Exams",
       thQr: "QR",
-      footer: "Data is read live from Supabase using a read-only anon key",
+      footer: "Data is read live in read-only mode",
       trendTitleSuffix: " — Exams", gradesTitleSuffix: " — Grades", qrTitleSuffix: " — QR Code",
       loadingExams: "Loading exam scores…", loadingQr: "Loading QR code…",
       onlyOneExam: "Only one exam recorded so far — add another exam score to see a trend",
@@ -562,7 +562,7 @@
       droppedBy: (d) => `▼ Dropped by ${d}%`,
       noChange: "— No change",
       fromTo: (a, b) => `from "${a}" to "${b}"`,
-      couldntLoad: "Couldn't load data from Supabase",
+      couldntLoad: "Couldn't load data",
       commonCauses: "Common causes: the table/column names in SCHEMA don't match your database, or Row Level Security is enabled on these tables without a SELECT policy for the anon role.",
       couldntLoadExams: "Couldn't load exam scores: ",
       couldntLoadGrades: "Couldn't load grades: ",
@@ -587,14 +587,14 @@
       gradeAll: "كل الصفوف",
       searchPlaceholder: "ابحث بالاسم أو رقم الهاتف…",
       filterAll: "الكل", filterPaid: "مدفوع", filterUnpaid: "غير مدفوع",
-      loadingData: "جاري تحميل البيانات من Supabase…",
+      loadingData: "جاري تحميل البيانات…",
       resultCount: (n) => `تم العثور على ${n} طالب`,
       noResults: "لا توجد نتائج مطابقة",
       thName: "الاسم", thGrade: "الصف", thCity: "المدينة", thGroupName: "المجموعة", thPresent: "حضور", thAbsent: "غياب", thRate: "نسبة الحضور",
       thStudentPhone: "هاتف الطالب", thParentPhone: "هاتف ولي الأمر", thPayment: "الدفع", thLast: "آخر حضور", thMonths: "الشهور المدفوعة",
       thExams: "الامتحانات", thQr: "QR",
       paid: "مدفوع", unpaid: "غير مدفوع",
-      footer: "يتم قراءة البيانات مباشرة من Supabase باستخدام مفتاح للقراءة فقط",
+      footer: "يتم قراءة البيانات مباشرة في وضع القراءة فقط",
       trendTitleSuffix: " — الامتحانات", gradesTitleSuffix: " — الدرجات", qrTitleSuffix: " — رمز QR",
       loadingExams: "جاري تحميل درجات الامتحانات…", loadingQr: "جاري تحميل رمز QR…",
       onlyOneExam: "تم تسجيل امتحان واحد فقط حتى الآن — أضف درجة امتحان أخرى لعرض المنحنى",
@@ -605,7 +605,7 @@
       droppedBy: (d) => `▼ انخفض بنسبة ${d}%`,
       noChange: "— لا تغيير",
       fromTo: (a, b) => `من "${a}" إلى "${b}"`,
-      couldntLoad: "تعذر تحميل البيانات من Supabase",
+      couldntLoad: "تعذر تحميل البيانات",
       commonCauses: "الأسباب الشائعة: أسماء الجداول أو الأعمدة في SCHEMA لا تطابق قاعدة بياناتك، أو تفعيل Row Level Security على هذه الجداول بدون سياسة SELECT لدور anon.",
       couldntLoadExams: "تعذر تحميل درجات الامتحانات: ",
       couldntLoadGrades: "تعذر تحميل الدرجات: ",

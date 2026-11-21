@@ -1,4 +1,4 @@
-/* MilEX AI — تقييم الامتحانات بالذكاء الاصطناعي (عن طريق Supabase Edge Function: ai-exam-grader)
+/* MilEX — تقييم تفصيلي للامتحانات
    مفيش أي مفتاح هنا. المفتاح على السيرفر بس. */
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -47,7 +47,7 @@
     const q = (review || [])[x.index];
     const pts = q && q.points != null ? ' من ' + num(q.points) : '';
     const tag = {correct:'✔ صح', partial:'◐ جزء من الدرجة', wrong:'✖ غلط', blank:'— من غير إجابة'}[x.verdict] || '';
-    return `<div class="mai-q"><b>🤖 تقييم الذكاء الاصطناعي:</b> ${tag} (${num(x.ai_score)}${pts})`
+    return `<div class="mai-q"><b>📝 تقييم الإجابات:</b> ${tag} (${num(x.ai_score)}${pts})`
       + (x.feedback ? `<div>${esc(x.feedback)}</div>` : '')
       + (x.ideal_answer ? `<div class="ideal"><b>الإجابة الصح:</b> ${esc(x.ideal_answer)}</div>` : '') + `</div>`;
   }
@@ -55,7 +55,7 @@
   function fullHtml(rep, review){
     if(!rep || !rep.ok) return '<div class="load">تعذّر تحميل التقييم دلوقتي.</div>';
     if(rep.pending) return '<div class="load">تصحيح الأسئلة المقالية لسه جاري… جرّب بعد شوية.</div>';
-    let h = '<h3>🤖 تقييم الذكاء الاصطناعي</h3>' + evalHtml(rep.evaluation);
+    let h = '<h3>📝 تقييم الإجابات</h3>' + evalHtml(rep.evaluation);
     if(review && (rep.questions||[]).length){
       h += '<h4>تفاصيل الأسئلة</h4>' + rep.questions.map(x => {
         const q = review[x.index];
@@ -68,42 +68,42 @@
   window.MILEX_AI = {
     fetchReport, fullHtml, questionHtml, evalHtml,
 
-    // صفحة الطالب: بيحط كارت التقييم فوق تفاصيل الأسئلة وبيضيف ملاحظة AI تحت كل سؤال
+    // صفحة الطالب: بيحط كارت التقييم فوق تفاصيل الأسئلة وبيضيف ملاحظة تحت كل سؤال
     async mountForStudent(supa, token, code, container){
       if(!container) return;
       let box = document.getElementById('maiBox');
       if(!box){ box = document.createElement('div'); box.id = 'maiBox'; box.className = 'mai'; container.parentNode.insertBefore(box, container); }
-      box.innerHTML = '<h3>🤖 تقييم الذكاء الاصطناعي</h3><div class="load">بنجهّز تقييمك… ⏳</div>';
+      box.innerHTML = '<h3>📝 تقييم الإجابات</h3><div class="load">بنجهّز تقييمك… ⏳</div>';
       try{
         const rep = await fetchReport(supa, token, code);
         if(!rep || !rep.ok || rep.pending){ box.innerHTML = fullHtml(rep); return; }
-        box.innerHTML = '<h3>🤖 تقييم الذكاء الاصطناعي</h3>' + evalHtml(rep.evaluation)
+        box.innerHTML = '<h3>📝 تقييم الإجابات</h3>' + evalHtml(rep.evaluation)
           + '<div class="note">التقييم ده استرشادي، والدرجة الرسمية هي اللي ظاهرة فوق.</div>';
         const cards = container.querySelectorAll('.qcard');
         (rep.questions || []).forEach(x => {
           const c = cards[x.index]; if(!c || c.querySelector('.mai-q')) return;
           c.insertAdjacentHTML('beforeend', questionHtml(x, null));
         });
-      }catch(e){ console.warn('ai', e); box.innerHTML = '<h3>🤖 تقييم الذكاء الاصطناعي</h3><div class="load">التقييم مش متاح دلوقتي.</div>'; }
+      }catch(e){ console.warn('ai', e); box.innerHTML = '<h3>📝 تقييم الإجابات</h3><div class="load">التقييم مش متاح دلوقتي.</div>'; }
     },
 
     // صفحة المدرس/المساعد: نافذة بتقرير طالب واحد
     async openModal(supa, token, code, name){
       const ov = document.createElement('div'); ov.className = 'mai-ov';
-      ov.innerHTML = `<div class="mai-box"><button class="x" type="button">إغلاق</button><div class="mai" style="border:0;padding:0"><h3>🤖 ${esc(name || code)}</h3><div class="load">جاري التقييم… ⏳</div></div></div>`;
+      ov.innerHTML = `<div class="mai-box"><button class="x" type="button">إغلاق</button><div class="mai" style="border:0;padding:0"><h3>📝 ${esc(name || code)}</h3><div class="load">جاري التقييم… ⏳</div></div></div>`;
       ov.addEventListener('click', e => { if(e.target === ov || e.target.classList.contains('x')) ov.remove(); });
       document.body.appendChild(ov);
       const body = ov.querySelector('.mai');
       try{
         const rep = await fetchReport(supa, token, code);
-        body.innerHTML = `<h3>🤖 ${esc(name || code)}</h3>` + fullHtml(rep, null).replace('<h3>🤖 تقييم الذكاء الاصطناعي</h3>', '');
+        body.innerHTML = `<h3>📝 ${esc(name || code)}</h3>` + fullHtml(rep, null).replace('<h3>📝 تقييم الإجابات</h3>', '');
         if(rep && rep.ok && !rep.pending){
           const withTxt = (rep.questions||[]).filter(x => x.feedback || x.ideal_answer);
           if(withTxt.length){
             body.insertAdjacentHTML('beforeend', '<h4>الأسئلة</h4>' + withTxt.map(x => `<div style="margin-top:8px"><b>سؤال ${x.index+1}</b>${questionHtml(x, null)}</div>`).join(''));
           }
         }
-      }catch(e){ body.innerHTML = '<div class="load">التقييم مش متاح. اتأكد إن دالة ai-exam-grader متركّبة على Supabase.</div>'; }
+      }catch(e){ body.innerHTML = '<div class="load">التقييم مش متاح. اتأكد إن خدمة التقييم متفعّلة.</div>'; }
     }
   };
 })();

@@ -172,12 +172,12 @@
       </div>
       <div class="hintline" style="margin-top:6px;">اكتب الدرجة الكلية، وبعدها تقدر تغيّر درجة كل سؤال لوحده. لما تزوّد درجة سؤال، الأسئلة التانية بتتعدّل لوحدها عشان المجموع يفضل زي الدرجة الكلية.</div>
       <div class="card" style="margin-top:14px; background:#f7fbff; border-color:#c9ddf5;">
-        <h3 style="margin:0 0 6px;">🤖 مساعد الامتحان</h3>
-        <p class="hintline" style="margin:0 0 10px;">اكتب المطلوب أو ارفع ملف نصي/صورة. راجع الأسئلة والإجابات قبل الحفظ؛ المساعد اقتراح وليس تصحيحًا نهائيًا.</p>
+        <h3 style="margin:0 0 6px;">📝 منشئ الأسئلة</h3>
+        <p class="hintline" style="margin:0 0 10px;">اكتب المطلوب أو ارفع ملف نصي/صورة. راجع الأسئلة والإجابات قبل الحفظ؛ الأسئلة المُنشأة مقترحة وليست نهائية.</p>
         <textarea id="aiInstruction" rows="3" placeholder="مثال: اعمل 10 أسئلة عن درس الجهاز الهضمي، 8 اختيار من متعدد وسؤالين مقاليين، مستوى متوسط"></textarea>
         <div class="acts" style="margin-top:8px; align-items:center;">
           <input id="aiSourceFile" type="file" accept=".txt,.md,.csv,image/png,image/jpeg,image/webp" style="max-width:260px;">
-          <button class="btn" id="aiGenerateBtn" type="button">✨ توليد أسئلة</button>
+          <button class="btn" id="aiGenerateBtn" type="button">📝 إنشاء أسئلة</button>
           <span class="hintline" id="aiStatus" style="margin:0;"></span>
         </div>
       </div>
@@ -292,7 +292,7 @@ async function rpc(fn, args){
   return data;
 }
 function setupMissing(){
-  showMsg('لازم تشغّل ملف exams_online_setup.sql مرة واحدة في Supabase > SQL Editor الأول، وبعدها حدّث الصفحة.', 'err');
+  showMsg('قاعدة البيانات محتاجة إعداد الامتحانات أونلاين (exams_online_setup.sql) الأول، وبعدها حدّث الصفحة.', 'err');
 }
 const examLink = token => location.href.replace(/[#?].*$/, '').replace(/[^/]*$/, '') + 'exam.html?e=' + encodeURIComponent(token);
 
@@ -625,7 +625,7 @@ function renderResults(){
     const st = r.in_progress ? '<span class="chip draft">بيمتحن</span>' : (r.auto ? '<span class="chip closed">اتسلّم تلقائي</span>' : '<span class="chip published">سلّم</span>');
     tr.innerHTML = `<td>${i+1}</td><td>${esc(r.name||'')}</td><td style="direction:ltr; text-align:right;">${esc(r.code)}</td>
       <td>${r.in_progress ? '—' : `${r.score} / ${r.total}`}</td><td>${r.in_progress ? '—' : pct(r)+'%'}</td><td>${st}</td>
-      <td style="white-space:nowrap">${r.in_progress ? '' : '<button class="btn sm" data-ai title="تقييم الذكاء الاصطناعي">🤖 تقييم</button> '}<button class="btn sm danger" data-reset title="يسمح له يدخل تاني">إعادة</button></td>`;
+      <td style="white-space:nowrap">${r.in_progress ? '' : '<button class="btn sm" data-ai title="تقييم الإجابات">📝 تقييم</button> '}<button class="btn sm danger" data-reset title="يسمح له يدخل تاني">إعادة</button></td>`;
     const aiBtn = tr.querySelector('[data-ai]');
     if(aiBtn) aiBtn.onclick = () => MILEX_AI.openModal(supa, resExam.token, r.code, r.name);
     tr.querySelector('[data-reset]').onclick = async () => {

@@ -365,7 +365,7 @@
     </div>
   </div>
 
-  <div class="footer-note" id="t_footerNote">يتم حفظ التغييرات مباشرة على Supabase</div>
+  <div class="footer-note" id="t_footerNote">يتم حفظ التغييرات مباشرة</div>
 </div>
 
 
@@ -463,7 +463,7 @@
       alertDeleteFail:(msg)=>`تعذّر حذف الامتحان: ${msg}`,
       confirmDelete:(name)=>`هل أنت متأكد من حذف "${name}"؟\n\nسيؤدي هذا إلى حذف الامتحان وكل درجات الطلاب المسجلة له نهائيًا، ولا يمكن التراجع عن ذلك.`,
       enterGradesTitle:(name,max)=>`تسجيل الدرجات: ${name} (من ${max})`,
-      footerNote:"يتم حفظ التغييرات مباشرة على Supabase",
+      footerNote:"يتم حفظ التغييرات مباشرة",
       gradeOptions: Object.fromEntries(GRADES.map(g => [g, GRADE_LABELS[g].ar]))
     },
     en: {
@@ -494,7 +494,7 @@
       alertDeleteFail:(msg)=>`Couldn't delete the exam: ${msg}`,
       confirmDelete:(name)=>`Are you sure you want to delete "${name}"?\n\nThis will permanently remove the exam and all student grades entered for it. This can't be undone.`,
       enterGradesTitle:(name,max)=>`Enter Grades: ${name} (out of ${max})`,
-      footerNote:"Changes are written live to Supabase",
+      footerNote:"Changes are saved instantly",
       gradeOptions: Object.fromEntries(GRADES.map(g => [g, GRADE_LABELS[g].en]))
     }
   };

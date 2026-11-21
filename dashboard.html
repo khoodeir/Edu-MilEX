@@ -1051,6 +1051,61 @@ body.dash-pro::before{display:block;content:"";position:fixed;inset:-600px;width
 .dash-pro .tab{animation:mxUp .4s var(--ease) backwards}
 .dash-pro .tab:nth-child(2){animation-delay:.04s}.dash-pro .tab:nth-child(3){animation-delay:.08s}.dash-pro .tab:nth-child(4){animation-delay:.12s}.dash-pro .tab:nth-child(5){animation-delay:.16s}.dash-pro .tab:nth-child(6){animation-delay:.2s}.dash-pro .tab:nth-child(7){animation-delay:.24s}
 @media (prefers-reduced-motion:reduce){body.dash-pro,body.dash-pro::before,.topbar::after,.tab,.fx-bar{animation:none!important}}
+/* ===== Neutral dark mode (charcoal + lime, no blue tint) ===== */
+[data-theme="dark"]{
+  --navy:#3A3A3A;--navy-deep:#262626;--navy-mid:#A8D400;
+  --paper:#1A1A1A;--card:#242424;--line:#383838;--muted:#A8A8A8;
+  --ink:#F0F0F0;--ink-2:#E6E6E6;
+  --gold:#A8D400;--gold-2:#C4E64A;--gold-soft:rgba(168,212,0,.14);
+  --cream-bg-1:#1A1A1A;--cream-bg-2:#1E1E1E;
+  --bg-main:#1A1A1A;--bg-secondary:#202020;--bg-dark-beige:#2A2A2A;
+  color-scheme:dark;
+}
+[data-theme="dark"] #settingsView{--sv-bg:#1A1A1A;--sv-card:#242424;--sv-line:#383838;--sv-ink:#F0F0F0;--sv-muted:#A8A8A8;--sv-navy:#4A4A4A;--sv-navy-2:#303030;--sv-purple:#6E9B00;--sv-purple-2:#4A6B00}
+[data-theme="dark"] #settingsView .switch .slider{background:rgba(255,255,255,.16)}
+[data-theme="dark"] #settingsView .theme-preview .swatch.dark,[data-theme="dark"] .theme-preview .swatch.dark,#settingsView .theme-preview .swatch.dark,.theme-preview .swatch.dark{background:linear-gradient(160deg,#151515,#2A2A2A);border:1px solid #3A3A3A}
+[data-theme="dark"] body.dash-pro{background-color:#151515;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px)}
+[data-theme="dark"] body.dash-pro::before{background:repeating-linear-gradient(115deg,transparent 0 160px,rgba(255,255,255,.03) 160px 161px,transparent 161px 320px,rgba(168,212,0,.06) 320px 321px,transparent 321px 480px)}
+[data-theme="dark"] .dash-pro .topbar::after{background:linear-gradient(90deg,#3A3A3A,#A8D400,#6E9B00,#A8D400,#3A3A3A);background-size:200% 100%}
+[data-theme="dark"] .dash-pro .topbar,[data-theme="dark"] .dash-pro .kpi-card,[data-theme="dark"] .dash-pro .fx-bar{box-shadow:0 1px 3px rgba(0,0,0,.4)}
+[data-theme="dark"] .dash-pro .chart-card{box-shadow:inset 0 3px 0 rgba(168,212,0,.55),0 1px 3px rgba(0,0,0,.4)}
+[data-theme="dark"] .dash-pro .list-card{box-shadow:inset 0 3px 0 rgba(255,255,255,.18),0 1px 3px rgba(0,0,0,.4)}
+[data-theme="dark"] .dash-pro .chart-card:hover{box-shadow:inset 0 3px 0 rgba(168,212,0,.55),0 8px 22px rgba(0,0,0,.45)}
+[data-theme="dark"] .dash-pro .list-card:hover{box-shadow:inset 0 3px 0 rgba(255,255,255,.18),0 8px 22px rgba(0,0,0,.45)}
+[data-theme="dark"] .dash-pro .refresh-btn,[data-theme="dark"] .dash-pro .excel-btn,[data-theme="dark"] .dash-pro .save-snapshot-btn,[data-theme="dark"] .dash-pro .pay-filter button.active{background:#3A3A3A;color:#fff;border:1px solid #4A4A4A}
+[data-theme="dark"] .dash-pro .refresh-btn:hover,[data-theme="dark"] .dash-pro .excel-btn:hover,[data-theme="dark"] .dash-pro .save-snapshot-btn:hover{background:#4A4A4A;color:#fff}
+[data-theme="dark"] .dash-pro .scanner-btn:hover{background:rgba(255,255,255,.06);border-color:#A8D400!important}
+[data-theme="dark"] .dash-pro .tab:hover{background:rgba(255,255,255,.06)}
+[data-theme="dark"] .dash-pro .tab.active{background:rgba(168,212,0,.12);color:#fff}
+[data-theme="dark"] .dash-pro .tab.active .tab-count{background:#A8D400;color:#111}
+[data-theme="dark"] .dash-pro .tab-count{background:rgba(255,255,255,.10);color:#BDBDBD}
+[data-theme="dark"] .dash-pro .rank{background:rgba(255,255,255,.10);color:#E6E6E6}
+[data-theme="dark"] .dash-pro .section-title .tag{background:rgba(168,212,0,.14);color:#C4E64A}
+[data-theme="dark"] .dash-pro .list-row:hover,[data-theme="dark"] .dash-pro tbody tr:hover td{background:rgba(255,255,255,.06)}
+[data-theme="dark"] .dash-pro .bar-fill{background:#A8D400}
+[data-theme="dark"] .dash-pro .kpi-card.seal .seal-ring .bg{stroke:rgba(255,255,255,.10)}
+[data-theme="dark"] .dash-pro .kpi-card:nth-child(1){--acc:#A8D400}
+[data-theme="dark"] .dash-pro .kpi-card:nth-child(2){--acc:#6FCF97}
+[data-theme="dark"] .dash-pro .kpi-card:nth-child(3){--acc:#5BC0CF}
+[data-theme="dark"] .dash-pro .kpi-card:nth-child(4){--acc:#E0B45C}
+[data-theme="dark"] .dash-pro .kpi-card:nth-child(5){--acc:#C9E04F}
+[data-theme="dark"] .dash-pro .kpi-card:nth-child(6){--acc:#BDBDBD}
+[data-theme="dark"] .dash-pro .kpi-ico{color:var(--acc,#A8D400);background:color-mix(in srgb,var(--acc,#A8D400) 18%,transparent)}
+[data-theme="dark"] .kpi-ico{color:#C4E64A;background:rgba(168,212,0,.14)}
+[data-theme="dark"] .dash-pro .fx-btn:hover{background:rgba(255,255,255,.05)}
+[data-theme="dark"] .dash-pro .fx.open .fx-btn,[data-theme="dark"] .dash-pro .fx-btn.filtered{background:rgba(168,212,0,.10);border-color:rgba(168,212,0,.40)}
+[data-theme="dark"] .dash-pro .fx-ico{background:rgba(255,255,255,.08);color:#C4E64A}
+[data-theme="dark"] .fx-ico{color:#111}
+[data-theme="dark"] .dash-pro .fx-count{background:rgba(255,255,255,.10);color:#BDBDBD}
+[data-theme="dark"] .dash-pro .fx-opt.sel{background:rgba(168,212,0,.18);color:#fff}
+[data-theme="dark"] .dash-pro .fx-menu{box-shadow:0 12px 32px rgba(0,0,0,.55)}
+[data-theme="dark"] .dash-pro .more-analytics .ma-icon svg{stroke:#A8D400}
+[data-theme="dark"] .dash-pro thead th{background:#2D2D2D;color:#E6E6E6}
+[data-theme="dark"] .grade-chip[style*="11,58,135"]{background:rgba(255,255,255,.10)!important}
+[data-theme="dark"] *{scrollbar-color:rgba(255,255,255,.25) transparent}
+[data-theme="dark"] ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22)}
+[data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea{background-color:#2A2A2A;color:var(--ink);border-color:#3F3F3F}
+[data-theme="dark"] .dash-pro .sidebar-logo::after{background:linear-gradient(90deg,transparent,#A8D400,transparent)}
 </style>
 <script>
 (function(){
@@ -1194,7 +1249,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   <div class="tab-panel">
     <div id="dashboardView">
     <div class="state-msg show" id="loadingMsg">
-      <span class="spinner"></span> Loading data from Supabase…
+      <span class="spinner"></span> Loading data…
     </div>
     <div class="state-msg err" id="errorMsg"></div>
 
@@ -1689,7 +1744,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
             <button type="button" data-lang-choice="ar" onclick="setLanguage('ar')">العربية</button>
           </div>
           <div class="settings-note" data-i18n="settingsLangNote">
-            Labels, buttons, and headers switch language instantly. Names and phone numbers stay exactly as stored in Supabase.
+            Labels, buttons, and headers switch language instantly. Names and phone numbers stay exactly as stored in the system.
           </div>
         </div>
 
@@ -1715,7 +1770,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
   </div>
 
-  <div class="footer-note" data-i18n="footerNote">Data is read live from Supabase using a read-only anon key</div>
+  <div class="footer-note" data-i18n="footerNote">Data is read live in read-only mode</div>
 </div>
 
 <div class="modal-overlay" id="unpaidModalOverlay" onclick="if(event.target===this) closeUnpaidModal()">
@@ -1891,12 +1946,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       secGradesTable: "Grades Table", tagPermanent: "Permanent — not cleared monthly",
       gradesTableNote: "Each exam is shown in its own column.",
       searchStudentName: "Search by student name…",
-      footerNote: "Data is read live from Supabase using a read-only anon key",
+      footerNote: "Data is read live in read-only mode",
       settingsAppearance: "Appearance", settingsAppearanceSub: "Choose how the dashboard looks",
       settingsLight: "Light", settingsDark: "Dark",
       settingsDarkMode: "Dark Mode", settingsDarkModeDesc: "Easier on the eyes at night",
       settingsLanguage: "Language", settingsLanguageSub: "Switch the interface language",
-      settingsLangNote: "Labels, buttons, and headers switch language instantly. Names and phone numbers stay exactly as stored in Supabase.",
+      settingsLangNote: "Labels, buttons, and headers switch language instantly. Names and phone numbers stay exactly as stored in the system.",
       settingsHeroTitle: "Dashboard Settings", settingsHeroSub: "Customize how your dashboard looks and speaks",
       settingsHeroPill: "Changes save instantly",
       emptyAttendance: "No attendance data yet", emptyPayment: "No payment data yet",
@@ -1976,12 +2031,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       secGradesTable: "جدول الدرجات", tagPermanent: "دائم — لا يُمسح شهريًا",
       gradesTableNote: "يظهر كل امتحان في عمود مستقل.",
       searchStudentName: "ابحث باسم الطالب…",
-      footerNote: "تُقرأ البيانات مباشرة من Supabase باستخدام مفتاح قراءة فقط",
+      footerNote: "تُقرأ البيانات مباشرة في وضع القراءة فقط",
       settingsAppearance: "المظهر", settingsAppearanceSub: "اختر شكل لوحة المتابعة",
       settingsLight: "فاتح", settingsDark: "داكن",
       settingsDarkMode: "الوضع الداكن", settingsDarkModeDesc: "أريح للعين ليلًا",
       settingsLanguage: "اللغة", settingsLanguageSub: "بدّل لغة الواجهة",
-      settingsLangNote: "تتغير التسميات والأزرار والعناوين فورًا. الأسماء وأرقام الهواتف تبقى كما هي في Supabase.",
+      settingsLangNote: "تتغير التسميات والأزرار والعناوين فورًا. الأسماء وأرقام الهواتف تبقى كما هي في النظام.",
       settingsHeroTitle: "إعدادات لوحة التحكم", settingsHeroSub: "خصص شكل ولغة لوحة التحكم الخاصة بك",
       settingsHeroPill: "التغييرات تُحفظ فورًا",
       emptyAttendance: "لا توجد بيانات حضور بعد", emptyPayment: "لا توجد بيانات دفع بعد",
@@ -2169,6 +2224,50 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     });
   }
 
+
+  /* ---- theme-aware chart colors (dark = charcoal + lime) ---- */
+  const DARK_MAP_RGB = {"11,58,135":"168,212,0","45,95,184":"190,190,190","6,31,85":"120,120,120","157,184,232":"224,224,224"};
+  const DARK_MAP_HEX = {"#0b3a87":"#A8D400","#2d5fb8":"#BEBEBE","#061f55":"#787878","#9db8e8":"#E0E0E0"};
+  function darkenColor(c){
+    if(typeof c !== "string") return c;
+    return c.replace(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/g,(m,r,g,b)=>{
+      const k = r+","+g+","+b; return DARK_MAP_RGB[k] ? m.replace(k, DARK_MAP_RGB[k]) : m;
+    }).replace(/#(0b3a87|2d5fb8|061f55|9db8e8)/gi,(m)=>DARK_MAP_HEX[m.toLowerCase()]);
+  }
+  function mapColor(c, dark){ return dark ? (Array.isArray(c) ? c.map(darkenColor) : darkenColor(c)) : c; }
+  if(window.Chart && !window.__mxThemePlugin){
+    window.__mxThemePlugin = true;
+    Chart.register({
+      id:"mxTheme",
+      beforeUpdate(chart){
+        const dark = document.documentElement.getAttribute("data-theme") === "dark";
+        chart.data.datasets.forEach(ds => {
+          ["backgroundColor","borderColor","pointBackgroundColor","pointBorderColor"].forEach(k => {
+            if(ds[k] === undefined) return;
+            const ok = "__o_"+k;
+            if(!(ok in ds)) ds[ok] = ds[k];
+            ds[k] = mapColor(ds[ok], dark);
+          });
+        });
+        const sc = chart.options && chart.options.scales;
+        if(sc) Object.values(sc).forEach(a => {
+          if(a.grid && a.grid.display !== false){
+            if(!("__og" in a.grid)) a.grid.__og = a.grid.color;
+            a.grid.color = dark ? "rgba(255,255,255,0.08)" : a.grid.__og;
+          }
+        });
+      }
+    });
+  }
+  function applyChartTheme(){
+    if(!window.Chart) return;
+    const dark = currentTheme === "dark";
+    Chart.defaults.color = dark ? "#B5B5B5" : "#5C6A80";
+    const tt = Chart.defaults.plugins.tooltip;
+    tt.backgroundColor = dark ? "#2E2E2E" : "#061F55";
+    Object.values(Chart.instances || {}).forEach(ch => { try{ ch.update("none"); }catch(e){} });
+  }
+  window.addEventListener('load', function(){ try{ applyChartTheme(); }catch(e){} });
   function setTheme(theme){
     currentTheme = theme === "dark" ? "dark" : "light";
     localStorage.setItem("dashTheme", currentTheme);
@@ -2176,6 +2275,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     document.querySelectorAll("#themePreview button").forEach(b => {
       b.classList.toggle("active", b.dataset.themeChoice === currentTheme);
     });
+    applyChartTheme();
   }
 function goBack(){
   if(document.referrer && document.referrer !== location.href){
@@ -2671,7 +2771,7 @@ function goBack(){
       }
 
       if (results.length === 0 && errors.length > 0) {
-        throw new Error("Could not load any data. Check if tables exist in Supabase.\n" + errors.join("\n"));
+        throw new Error("Could not load any data. Check that the required tables exist.\n" + errors.join("\n"));
       }
 
       if(mySeq !== dashSeq) return;   // المستخدم ضغط على تاب تاني — اتجاهل الرد القديم
@@ -2698,13 +2798,12 @@ function goBack(){
     }catch(err){
       console.error(err);
       errorEl.innerHTML = `
-        <div style="font-weight:700;">Couldn't load data from Supabase</div>
+        <div style="font-weight:700;">Couldn't load data</div>
         <div style="font-size:12px; max-width:520px;">
           ${err.message || err}<br><br>
           Common causes: the table/column names in SCHEMA don't match your database,
           or Row Level Security is enabled on these tables without a SELECT policy for the anon role —
-          this is the most common reason for everything showing 0 despite data being visible in Table Editor
-          (Table Editor uses elevated privileges, not the anon key).
+          this is the most common reason for everything showing 0 despite data being visible in the admin tools.
         </div>`;
       errorEl.classList.add("show");
     }finally{
@@ -4246,7 +4345,7 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
     }catch(e){
       const missing = /consecutive_absences/i.test(e.message || '');
       $('absErr').textContent = missing
-        ? L('عمود consecutive_absences مش موجود — شغّل ملف milex_upgrade.sql في Supabase الأول.', 'Column consecutive_absences is missing — run milex_upgrade.sql in Supabase first.')
+        ? L('عمود consecutive_absences مش موجود — قاعدة البيانات محتاجة تحديث (milex_upgrade.sql) الأول.', 'Column consecutive_absences is missing — the database needs the milex_upgrade.sql update first.')
         : (e.message || String(e));
       $('absErr').classList.add('show');
     }finally{ $('absLoading').classList.remove('show'); }
@@ -4300,7 +4399,7 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
       auditRows = data || [];
       renderAudit();
     }catch(e){
-      $('auditErr').textContent = /audit_log/i.test(e.message || '') ? L('جدول audit_log مش موجود — شغّل ملف milex_upgrade.sql في Supabase الأول.', 'Table audit_log is missing — run milex_upgrade.sql in Supabase first.') : (e.message || String(e));
+      $('auditErr').textContent = /audit_log/i.test(e.message || '') ? L('جدول audit_log مش موجود — قاعدة البيانات محتاجة تحديث (milex_upgrade.sql) الأول.', 'Table audit_log is missing — the database needs the milex_upgrade.sql update first.') : (e.message || String(e));
       $('auditErr').classList.add('show');
     }finally{ $('auditLoading').classList.remove('show'); }
   }
