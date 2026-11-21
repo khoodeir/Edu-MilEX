@@ -959,6 +959,15 @@
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
+
+  // فتح تلقائي من رابط الـ QR:  parent_portal.html?c=<كود الطالب>
+  (function(){
+    const c = new URLSearchParams(location.search).get("c");
+    if(!c) return;
+    document.getElementById("lookupInput").value = c.trim();
+    try{ history.replaceState(null, "", location.pathname); }catch(e){}
+    runSearch();
+  })();
 </script>
 </body>
 </html>
