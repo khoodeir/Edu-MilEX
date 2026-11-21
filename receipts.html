@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="milex-perm" content="payments">
+<meta name="theme-color" content="#0B3A87">
+<title>الإيصالات | MilEX</title>
+<script src="milex-theme-sync.js" data-apply="1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="milex-common.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="milex-pages.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  .rc{background:#fff;color:#101B33;border:2px solid #0B3A87;border-radius:14px;padding:22px;max-width:420px;margin:0 auto;font-family:'Cairo',sans-serif}
+  .rc .hd{text-align:center;border-bottom:2px dashed #b8c4d8;padding-bottom:12px;margin-bottom:12px}
+  .rc .hd img{height:46px}
+  .rc .hd h3{margin:6px 0 0;font-size:18px;color:#0B3A87}
+  .rc .ln{display:flex;justify-content:space-between;gap:10px;padding:6px 0;font-size:14px;border-bottom:1px solid #eef1f6}
+  .rc .ln span{color:#5C6A80}
+  .rc .amt{text-align:center;margin:14px 0 4px;font-size:26px;font-weight:700;color:#0B3A87}
+  .rc .ft{text-align:center;font-size:12px;color:#5C6A80;margin-top:12px}
+  .rc .sig{display:flex;justify-content:space-between;margin-top:22px;font-size:12px;color:#5C6A80}
+  .rc .sig div{border-top:1px solid #9aa7bd;padding-top:4px;min-width:120px;text-align:center}
+  .prow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}
+  @media print{
+    body *{visibility:hidden}
+    #rcPrint,#rcPrint *{visibility:visible}
+    #rcPrint{position:absolute;inset:0 auto auto 0;width:100%;padding:20px}
+    .overlay{background:#fff !important;position:static;display:block !important;padding:0}
+    .modal{box-shadow:none;max-width:none;padding:0;background:#fff}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="icon-btn" onclick="MX.goBack()" title="رجوع">↩️</button>
+  <h1>🧾 الإيصالات</h1>
+  <button class="icon-btn" id="themeBtn" onclick="MX.toggleTheme(); this.textContent=MX.themeIcon()">🌙</button>
+</div>
+<div class="wrap">
+  <div class="card">
+    <div class="row">
+      <select id="gradeSel" style="width:auto;min-width:190px" onchange="loadStudents()"></select>
+      <input class="grow" type="search" id="q" placeholder="ابحث بالاسم أو الكود أو الموبايل…" oninput="renderStudents()">
+    </div>
+    <div id="stList" style="margin-top:10px"></div>
+  </div>
+  <div class="card" id="payCard" style="display:none">
+    <div class="row"><h2 style="margin:0;flex:1" id="payTitle"></h2><button class="btn ghost sm" onclick="closePay()">إغلاق</button></div>
+    <div id="payList"><div class="state">جاري التحميل…</div></div>
+  </div>
+  <div class="card">
+    <div class="row"><h2 style="margin:0;flex:1">دفعات النهارده</h2><button class="btn ghost sm" onclick="loadToday()">تحديث</button></div>
+    <div id="today"><div class="state">جاري التحميل…</div></div>
+  </div>
+</div>
+
+<div class="overlay" id="rcOv" onclick="if(event.target===this) closeRc()">
+  <div class="modal" style="max-width:480px">
+    <div id="rcPrint"></div>
+    <div class="actions no-print">
+      <button class="btn ghost" onclick="closeRc()">إغلاق</button>
+      <button class="btn ghost" onclick="copyRc()">📋 نسخ النص</button>
+      <a class="btn ok" id="rcWa" target="_blank" rel="noopener">💬 واتساب ولي الأمر</a>
+      <button class="btn" onclick="window.print()">🖨 طباعة / PDF</button>
+    </div>
+  </div>
+</div>
+
+<script src="milex-ui.js"></script>
+<script>
+  const { $, esc } = MX;
+  const supa = MX.client();
+  let students = [], current = null, curRc = null;
+
+  function gradeKey(v){
+    if(!v) return null;
+    if(MX.GRADES[v]) return v;
+    return MX.GRADE_KEYS.find(k => MX.GRADES[k].scanner === v) || null;
+  }
+  function monthLabel(m){
+    const n = Number(m);
+    if(n >= 1 && n <= 12) return MX.MONTHS_AR[n-1];
+    return m || '—';
+  }
+  function receiptNo(r){
+    const id = String(r.id ?? '');
+    return /^\d+$/.test(id) ? 'R-' + id.padStart(6, '0') : 'R-' + id.replace(/-/g,'').slice(0,8).toUpperCase();
+  }
+
+  async function loadStudents(){
+    $('stList').innerHTML = '<div class="state">جاري التحميل…</div>';
+    try{
+      const k = $('gradeSel').value;
+      students = await MX.loadStudents([k], false);
+      renderStudents();
+    }catch(e){ $('stList').innerHTML = `<div class="state err">تعذر التحميل: ${esc(e.message)}</div>`; }
+  }
+  function renderStudents(){
+    const q = $('q').value.trim().toLowerCase();
+    let l = students;
+    if(q) l = l.filter(s => s.name.toLowerCase().includes(q) || s.qr.toLowerCase().includes(q) || s.parentPhone.includes(q) || s.studentPhone.includes(q));
+    $('stList').innerHTML = l.slice(0, 40).map(s => `
+      <div class="prow"><div class="grow"><b>${esc(s.name)}</b><div class="muted small">${esc(s.group || '—')} · <bdi>${esc(s.qr)}</bdi></div></div>
+      <button class="btn sm" onclick="openStudent('${esc(s.qr.replace(/'/g,"\\'"))}')">الدفعات</button></div>`).join('')
+      || '<div class="state">مفيش نتائج</div>';
+    if(l.length > 40) $('stList').insertAdjacentHTML('beforeend', '<div class="muted small" style="padding:8px">أول 40 — استخدم البحث</div>');
+  }
+
+  async function openStudent(qr, autoLatest){
+    current = students.find(s => s.qr === qr) || current;
+    if(!current) return;
+    $('payCard').style.display = 'block';
+    $('payTitle').textContent = 'دفعات: ' + current.name;
+    $('payList').innerHTML = '<div class="state">جاري التحميل…</div>';
+    const { data, error } = await supa.from('payment_history').select('*').eq('qr_code', qr).order('created_at', { ascending:false });
+    if(error){ $('payList').innerHTML = `<div class="state err">${esc(error.message)}</div>`; return; }
+    const rows = data || [];
+    window._rows = rows;
+    $('payList').innerHTML = rows.map((r,i) => `
+      <div class="prow"><div class="grow"><b>${esc(monthLabel(r.month))} ${esc(r.year || '')}</b>
+        <div class="muted small">${MX.fmtDateTime(r.created_at)} · ${esc(receiptNo(r))}</div></div>
+        <b>${MX.fmtMoney(r.amount_paid)}</b>
+        <button class="btn sm" onclick="showRc(${i})">🧾 إيصال</button></div>`).join('')
+      || '<div class="state">لا توجد دفعات مسجلة لهذا الطالب</div>';
+    $('payCard').scrollIntoView({ behavior:'smooth', block:'start' });
+    if(autoLatest && rows.length) showRc(0);
+  }
+  function closePay(){ $('payCard').style.display = 'none'; }
+
+  function rcText(r, s){
+    return `إيصال دفع — ${r.no}\nالطالب: ${s.name}\nالصف: ${s.gradeAr}${s.group ? ' — ' + s.group : ''}\nعن شهر: ${r.month} ${r.year || ''}\nالمبلغ: ${MX.fmtMoney(r.amount)}\nالتاريخ: ${MX.fmtDateTime(r.date)}\nشكرًا لكم — MilEX EDU`;
+  }
+  function showRc(i, rowOverride, stOverride){
+    const row = rowOverride || window._rows[i], s = stOverride || current;
+    curRc = { no:receiptNo(row), month:monthLabel(row.month), year:row.year, amount:row.amount_paid, date:row.created_at };
+    $('rcPrint').innerHTML = `<div class="rc">
+      <div class="hd"><img src="logo.png" alt="" onerror="this.style.display='none'"><h3>إيصال دفع</h3></div>
+      <div class="ln"><span>رقم الإيصال</span><b>${esc(curRc.no)}</b></div>
+      <div class="ln"><span>التاريخ</span><b>${MX.fmtDateTime(curRc.date)}</b></div>
+      <div class="ln"><span>اسم الطالب</span><b>${esc(s.name)}</b></div>
+      <div class="ln"><span>الصف / المجموعة</span><b>${esc(s.gradeAr)}${s.group ? ' — ' + esc(s.group) : ''}</b></div>
+      <div class="ln"><span>عن شهر</span><b>${esc(curRc.month)} ${esc(curRc.year || '')}</b></div>
+      <div class="amt">${MX.fmtMoney(curRc.amount)}</div>
+      <div class="sig"><div>توقيع المستلم</div><div>ختم المركز</div></div>
+      <div class="ft">شكرًا لثقتكم — MilEX EDU</div></div>`;
+    $('rcWa').href = MX.waLink(s.parentPhone || s.studentPhone, rcText(curRc, s));
+    $('rcWa').dataset.text = rcText(curRc, s);
+    $('rcOv').classList.add('show');
+  }
+  function closeRc(){ $('rcOv').classList.remove('show'); }
+  async function copyRc(){ MX.toast((await MX.copyText($('rcWa').dataset.text)) ? 'اتنسخ ✔' : 'تعذر النسخ'); }
+
+  async function loadToday(){
+    const el = $('today');
+    try{
+      const start = new Date(); start.setHours(0,0,0,0);
+      const { data, error } = await supa.from('payment_history').select('*').gte('created_at', start.toISOString()).order('created_at', { ascending:false });
+      if(error) throw error;
+      const all = await MX.loadStudents(null, false);
+      const by = {}; all.forEach(s => by[s.qr] = s);
+      window._today = (data || []).map(r => ({ r, s: by[String(r.qr_code)] }));
+      const total = window._today.reduce((a,x) => a + (Number(x.r.amount_paid) || 0), 0);
+      el.innerHTML = window._today.length
+        ? `<div class="kpis" style="margin-bottom:10px"><div class="kpi"><b>${window._today.length}</b><span>دفعة</span></div><div class="kpi"><b>${MX.fmtMoney(total)}</b><span>إجمالي اليوم</span></div></div>`
+          + window._today.map((x,i) => `<div class="prow"><div class="grow"><b>${esc(x.s ? x.s.name : x.r.qr_code)}</b>
+            <div class="muted small">${MX.fmtDateTime(x.r.created_at)} · ${esc(receiptNo(x.r))}</div></div>
+            <b>${MX.fmtMoney(x.r.amount_paid)}</b>${x.s ? `<button class="btn sm" onclick="showToday(${i})">🧾</button>` : ''}</div>`).join('')
+        : '<div class="state">مفيش دفعات النهارده لحد دلوقتي</div>';
+    }catch(e){ el.innerHTML = `<div class="state err">تعذر التحميل: ${esc(e.message || e)}</div>`; }
+  }
+  function showToday(i){ const x = window._today[i]; showRc(0, x.r, x.s); }
+
+  async function init(){
+    $('themeBtn').textContent = MX.themeIcon();
+    MX.GRADE_KEYS.forEach(k => $('gradeSel').add(new Option(MX.GRADES[k].ar, k)));
+    const p = new URLSearchParams(location.search);
+    const gk = gradeKey(p.get('grade')), qr = p.get('qr');
+    if(gk) $('gradeSel').value = gk;
+    await loadStudents();
+    if(qr){ const s = students.find(x => x.qr === qr); if(s){ $('q').value = s.name; renderStudents(); await openStudent(qr, p.get('latest') === '1'); } }
+    loadToday();
+  }
+  init();
+</script>
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+<script src="milex-search.js" defer></script>
+</body>
+</html>

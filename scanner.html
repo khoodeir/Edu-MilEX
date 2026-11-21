@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="milex-theme-sync.js"></script>
+<meta name="milex-perm" content="attendance|payments">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Student Attendance Scanner</title>
@@ -1948,6 +1951,7 @@
           </div>
         </div>
         ${statsHtml}
+        ${(kind === "payment" && extra && extra.qr && window.MILEX && MILEX.can('payments')) ? `<a class="next-scan-btn" style="display:block;text-align:center;text-decoration:none;margin-bottom:8px" target="_blank" rel="noopener" href="receipts.html?grade=${encodeURIComponent(currentGrade)}&qr=${encodeURIComponent(extra.qr)}&latest=1">🧾 إيصال الدفع</a>` : ""}
         <button type="button" class="next-scan-btn" onclick="scanNext()">📷 ${t('next_scan_btn')}</button>
         <div class="auto-resume-note" id="autoResumeNote"></div>
       </div>`;
@@ -2201,7 +2205,7 @@
       if(result.success){
         const s = result.student || {};
         if(!s.time) s.time = new Date().toLocaleTimeString();
-        renderResultCard(currentMode, s, { month, amount }, true);
+        renderResultCard(currentMode, s, { month, amount, qr: decodedText }, true);
         pushHistory(s.name || s.full_name || "Student", s.time || "", true);
         beep("success");
       } else {
@@ -2341,5 +2345,29 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
 </script>
+<script>
+/* صلاحيات المساعد: إخفاء وضع الحضور أو الدفع لو مش مسموح */
+(function(){
+  function apply(){
+    if(!window.MILEX) return;
+    var a = MILEX.can('attendance'), p = MILEX.can('payments');
+    var ba = document.getElementById('modeAttendance'), bp = document.getElementById('modePayment');
+    if(ba) ba.style.display = a ? '' : 'none';
+    if(bp) bp.style.display = p ? '' : 'none';
+    if(!a && p && typeof currentMode !== 'undefined' && currentMode !== 'payment') setMode('payment');
+    if(a && !p && typeof currentMode !== 'undefined' && currentMode !== 'attendance') setMode('attendance');
+  }
+  var _set = window.setMode;
+  if(typeof _set === 'function'){
+    window.setMode = function(m){
+      if(m === 'payment' && !MILEX.can('payments')) return;
+      if(m === 'attendance' && !MILEX.can('attendance')) return;
+      return _set.apply(this, arguments);
+    };
+  }
+  window.addEventListener('load', function(){ apply(); if(MILEX.syncStaff) MILEX.syncStaff().then(apply); });
+})();
+</script>
+<script src="milex-search.js" defer></script>
 </body>
 </html>

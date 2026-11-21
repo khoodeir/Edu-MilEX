@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" style="visibility:hidden">
 <head>
+<script src="milex-theme-sync.js"></script>
+<meta name="milex-perm" content="edit">
+<meta name="theme-color" content="#0B3A87">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تعديل بيانات طالب</title>
@@ -133,6 +139,7 @@
     GRADE_KEYS.forEach(k => $('gradeSelect').add(new Option(GRADES[k].ar, k)));
     GRADE_KEYS.forEach(k => $('fGrade').add(new Option(GRADES[k].ar, k)));
     groupsByGrade = await MILEX.loadGroups(supa);
+    try{ const qp = new URLSearchParams(location.search).get('q'); if(qp) $('searchInput').value = qp; }catch(e){}
     loadData();
   }
 
@@ -333,6 +340,12 @@
   }
 
   guard();
+</script>
+<script src="milex-search.js" defer></script>
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
 </script>
 </body>
 </html>

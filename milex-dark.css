@@ -1,0 +1,27 @@
+/* دارك مود للصفحات اللي ماكانش فيها (ولي الأمر، سجل العمليات، التسجيل، الامتحانات) */
+html[data-theme="dark"]{
+  color-scheme:dark;
+  /* parent_portal */
+  --bg-main:#141414; --bg-secondary:#1B1B1B; --bg-dark-beige:#222; --card-bg:#1F1F1F;
+  --text-main:#E3EBF7; --text-secondary:#9FB3D4; --petrol:#6AA0EA; --petrol-dark:#A5C4F0; --wood:#4F86D9; --wood-light:#2C4A7A;
+  --border:rgba(180,205,240,.16); --gold-soft:rgba(106,160,234,.14);
+  --success:#7FCB5A; --success-soft:rgba(127,203,90,.15); --warning:#E3B15B; --warning-soft:rgba(227,177,91,.15);
+  --error:#FF8A80; --error-soft:rgba(255,138,128,.15);
+  --shadow-sm:0 2px 8px rgba(0,0,0,.35); --shadow-md:0 4px 16px rgba(0,0,0,.4); --shadow-lg:0 8px 24px rgba(0,0,0,.45);
+  /* audit_log */
+  --bg:#141414; --card:#1F1F1F; --ink:#E3EBF7; --muted:#9FB3D4; --line:rgba(180,205,240,.16); --gold:#6AA0EA; --bad:#FF8A80; --ok:#6FCF73;
+  /* student_registration / test */
+  --bg-0:#141414; --bg-1:#181818; --bg-2:#1D1D1D; --card-border:rgba(180,205,240,.16);
+  --gold-light:#8DB6F0; --gold-deep:#A5C4F0; --bronze:#4F86D9; --text:#E3EBF7;
+  /* exam / exam_builder */
+  --paper:#141414; --soft:#1C1C1C; --brand:#6AA0EA; --brand-d:#A5C4F0; --brand-soft:#1F2A3D; --line-d:rgba(180,205,240,.28);
+  --ok-soft:#1C2B1F; --err:#FF8A80; --err-soft:#33201F; --warn:#E3B15B; --warn-soft:#322A18;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+}
+html[data-theme="dark"] body{background-image:none}
+html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#262626;color:#E3EBF7;border-color:rgba(180,205,240,.22)}
+html[data-theme="dark"] ::placeholder{color:#7f90ac}
+html[data-theme="dark"] .btn,html[data-theme="dark"] button.btn{background:#262626;color:#E3EBF7}
+html[data-theme="dark"] .btn.primary,html[data-theme="dark"] .btn-primary,html[data-theme="dark"] .btn.brand{background:#6AA0EA;color:#0b1220}
+html[data-theme="dark"] img.logo,html[data-theme="dark"] .logo{filter:brightness(1.15)}
+html[data-theme="dark"] table th{background:#262626}

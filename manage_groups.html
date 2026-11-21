@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<script src="milex-theme-sync.js"></script>
+<meta name="milex-perm" content="groups">
+
 <script>
 /* MilEX guard: المدرس أو المساعد */
 (function(){
@@ -306,6 +309,16 @@ async function save(){
   const problems = validate();
   if(problems.length){ showMsg('صحّح الأول:\n• ' + problems.join('\n• '), 'err'); $('msg').style.whiteSpace = 'pre-line'; render(); return; }
   $('msg').style.whiteSpace = '';
+  // تنبيه تعارض المواعيد (نفس اليوم والحصتين متداخلتين، حتى لو في صفين مختلفين)
+  try{
+    if(window.MX_SCHED){
+      const cs = MX_SCHED.conflicts(MX_SCHED.sessions(cfg, MILEX.GRADES), 120);
+      if(cs.length){
+        const names = cs.slice(0,5).map(c => `• ${c.a.gradeAr} (${c.a.group}) ↔ ${c.b.gradeAr} (${c.b.group})`).join('\n');
+        if(!confirm('⚠️ في تعارض في المواعيد (بافتراض حصة ساعتين):\n' + names + (cs.length > 5 ? '\n…' : '') + '\n\nتحفظ برضه؟')) return;
+      }
+    }
+  }catch(_){}
   const btn = $('saveBtn'); btn.disabled = true; btn.textContent = 'جاري الحفظ…';
   try{
 
@@ -369,5 +382,7 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
 </script>
+<script src="milex-schedule.js"></script>
+<script src="milex-search.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="milex-perm" content="teacher">
+<meta name="theme-color" content="#0B3A87">
+<title>نسخة احتياطية | MilEX</title>
+<script src="milex-theme-sync.js" data-apply="1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="milex-common.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="milex-pages.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  .big{width:100%;padding:18px;font-size:18px;border-radius:14px}
+  .tl{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  .bar{height:8px;border-radius:8px;background:var(--soft);overflow:hidden;margin:12px 0}
+  .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="icon-btn" onclick="MX.goBack()" title="رجوع">↩️</button>
+  <h1>💾 نسخة احتياطية</h1>
+  <button class="icon-btn" id="themeBtn" onclick="MX.toggleTheme(); this.textContent=MX.themeIcon()">🌙</button>
+</div>
+<div class="wrap" style="max-width:640px">
+  <div class="card">
+    <p style="margin-top:0">بضغطة واحدة بتنزّل ملف Excel فيه <b>كل البيانات</b>: الطلاب والحضور والمدفوعات وتاريخ الدفع والامتحانات والدرجات وسجل الحضور والمجموعات. احتفظ بنسخة على موبايلك أو درايف.</p>
+    <div class="banner" id="lastBox">آخر نسخة: <b id="lastTxt">لسه ما اتعملتش نسخة على الجهاز ده</b></div>
+    <button class="btn big" id="goBtn" onclick="runBackup('xlsx')">⬇️ تنزيل نسخة Excel</button>
+    <div class="row" style="margin-top:10px"><button class="btn ghost grow" onclick="runBackup('json')">تنزيل JSON (للاستعادة التقنية)</button></div>
+    <div class="bar" id="barWrap" style="display:none"><i id="bar"></i></div>
+    <div id="log"></div>
+  </div>
+  <p class="muted small">النسخة بتتعمل من المتصفح مباشرة ومبتتخزنش على أي سيرفر. جداول مش موجودة في قاعدة بياناتك بتتخطى تلقائيًا.</p>
+</div>
+
+<script src="milex-ui.js"></script>
+<script>
+  const { $, esc } = MX;
+  const supa = MX.client();
+  const G = MX.GRADES, GK = MX.GRADE_KEYS;
+
+  function sheets(){
+    const l = [];
+    GK.forEach(k => { l.push({ name:'حضور - ' + G[k].ar, table:G[k].att }); l.push({ name:'دفع - ' + G[k].ar, table:G[k].pay }); });
+    l.push({ name:'سجل الدفعات', table:'payment_history' });
+    l.push({ name:'الامتحانات', table:'الامتحانات' });
+    l.push({ name:'درجات الامتحانات', table:'نتائج_الامتحانات' });
+    l.push({ name:'سجل الحضور بالتاريخ', table:'attendance_log' });
+    l.push({ name:'جلسات الحضور', table:'attendance_sessions' });
+    l.push({ name:'ملاحظات الطلاب', table:'student_notes' });
+    l.push({ name:'الواجبات والمواد', table:'materials' });
+    l.push({ name:'سجل العمليات', table:'audit_log' });
+    l.push({ name:'إعدادات', table:'app_config' });
+    return l;
+  }
+
+  async function fetchAll(table){
+    const out = []; const PAGE = 1000;
+    for(let from = 0; ; from += PAGE){
+      const { data, error } = await supa.from(table).select('*').range(from, from + PAGE - 1);
+      if(error) throw error;
+      out.push(...(data || []));
+      if(!data || data.length < PAGE) break;
+    }
+    return out;
+  }
+  const flat = rows => rows.map(r => { const o = {}; for(const k in r){ const v = r[k]; o[k] = (v && typeof v === 'object') ? JSON.stringify(v) : v; } return o; });
+  const safeName = (n, used) => { let s = n.replace(/[\\\/\?\*\[\]:]/g,' ').slice(0,31); let i = 2; while(used.has(s)) s = s.slice(0,28) + ' ' + i++; used.add(s); return s; };
+
+  async function runBackup(kind){
+    const btn = $('goBtn'); btn.disabled = true;
+    $('barWrap').style.display = 'block'; $('log').innerHTML = '';
+    const list = sheets(); const result = []; const wb = XLSX.utils.book_new(); const used = new Set(); const json = {};
+    let done = 0, total = 0;
+    for(const sh of list){
+      let line;
+      try{
+        const rows = await fetchAll(sh.table);
+        if(rows.length){
+          json[sh.table] = rows;
+          if(kind === 'xlsx'){
+            const ws = XLSX.utils.json_to_sheet(flat(rows));
+            if(!wb.Workbook) wb.Workbook = { Views:[{ RTL:true }] };
+            XLSX.utils.book_append_sheet(wb, ws, safeName(sh.name, used));
+          }
+        }
+        total += rows.length;
+        line = `<div class="tl"><span>${esc(sh.name)}</span><b>${rows.length} صف</b></div>`;
+      }catch(e){
+        line = `<div class="tl"><span>${esc(sh.name)}</span><span class="muted">اتخطّى (${esc((e.message || '').slice(0,60))})</span></div>`;
+      }
+      done++; $('bar').style.width = Math.round(done / list.length * 100) + '%';
+      $('log').insertAdjacentHTML('beforeend', line);
+    }
+    const stamp = new Date().toISOString().slice(0,10);
+    if(!total){ MX.toast('مفيش بيانات اتقرت — اتأكد من الاتصال وتسجيل الدخول', true); btn.disabled = false; return; }
+    if(kind === 'xlsx'){
+      const out = XLSX.write(wb, { bookType:'xlsx', type:'array' });
+      MX.download(`MilEX-backup-${stamp}.xlsx`, new Blob([out], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    }else{
+      MX.download(`MilEX-backup-${stamp}.json`, new Blob([JSON.stringify(json)], { type:'application/json' }));
+    }
+    try{ localStorage.setItem('milexLastBackup', new Date().toISOString()); }catch(e){}
+    showLast(); btn.disabled = false; MX.toast('تم تنزيل النسخة ✔');
+  }
+  function showLast(){
+    let v = null; try{ v = localStorage.getItem('milexLastBackup'); }catch(e){}
+    if(v){
+      const days = Math.floor((Date.now() - new Date(v)) / 864e5);
+      $('lastTxt').textContent = MX.fmtDateTime(v) + (days > 7 ? ` (من ${days} يوم — يفضّل تعمل نسخة جديدة)` : '');
+      $('lastBox').classList.toggle('warn', days > 7);
+    }
+  }
+  $('themeBtn').textContent = MX.themeIcon(); showLast();
+</script>
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+<script src="milex-search.js" defer></script>
+</body>
+</html>

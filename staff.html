@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="milex-perm" content="teacher">
+<meta name="theme-color" content="#0B3A87">
+<title>إدارة المساعدين | MilEX</title>
+<script src="milex-theme-sync.js" data-apply="1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="milex-common.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="milex-pages.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  .acct{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--card)}
+  .acct .who{flex:1;min-width:210px}
+  .acct .who b{font-size:15px}
+  .acct .em{direction:ltr;text-align:right;font-size:12.5px;color:var(--muted);word-break:break-all}
+  .acct .perms{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+  .acct .btns{display:flex;gap:6px;flex-wrap:wrap}
+  .acct.off{opacity:.7}
+  .permgrid{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+  .pwrow{display:flex;gap:8px}
+  .cred{direction:ltr;text-align:left;background:var(--soft);border:1px dashed var(--line);border-radius:10px;padding:12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;white-space:pre-wrap;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="icon-btn" onclick="MX.goBack()" title="رجوع">↩️</button>
+  <h1>👥 إدارة المساعدين</h1>
+  <button class="icon-btn" id="themeBtn" onclick="MX.toggleTheme(); this.textContent=MX.themeIcon()">🌙</button>
+</div>
+
+<div class="wrap">
+  <div class="banner err" id="needSql" style="display:none">
+    لسه ملف <b>supabase_milex_upgrade.sql</b> ما اتشغّلش في Supabase (SQL Editor). شغّله مرة واحدة وبعدها حدّث الصفحة. حسابات المساعدين الحالية هتفضل شغالة زي ما هي لحد ما تعتمدها من هنا.
+  </div>
+  <div class="banner warn" id="needLogin" style="display:none">الجلسة انتهت — ارجع للصفحة الرئيسية وسجّل دخول المدرس تاني.</div>
+
+  <div class="card" id="createCard">
+    <h2>➕ حساب مساعد جديد</h2>
+    <p class="muted small" style="margin:0 0 12px">الحساب بيتعمل مرة واحدة وبيفضل موجود — المساعد يدخل بيه كل مرة من غير ما يتمسح. تقدر توقفه أو تغيّر صلاحياته أو كلمة مروره في أي وقت.</p>
+    <div class="grid2">
+      <div><label class="f" for="nName">اسم المساعد</label><input type="text" id="nName" placeholder="مثال: أحمد"></div>
+      <div><label class="f" for="nEmail">الإيميل (اسم الدخول)</label><input type="email" id="nEmail" dir="ltr" placeholder="assistant@example.com" autocomplete="off"></div>
+      <div class="full" style="grid-column:1/-1">
+        <label class="f" for="nPass">كلمة المرور (8 حروف على الأقل)</label>
+        <div class="pwrow">
+          <input type="text" id="nPass" dir="ltr" autocomplete="off" style="font-family:ui-monospace,Menlo,monospace">
+          <button type="button" class="btn ghost" onclick="genPass('nPass')">🎲 توليد</button>
+        </div>
+      </div>
+    </div>
+    <h3 style="margin-top:14px">الصلاحيات</h3>
+    <div class="permgrid" id="nPerms"></div>
+    <div class="actions"><button class="btn" id="createBtn" onclick="createStaff()">إنشاء الحساب</button></div>
+  </div>
+
+  <div class="card">
+    <h2>الحسابات <span class="muted small" id="countTxt"></span></h2>
+    <div id="list"><div class="state">جاري التحميل…</div></div>
+  </div>
+
+  <div class="card" id="unlinkedCard" style="display:none">
+    <h2>حسابات غير مصنّفة</h2>
+    <p class="muted small" style="margin:0 0 10px">دي حسابات موجودة في Supabase بس لسه متسجلتش كمساعد. لحد ما تعتمدها بتفضل شغالة بصلاحيات كاملة (زي الأول). اعتمدها وحدد صلاحياتها.</p>
+    <div id="unlinked"></div>
+  </div>
+
+  <p class="muted small">ملحوظة: صفحات <b>إدارة المساعدين</b> و<b>النسخ الاحتياطي</b> و<b>ملاحظات الطلاب</b> و<b>سجل العمليات</b> للمدرس فقط ومينفعش تتدّي لمساعد.</p>
+</div>
+
+<!-- تعديل -->
+<div class="overlay" id="editOv" onclick="if(event.target===this) closeModals()">
+  <div class="modal">
+    <h2 id="eTitle">تعديل</h2>
+    <div class="grid2">
+      <div><label class="f" for="eName">الاسم</label><input type="text" id="eName"></div>
+      <div style="display:flex;align-items:flex-end"><label class="chk" style="width:100%"><input type="checkbox" id="eActive"><div><b>الحساب مفعّل</b><span>لو اتوقف مش هيعرف يدخل</span></div></label></div>
+    </div>
+    <h3 style="margin-top:14px">الصلاحيات</h3>
+    <div class="permgrid" id="ePerms"></div>
+    <div class="actions">
+      <button class="btn ghost" onclick="closeModals()">إلغاء</button>
+      <button class="btn" id="eSave" onclick="saveEdit()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- كلمة مرور -->
+<div class="overlay" id="pwOv" onclick="if(event.target===this) closeModals()">
+  <div class="modal" style="max-width:440px">
+    <h2 id="pTitle">كلمة مرور جديدة</h2>
+    <label class="f" for="pNew">كلمة المرور الجديدة</label>
+    <div class="pwrow">
+      <input type="text" id="pNew" dir="ltr" autocomplete="off" style="font-family:ui-monospace,Menlo,monospace">
+      <button type="button" class="btn ghost" onclick="genPass('pNew')">🎲</button>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" onclick="closeModals()">إلغاء</button>
+      <button class="btn" id="pSave" onclick="savePass()">تغيير</button>
+    </div>
+  </div>
+</div>
+
+<!-- بيانات الدخول بعد الإنشاء -->
+<div class="overlay" id="credOv" onclick="if(event.target===this) closeModals()">
+  <div class="modal" style="max-width:480px">
+    <h2>✅ تم إنشاء الحساب</h2>
+    <p class="muted small" style="margin-top:0">ابعت البيانات دي للمساعد دلوقتي — كلمة المرور مش هتظهر تاني (تقدر تغيّرها بس).</p>
+    <div class="cred" id="credBox"></div>
+    <div class="actions">
+      <button class="btn ghost" onclick="closeModals()">تمام</button>
+      <button class="btn" onclick="copyCred()">📋 نسخ</button>
+      <a class="btn ok" id="credWa" target="_blank" rel="noopener">واتساب</a>
+    </div>
+  </div>
+</div>
+
+<script src="milex-ui.js"></script>
+<script>
+  const { $, esc } = MX;
+  const supa = MX.client();
+  const PERMS = MILEX.PERMS;
+  const permLabel = Object.fromEntries(PERMS.map(p => [p.key, p.ar]));
+  let staff = [], editing = null, pwTarget = null;
+
+  function renderPermGrid(el, selected){
+    el.innerHTML = PERMS.map(p => `
+      <label class="chk"><input type="checkbox" value="${p.key}" ${selected.includes(p.key) ? 'checked' : ''}>
+        <div><b>${esc(p.ar)}</b><span>${esc(p.hint)}</span></div></label>`).join('');
+  }
+  const readPerms = el => [...el.querySelectorAll('input:checked')].map(i => i.value);
+
+  function genPass(id){
+    const cs = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    const a = new Uint32Array(10); crypto.getRandomValues(a);
+    $(id).value = [...a].map(n => cs[n % cs.length]).join('');
+  }
+
+  function closeModals(){ document.querySelectorAll('.overlay').forEach(o => o.classList.remove('show')); }
+
+  async function ensureSession(){
+    const { data } = await supa.auth.getSession();
+    if(!data || !data.session){ $('needLogin').style.display = 'block'; return false; }
+    return true;
+  }
+
+  async function load(){
+    $('themeBtn').textContent = MX.themeIcon();
+    renderPermGrid($('nPerms'), MILEX.DEFAULT_ASSISTANT_PERMS);
+    if(!(await ensureSession())){ $('list').innerHTML = ''; return; }
+    const [l, u] = await Promise.all([ supa.rpc('staff_list'), supa.rpc('staff_unlinked') ]);
+    if(l.error){
+      $('createCard').style.display = 'none';
+      const msg = l.error.message || '';
+      if(/Could not find the function|PGRST202|does not exist/i.test(msg)){ $('needSql').style.display = 'block'; $('list').innerHTML = ''; }
+      else if(/not_allowed/.test(msg)) $('list').innerHTML = '<div class="state err">الحساب الحالي مش مسجّل كمدرس. شغّل سطر staff_bootstrap_teacher في آخر ملف SQL بإيميلك.</div>';
+      else $('list').innerHTML = `<div class="state err">${esc(MX.rpcMsg(l.error))}</div>`;
+      return;
+    }
+    staff = l.data || [];
+    renderList();
+    const un = (u.data || []);
+    $('unlinkedCard').style.display = un.length ? 'block' : 'none';
+    $('unlinked').innerHTML = un.map(x => `
+      <div class="acct"><div class="who"><b dir="ltr">${esc(x.email)}</b>
+        <div class="muted small">آخر دخول: ${x.last_sign_in_at ? MX.fmtDateTime(x.last_sign_in_at) : '—'}</div></div>
+        <div class="btns"><button class="btn sm" onclick="adopt('${x.user_id}','${esc(x.email)}')">اعتمد كمساعد</button></div></div>`).join('');
+  }
+
+  function renderList(){
+    $('countTxt').textContent = `(${staff.length})`;
+    $('list').innerHTML = staff.map(s => {
+      const isT = s.role === 'teacher';
+      const perms = isT ? '<span class="tag ok">كل الصلاحيات</span>'
+        : (s.perms || []).map(k => `<span class="tag">${esc(permLabel[k] || k)}</span>`).join('') || '<span class="tag warn">من غير صلاحيات</span>';
+      return `<div class="acct ${s.active ? '' : 'off'}">
+        <div class="who">
+          <b>${esc(s.name || (isT ? 'المدرس' : 'مساعد'))}</b>
+          <span class="tag ${isT ? 'ok' : ''}">${isT ? 'مدرس' : 'مساعد'}</span>
+          ${s.active ? '' : '<span class="tag err">موقوف</span>'}
+          <div class="em">${esc(s.email)}</div>
+          <div class="muted small">آخر دخول: ${s.last_sign_in_at ? MX.fmtDateTime(s.last_sign_in_at) : 'لسه ماداخلش'}</div>
+          <div class="perms">${perms}</div>
+        </div>
+        ${isT ? '' : `<div class="btns">
+          <button class="btn sm" onclick="openEdit('${s.user_id}')">✏️ الصلاحيات</button>
+          <button class="btn sm ghost" onclick="openPass('${s.user_id}')">🔑 كلمة المرور</button>
+          <button class="btn sm ghost" onclick="toggleActive('${s.user_id}')">${s.active ? '⏸ إيقاف' : '▶️ تفعيل'}</button>
+          <button class="btn sm danger" onclick="delStaff('${s.user_id}')">🗑</button>
+        </div>`}
+      </div>`;
+    }).join('') || '<div class="state">مفيش حسابات</div>';
+  }
+
+  async function createStaff(){
+    const name = $('nName').value.trim(), email = $('nEmail').value.trim(), pass = $('nPass').value;
+    if(!name){ MX.toast('اكتب اسم المساعد', true); return; }
+    if(!email){ MX.toast('اكتب الإيميل', true); return; }
+    if(pass.length < 8){ MX.toast('كلمة المرور لازم 8 حروف على الأقل', true); return; }
+    const btn = $('createBtn'); btn.disabled = true;
+    const { error } = await supa.rpc('staff_create', { p_email:email, p_password:pass, p_name:name, p_perms:readPerms($('nPerms')) });
+    btn.disabled = false;
+    if(error){ MX.toast(MX.rpcMsg(error), true); return; }
+    const url = new URL('index.html', location.href).href;
+    const text = `بيانات دخول المساعد — MilEX\nالاسم: ${name}\nالإيميل: ${email}\nكلمة المرور: ${pass}\nالرابط: ${url}\n(من الصفحة الرئيسية اختار «المساعد»)`;
+    $('credBox').textContent = text;
+    $('credWa').href = 'https://wa.me/?text=' + encodeURIComponent(text);
+    $('credOv').classList.add('show');
+    $('nName').value = ''; $('nEmail').value = ''; $('nPass').value = '';
+    renderPermGrid($('nPerms'), MILEX.DEFAULT_ASSISTANT_PERMS);
+    load();
+  }
+  async function copyCred(){ MX.toast((await MX.copyText($('credBox').textContent)) ? 'اتنسخت ✔' : 'تعذر النسخ', false); }
+
+  function find(id){ return staff.find(s => s.user_id === id); }
+
+  function openEdit(id){
+    editing = find(id); if(!editing) return;
+    $('eTitle').textContent = 'تعديل: ' + (editing.name || editing.email);
+    $('eName').value = editing.name || ''; $('eActive').checked = !!editing.active;
+    renderPermGrid($('ePerms'), editing.perms || []);
+    $('editOv').classList.add('show');
+  }
+  async function saveEdit(){
+    if(!editing) return;
+    $('eSave').disabled = true;
+    const { error } = await supa.rpc('staff_update', { p_user_id:editing.user_id, p_name:$('eName').value.trim(), p_perms:readPerms($('ePerms')), p_active:$('eActive').checked });
+    $('eSave').disabled = false;
+    if(error){ MX.toast(MX.rpcMsg(error), true); return; }
+    closeModals(); MX.toast('اتحفظ ✔'); load();
+  }
+  async function toggleActive(id){
+    const s = find(id); if(!s) return;
+    const next = !s.active;
+    if(!next && !confirm(`إيقاف حساب ${s.name || s.email}؟ مش هيقدر يدخل لحد ما تفعّله تاني.`)) return;
+    const { error } = await supa.rpc('staff_update', { p_user_id:id, p_name:s.name, p_perms:s.perms || [], p_active:next });
+    if(error){ MX.toast(MX.rpcMsg(error), true); return; }
+    MX.toast(next ? 'اتفعّل ✔' : 'اتوقف'); load();
+  }
+  function openPass(id){
+    pwTarget = find(id); if(!pwTarget) return;
+    $('pTitle').textContent = 'كلمة مرور جديدة: ' + (pwTarget.name || pwTarget.email);
+    $('pNew').value = ''; genPass('pNew'); $('pwOv').classList.add('show');
+  }
+  async function savePass(){
+    const v = $('pNew').value;
+    if(v.length < 8){ MX.toast('8 حروف على الأقل', true); return; }
+    $('pSave').disabled = true;
+    const { error } = await supa.rpc('staff_set_password', { p_user_id:pwTarget.user_id, p_password:v });
+    $('pSave').disabled = false;
+    if(error){ MX.toast(MX.rpcMsg(error), true); return; }
+    closeModals();
+    $('credBox').textContent = `الإيميل: ${pwTarget.email}\nكلمة المرور الجديدة: ${v}`;
+    $('credWa').href = 'https://wa.me/?text=' + encodeURIComponent($('credBox').textContent);
+    $('credOv').classList.add('show');
+  }
+  async function delStaff(id){
+    const s = find(id); if(!s) return;
+    if(!confirm(`حذف حساب ${s.name || s.email} نهائيًا؟ مينفعش تتراجع. (لو عايز بس تمنعه مؤقتًا استخدم «إيقاف»)`)) return;
+    const { error } = await supa.rpc('staff_delete', { p_user_id:id });
+    if(error){ MX.toast(MX.rpcMsg(error), true); return; }
+    MX.toast('اتحذف'); load();
+  }
+  async function adopt(id, email){
+    const name = prompt('اسم المساعد لهذا الحساب:\n' + email, '');
+    if(name === null) return;
+    const { error } = await supa.rpc('staff_adopt', { p_user_id:id, p_name:name, p_perms:MILEX.DEFAULT_ASSISTANT_PERMS });
+    if(error){ MX.toast(MX.rpcMsg(error), true); return; }
+    MX.toast('اتعتمد — عدّل صلاحياته من القايمة'); load();
+  }
+
+  load();
+</script>
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>

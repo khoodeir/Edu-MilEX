@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
+<script src="milex-theme-sync.js"></script>
+<meta name="milex-perm" content="dashboard">
+<script src="milex-common.js"></script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
@@ -13,6 +17,12 @@
       var data = JSON.parse(raw);
       valid = !!(data && data.exp && Date.now() < data.exp);
       if(!valid){ sessionStorage.removeItem('milexTeacherSession'); localStorage.removeItem('milexTeacherSession'); }
+    }
+    if(!valid){
+      // المساعد اللي معاه صلاحية «لوحة المتابعة» يدخل برضه (الصلاحية بتتراجع في milex-common)
+      var ra = sessionStorage.getItem('milexAssistantSession');
+      var da = ra && JSON.parse(ra);
+      valid = !!(da && da.exp && Date.now() < da.exp);
     }
     if(!valid){
       window.location.replace('index.html');
@@ -4409,5 +4419,6 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
   $('auditSearch').addEventListener('input', renderAudit);
 })();
 </script>
+<script src="milex-search.js" defer></script>
 </body>
 </html>

@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<script src="milex-theme-sync.js" data-apply="1" data-float="1"></script>
+<meta name="milex-perm" content="online_exams">
+<script src="milex-common.js"></script>
+<link rel="stylesheet" href="milex-dark.css">
+
 <script>
 /* MilEX guard: المدرس أو المساعد */
 (function(){
@@ -654,5 +659,6 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
 </script>
+<script src="milex-search.js" defer></script>
 </body>
 </html>

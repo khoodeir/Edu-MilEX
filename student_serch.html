@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<script src="milex-theme-sync.js"></script>
+<meta name="milex-perm" content="search">
+<script src="milex-common.js"></script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
@@ -1277,6 +1281,7 @@
     }
     applyStaticTranslations();
     populateGradeSelect();
+    try{ const qp = new URLSearchParams(location.search).get('q'); if(qp) document.getElementById('searchInput').value = qp; }catch(e){}
   })();
 
   loadData();

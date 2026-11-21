@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="milex-perm" content="any">
+<meta name="theme-color" content="#0B3A87">
+<title>جدول الحصص | MilEX</title>
+<script src="milex-theme-sync.js" data-apply="1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="milex-common.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="milex-pages.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  .week{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+  .day{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .day h3{margin:0;padding:9px 12px;background:var(--soft);font-size:14px;border-bottom:1px solid var(--line)}
+  .ses{padding:8px 12px;border-bottom:1px solid var(--line);font-size:13px}
+  .ses:last-child{border-bottom:0}
+  .ses b{display:block}
+  .ses.clash{background:rgba(179,38,30,.10);border-inline-start:4px solid var(--err)}
+  .ses .t{color:var(--accent);font-weight:700;direction:ltr;display:inline-block}
+  .empty{padding:14px;color:var(--muted);text-align:center;font-size:13px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="icon-btn" onclick="MX.goBack()" title="رجوع">↩️</button>
+  <h1>🗓 جدول الحصص</h1>
+  <button class="icon-btn" id="themeBtn" onclick="MX.toggleTheme(); this.textContent=MX.themeIcon()">🌙</button>
+</div>
+<div class="wrap">
+  <div class="card no-print">
+    <div class="row">
+      <div><label class="f">مدة الحصة (لكشف التعارض)</label>
+        <select id="dur" style="width:auto" onchange="render()"><option value="60">ساعة</option><option value="90">ساعة ونص</option><option value="120" selected>ساعتين</option><option value="150">ساعتين ونص</option><option value="180">3 ساعات</option></select></div>
+      <div><label class="f">الصف</label><select id="gradeF" style="width:auto" onchange="render()"><option value="">كل الصفوف</option></select></div>
+      <div class="grow"></div>
+      <button class="btn ghost" onclick="window.print()">🖨 طباعة</button>
+      <a class="btn" href="manage_groups.html" data-perm="groups">✏️ تعديل المجاميع</a>
+    </div>
+  </div>
+  <div id="clash"></div>
+  <div id="week"><div class="state">جاري التحميل…</div></div>
+  <div id="bad"></div>
+</div>
+<script src="milex-schedule.js"></script>
+<script src="milex-ui.js"></script>
+<script>
+  const { $, esc } = MX;
+  const supa = MX.client();
+  let sess = [];
+  const ORDER = [6,0,1,2,3,4,5];
+  const dayAr = n => MX_SCHED.DAYS.find(d => d.n === n).ar;
+
+  async function load(){
+    $('themeBtn').textContent = MX.themeIcon();
+    MX.GRADE_KEYS.forEach(k => $('gradeF').add(new Option(MX.GRADES[k].ar, k)));
+    try{ $('dur').value = localStorage.getItem('milexSessDur') || '120'; }catch(e){}
+    const { data, error } = await supa.from('app_config').select('value').eq('key','reg_form_data').maybeSingle();
+    if(error || !data || !data.value){ $('week').innerHTML = '<div class="state">مفيش مجموعات متسجلة لسه — ضيفها من «المجاميع والمواعيد».</div>'; return; }
+    sess = MX_SCHED.sessions(data.value, MX.GRADES);
+    render();
+  }
+
+  function render(){
+    const dur = +$('dur').value, gf = $('gradeF').value;
+    try{ localStorage.setItem('milexSessDur', String(dur)); }catch(e){}
+    const all = sess;                                   // التعارض بيتحسب على كل الصفوف (نفس المدرس)
+    const cs = MX_SCHED.conflicts(all, dur);
+    const clashSet = new Set(); cs.forEach(c => { clashSet.add(c.a); clashSet.add(c.b); });
+    $('clash').innerHTML = cs.length
+      ? `<div class="banner err"><b>⚠️ في ${cs.length} تعارض في المواعيد:</b><ul style="margin:6px 0 0;padding-inline-start:20px">`
+        + cs.map(c => `<li>${esc(c.a.gradeAr)} (${esc(c.a.group)}) ↔ ${esc(c.b.gradeAr)} (${esc(c.b.group)}) — يوم ${c.days.map(dayAr).join(' و')}</li>`).join('') + '</ul></div>'
+      : '<div class="banner ok">✅ مفيش أي تعارض في المواعيد</div>';
+    const list = all.filter(s => !s.bad && (!gf || s.grade === gf));
+    $('week').innerHTML = '<div class="week">' + ORDER.map(d => {
+      const items = list.filter(s => s.days.includes(d)).sort((a,b) => a.start - b.start);
+      return `<div class="day"><h3>${dayAr(d)}</h3>` + (items.map(s => `<div class="ses ${clashSet.has(s) ? 'clash' : ''}">
+        <span class="t">${MX_SCHED.fmt(s.start)} → ${MX_SCHED.fmt(s.start + dur)}</span>
+        <b>${esc(s.gradeAr)}</b><span class="muted">${esc(s.group)}</span></div>`).join('') || '<div class="empty">—</div>') + '</div>';
+    }).join('') + '</div>';
+    const bad = all.filter(s => s.bad);
+    $('bad').innerHTML = bad.length ? `<div class="banner warn" style="margin-top:12px">مجموعات مش مفهوم يومها/ميعادها: ${bad.map(s => esc(s.gradeAr + ' — ' + s.group)).join('، ')}</div>` : '';
+  }
+  load();
+</script>
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+<script src="milex-search.js" defer></script>
+</body>
+</html>

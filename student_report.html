@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="milex-perm" content="reports">
+<meta name="theme-color" content="#0B3A87">
+<title>التقرير الشهري | MilEX</title>
+<script src="milex-theme-sync.js" data-apply="1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="milex-common.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="milex-pages.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  .sheet{background:#fff;color:#101B33;border:1px solid #cfd8e6;border-radius:12px;padding:24px;margin:0 auto 16px;max-width:794px;font-family:'Cairo',sans-serif}
+  .sheet .hd{display:flex;align-items:center;gap:14px;border-bottom:3px solid #0B3A87;padding-bottom:10px;margin-bottom:14px}
+  .sheet .hd img{height:48px}
+  .sheet .hd h2{margin:0;font-size:20px;color:#0B3A87;flex:1}
+  .sheet .hd small{color:#5C6A80}
+  .sheet .info{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px 18px;font-size:14px;margin-bottom:14px}
+  .sheet .info span{color:#5C6A80}
+  .sheet .k3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+  .sheet .k3 div{border:1px solid #d6deea;border-radius:10px;padding:10px;text-align:center}
+  .sheet .k3 b{display:block;font-size:22px;color:#0B3A87}
+  .sheet .k3 span{font-size:12px;color:#5C6A80}
+  .sheet h3{margin:14px 0 6px;font-size:15px;color:#0B3A87}
+  .sheet table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .sheet th,.sheet td{border:1px solid #d6deea;padding:6px 9px;text-align:right}
+  .sheet th{background:#EEF3FA}
+  .sheet .dates{display:flex;gap:5px;flex-wrap:wrap}
+  .sheet .d{padding:2px 8px;border-radius:12px;font-size:12px;border:1px solid}
+  .sheet .d.p{color:#2E7D32;background:#E8F5E9;border-color:#A5D6A7}
+  .sheet .d.a{color:#B3261E;background:#FDECEA;border-color:#F5B7B1}
+  .sheet .pay{padding:10px 12px;border-radius:10px;font-weight:700;margin-top:4px}
+  .sheet .pay.ok{background:#E8F5E9;color:#2E7D32}
+  .sheet .pay.no{background:#FDECEA;color:#B3261E}
+  .sheet .ft{margin-top:16px;padding-top:8px;border-top:1px dashed #b8c4d8;font-size:12px;color:#5C6A80;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .sheet .tools{margin-top:10px}
+  @media print{
+    @page{size:A4;margin:12mm}
+    .sheet{border:0;border-radius:0;max-width:none;margin:0;padding:0;page-break-after:always;break-after:page}
+    .sheet:last-child{page-break-after:auto}
+    .sheet .tools{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="icon-btn" onclick="MX.goBack()" title="رجوع">↩️</button>
+  <h1>📄 التقرير الشهري للطالب</h1>
+  <button class="icon-btn" id="themeBtn" onclick="MX.toggleTheme(); this.textContent=MX.themeIcon()">🌙</button>
+</div>
+<div class="wrap no-print-wrap">
+  <div class="card no-print">
+    <div class="grid2">
+      <div><label class="f">الصف</label><select id="gradeSel" onchange="onGrade()"></select></div>
+      <div><label class="f">الشهر</label><input type="month" id="monthIn"></div>
+      <div><label class="f">المجموعة</label><select id="groupSel" onchange="fillStudents()"><option value="">كل المجموعات</option></select></div>
+      <div><label class="f">الطالب</label><select id="stuSel"><option value="">كل طلاب المجموعة (طباعة جماعية)</option></select></div>
+    </div>
+    <div class="actions" style="justify-content:flex-start">
+      <button class="btn" id="goBtn" onclick="build()">عرض التقرير</button>
+      <button class="btn ghost" onclick="window.print()">🖨 طباعة / PDF</button>
+    </div>
+    <div class="muted small" id="note"></div>
+  </div>
+  <div id="out"></div>
+</div>
+
+<script src="milex-ui.js"></script>
+<script>
+  const { $, esc } = MX;
+  const supa = MX.client();
+  let all = [];
+
+  function gradeKey(v){ return !v ? null : (MX.GRADES[v] ? v : MX.GRADE_KEYS.find(k => MX.GRADES[k].scanner === v) || null); }
+
+  async function onGrade(){
+    const k = $('gradeSel').value;
+    $('groupSel').innerHTML = '<option value="">كل المجموعات</option>';
+    $('stuSel').innerHTML = '<option value="">كل طلاب المجموعة (طباعة جماعية)</option>';
+    all = await MX.loadStudents([k], true);
+    [...new Set(all.map(s => s.group).filter(Boolean))].sort().forEach(g => $('groupSel').add(new Option(g, g)));
+    fillStudents();
+  }
+  function fillStudents(){
+    const g = $('groupSel').value;
+    $('stuSel').innerHTML = '<option value="">كل طلاب المجموعة (طباعة جماعية)</option>';
+    all.filter(s => !g || s.group === g).sort((a,b) => a.name.localeCompare(b.name, 'ar'))
+       .forEach(s => $('stuSel').add(new Option(s.name, s.qr)));
+  }
+
+  const inMonth = (d, y, m) => { const x = new Date(d); return x.getFullYear() === y && x.getMonth() + 1 === m; };
+  function monthMatches(r, y, m){
+    const rm = Number(r.month), ry = Number(r.year);
+    if(!isNaN(rm) && rm >= 1 && rm <= 12) return rm === m && (!ry || ry === y);
+    return String(r.month || '').trim() === MX.MONTHS_AR[m-1] && (!ry || ry === y);
+  }
+  async function tryQ(mk){ try{ return await MX.fetchAll(mk); }catch(e){ return null; } }
+
+  async function build(){
+    const k = $('gradeSel').value, ym = $('monthIn').value;
+    if(!ym){ MX.toast('اختار الشهر', true); return; }
+    const [Y, M] = ym.split('-').map(Number);
+    const g = $('groupSel').value, one = $('stuSel').value;
+    let list = all.filter(s => (!g || s.group === g) && (!one || s.qr === one));
+    if(!list.length){ $('out').innerHTML = '<div class="state">مفيش طلاب</div>'; return; }
+    $('goBtn').disabled = true; $('out').innerHTML = '<div class="state">جاري تجهيز التقارير…</div>';
+    const start = `${Y}-${MX.pad2(M)}-01`, end = M === 12 ? `${Y+1}-01-01` : `${Y}-${MX.pad2(M+1)}-01`;
+    const GM = MX.GRADES[k];
+    const [log, pays, exams] = await Promise.all([
+      tryQ((a,b) => supa.from('attendance_log').select('qr_code,status,log_date').eq('grade', k).gte('log_date', start).lt('log_date', end).range(a, b)),
+      tryQ((a,b) => supa.from('payment_history').select('*').range(a, b)),
+      tryQ((a,b) => supa.from('الامتحانات').select('*').gte('created_at', start).lt('created_at', end).range(a, b))
+    ]);
+    const gradeNames = [k, GM.ar, GM.scanner, GM.reg].map(x => String(x).toLowerCase());
+    const myExams = (exams || []).filter(e => !e.grade || gradeNames.includes(String(e.grade).toLowerCase()));
+    let scores = [];
+    if(myExams.length) scores = await tryQ((a,b) => supa.from('نتائج_الامتحانات').select('*').in('exam_id', myExams.map(e => e.id)).range(a, b)) || [];
+    const avgBy = {}; myExams.forEach(e => { const v = scores.filter(x => x.exam_id === e.id).map(x => Number(x.score)).filter(n => !isNaN(n)); avgBy[e.id] = v.length ? v.reduce((a,b)=>a+b,0)/v.length : null; });
+    const hasLog = log !== null;
+    $('note').textContent = hasLog ? '' : 'سجل الحضور بالتاريخ مش متاح لسه (شغّل ملف SQL) — التقرير بيعرض إجمالي الحضور والغياب.';
+
+    $('out').innerHTML = list.map(s => sheet(s, { Y, M, log, pays, myExams, scores, avgBy, hasLog })).join('');
+    $('goBtn').disabled = false;
+    if(list.length > 1) MX.toast(`تم تجهيز ${list.length} تقرير — اضغط طباعة`);
+  }
+
+  function sheet(s, c){
+    const mine = c.hasLog ? c.log.filter(r => String(r.qr_code) === s.qr) : [];
+    const pDates = [...new Set(mine.filter(r => r.status === 'present').map(r => r.log_date))].sort();
+    const aDates = [...new Set(mine.filter(r => r.status === 'absent').map(r => r.log_date))].sort();
+    const present = c.hasLog ? pDates.length : s.att, absent = c.hasLog ? aDates.length : s.abs;
+    const rate = (present + absent) ? Math.round(present / (present + absent) * 100) : null;
+    const pay = (c.pays || []).filter(r => String(r.qr_code) === s.qr && monthMatches(r, c.Y, c.M));
+    const paidAmt = pay.reduce((a, r) => a + (Number(r.amount_paid) || 0), 0);
+    const paid = pay.length > 0;
+    const exRows = c.myExams.map(e => {
+      const sc = c.scores.find(x => x.exam_id === e.id && String(x.student_code) === s.qr);
+      const max = Number(e.max_score) || null, v = sc ? Number(sc.score) : null;
+      return { name:e.exam_name, v, max, pct:(v != null && max) ? Math.round(v / max * 100) : null, avg:c.avgBy[e.id] };
+    });
+    const withPct = exRows.filter(r => r.pct != null);
+    const exAvg = withPct.length ? Math.round(withPct.reduce((a,r) => a + r.pct, 0) / withPct.length) : null;
+    const mLabel = `${MX.MONTHS_AR[c.M-1]} ${c.Y}`;
+    const dateChips = (arr, cls) => arr.length ? arr.map(d => `<span class="d ${cls}">${esc(MX.fmtDate(d).slice(0,5))}</span>`).join('') : '<span style="color:#8a96ab;font-size:12px">—</span>';
+    const msg = `📄 تقرير ${s.name} — ${mLabel}\nالحضور: ${present} | الغياب: ${absent}${rate != null ? ' (' + rate + '%)' : ''}\n`
+      + (exRows.length ? 'الامتحانات: ' + (exAvg != null ? exAvg + '% متوسط' : 'لم تُرصد درجات') + '\n' : '')
+      + `الدفع عن الشهر: ${paid ? 'تم ✅ (' + MX.fmtMoney(paidAmt) + ')' : 'لم يتم ❌'}\nMilEX EDU`;
+    return `<div class="sheet">
+      <div class="hd"><img src="logo.png" alt="" onerror="this.style.display='none'"><h2>تقرير شهري — ${esc(mLabel)}</h2><small>${MX.fmtDate(new Date())}</small></div>
+      <div class="info"><div><span>الطالب: </span><b>${esc(s.name)}</b></div><div><span>الصف: </span><b>${esc(s.gradeAr)}</b></div>
+        <div><span>المجموعة: </span><b>${esc(s.group || '—')}</b></div><div><span>الكود: </span><b><bdi>${esc(s.qr)}</bdi></b></div></div>
+      <div class="k3"><div><b>${present}</b><span>حضور</span></div><div><b>${absent}</b><span>غياب</span></div><div><b>${rate != null ? rate + '%' : '—'}</b><span>نسبة الحضور</span></div></div>
+      ${c.hasLog ? `<h3>أيام الحضور والغياب</h3><div class="dates">${dateChips(pDates,'p')}${dateChips(aDates,'a')}</div>` : ''}
+      <h3>الامتحانات والدرجات${exAvg != null ? ` — المتوسط ${exAvg}%` : ''}</h3>
+      ${exRows.length ? `<table><tr><th>الامتحان</th><th>الدرجة</th><th>النسبة</th><th>متوسط المجموعة</th></tr>${exRows.map(r => `<tr><td>${esc(r.name)}</td><td>${r.v != null ? r.v + (r.max ? ' / ' + r.max : '') : 'لم تُرصد'}</td><td>${r.pct != null ? r.pct + '%' : '—'}</td><td>${r.avg != null ? (Math.round(r.avg * 10) / 10) : '—'}</td></tr>`).join('')}</table>` : '<div style="color:#8a96ab;font-size:13px">لا توجد امتحانات في هذا الشهر</div>'}
+      <h3>المدفوعات</h3>
+      <div class="pay ${paid ? 'ok' : 'no'}">${paid ? '✅ تم دفع مصروفات ' + esc(MX.MONTHS_AR[c.M-1]) + ' — ' + MX.fmtMoney(paidAmt) : '❌ لم يتم دفع مصروفات ' + esc(MX.MONTHS_AR[c.M-1]) + ' بعد'}</div>
+      <div class="ft"><span>MilEX EDU</span><span>تقرير آلي — للاستفسار تواصل مع الإدارة</span></div>
+      <div class="tools no-print"><a class="btn ok sm" target="_blank" rel="noopener" href="${esc(MX.waLink(s.parentPhone || s.studentPhone, msg))}">💬 إرسال لولي الأمر (واتساب)</a></div>
+    </div>`;
+  }
+
+  async function init(){
+    $('themeBtn').textContent = MX.themeIcon();
+    MX.GRADE_KEYS.forEach(k => $('gradeSel').add(new Option(MX.GRADES[k].ar, k)));
+    $('monthIn').value = MX.ymNow();
+    const p = new URLSearchParams(location.search), gk = gradeKey(p.get('grade')), qr = p.get('qr');
+    if(gk) $('gradeSel').value = gk;
+    await onGrade();
+    if(qr){ const s = all.find(x => x.qr === qr); if(s){ $('groupSel').value = s.group; fillStudents(); $('stuSel').value = qr; build(); } }
+  }
+  init();
+</script>
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+<script src="milex-search.js" defer></script>
+</body>
+</html>
