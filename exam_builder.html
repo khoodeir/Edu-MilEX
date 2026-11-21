@@ -118,6 +118,42 @@
   .stat b{ display:block; font-size:20px; color:var(--brand-d); font-family:'Space Grotesk',sans-serif; }
   .stat span{ font-size:12.5px; color:var(--muted); }
   .sticky-actions{ position:sticky; bottom:12px; background:rgba(255,255,255,.97); border:1px solid var(--line); border-radius:14px; padding:12px; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; box-shadow:0 6px 24px rgba(16,27,51,.1); }
+
+  .wrap.wide{ max-width:1320px; }
+  @media (min-width:1001px){ body{ padding-left:56px; } }
+  .ed-split{ display:grid; grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr); gap:22px; align-items:start; }
+  .ed-admin{ min-width:0; }
+  .ed-step{ padding:18px 20px; }
+  .ed-step-head{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .ed-step-head h2{ margin:0; font-size:16px; }
+  .ed-step-head p{ font-size:12.5px; color:var(--muted); margin-top:1px; }
+  .ed-n{ width:30px; height:30px; border-radius:50%; display:grid; place-items:center; flex:0 0 auto; background:var(--brand); color:#fff; font:700 14px 'Space Grotesk',sans-serif; box-shadow:0 0 0 4px var(--brand-soft); }
+  .ed-qhead{ margin:22px 4px 12px; }
+  .ed-gen{ background:#f7fbff; border-color:#c9ddf5; }
+  .ed-preview{ position:sticky; top:16px; max-height:calc(100vh - 32px); display:flex; flex-direction:column; border:1px solid var(--line); border-radius:18px; background:var(--soft); overflow:hidden; box-shadow:var(--shadow); }
+  .pv-bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:12px 16px; background:#fff; border-bottom:1px solid var(--line); font-size:14px; }
+  .pv-toggle{ font-size:12.5px; color:var(--muted); }
+  .pv-paper{ overflow:auto; padding:16px; }
+  .pv-head{ background:linear-gradient(135deg,var(--brand),var(--brand-d)); color:#fff; border-radius:14px; padding:16px 18px; margin-bottom:14px; position:relative; }
+  .pv-head::after{ content:""; position:absolute; inset-inline:0; bottom:0; height:3px; border-radius:0 0 14px 14px; background:linear-gradient(90deg,#A8D400,transparent); }
+  .pv-head h3{ font-size:18px; font-weight:700; margin-bottom:8px; word-break:break-word; }
+  .pv-meta{ display:flex; gap:8px; flex-wrap:wrap; }
+  .pv-meta span{ background:rgba(255,255,255,.16); border-radius:99px; padding:2px 12px; font-size:12.5px; font-weight:600; }
+  .pv-q{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; }
+  .pv-qh{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .pv-qh b{ color:var(--brand-d); font-size:14px; }
+  .pv-pts{ font-size:12px; color:var(--muted); background:var(--soft); border-radius:99px; padding:2px 10px; white-space:nowrap; }
+  .pv-text{ font-size:15px; font-weight:600; margin-bottom:10px; white-space:pre-wrap; word-break:break-word; }
+  .pv-empty{ color:var(--muted); font-weight:500; font-style:italic; }
+  .pv-opt{ display:flex; align-items:center; gap:10px; border:1.5px solid var(--line-d); border-radius:10px; padding:8px 12px; margin-bottom:7px; font-size:14px; }
+  .pv-opt i{ width:26px; height:26px; border-radius:50%; border:1.5px solid var(--line-d); display:grid; place-items:center; font:700 12.5px 'Cairo',sans-serif; color:var(--muted); font-style:normal; flex:0 0 auto; }
+  .pv-opt.ok{ border-color:var(--ok); background:var(--ok-soft); }
+  .pv-opt.ok i{ background:var(--ok); border-color:var(--ok); color:#fff; }
+  .pv-essay{ border:1.5px dashed var(--line-d); border-radius:10px; min-height:84px; padding:10px 12px; color:var(--muted); font-size:13.5px; }
+  .pv-model{ margin-top:8px; font-size:13px; background:var(--ok-soft); color:var(--ok); border-radius:10px; padding:8px 12px; white-space:pre-wrap; }
+  .pv-foot{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:4px; font-size:12.5px; color:var(--muted); }
+  .pv-submit{ background:var(--brand); color:#fff; border-radius:10px; padding:9px 22px; font-weight:700; font-size:14px; opacity:.85; }
+  @media (max-width:1000px){ .ed-split{ grid-template-columns:1fr; } .ed-preview{ position:static; max-height:none; } .wrap.wide{ max-width:860px; } }
   @media (max-width:640px){ .grid2,.grid3{ grid-template-columns:1fr; } }
 </style>
 <link rel="stylesheet" href="milex-theme.css">
@@ -158,51 +194,72 @@
 
   
   <div class="view" id="viewEdit">
-    <div class="card">
-      <h2 id="edTitleHead">امتحان جديد</h2>
+    <div class="ed-split">
+      <div class="ed-admin">
+        <div class="card ed-step">
+          <div class="ed-step-head"><span class="ed-n">1</span><div><h2 id="edTitleHead">امتحان جديد</h2><p>البيانات الأساسية للامتحان</p></div></div>
       <div class="msg warn" id="lockNote">فيه طلبة بدأوا الامتحان ده، فالأسئلة والسنة الدراسية والدرجات مقفولة. تقدر تغيّر الاسم والمدة ووقت الانتهاء بس. (لو عايز أسئلة جديدة اعمل امتحان جديد)</div>
-      <div class="grid3">
-        <div><label class="lbl" for="edTitle">اسم الامتحان</label><input type="text" id="edTitle" placeholder="مثال: اختبار الوحدة الأولى"></div>
-        <div><label class="lbl" for="edGrade">السنة الدراسية</label><select id="edGrade"></select></div>
-        <div><label class="lbl" for="edDur">المدة (بالدقايق)</label><input type="number" id="edDur" min="1" max="600" value="30"></div>
-      </div>
-      <div class="grid2" style="margin-top:12px;">
-        <div><label class="lbl" for="edCloses">آخر وقت لانتهاء الامتحان (اختياري)</label><input type="datetime-local" id="edCloses">
-          <div class="hintline">لو حددته، أي طالب هيتسلّم امتحانه تلقائي عند الوقت ده حتى لو لسه مخلّصش مدته.</div></div>
-        <div style="display:flex; align-items:center;"><label class="chk"><input type="checkbox" id="edShow" checked> اعرض الإجابات الصح للطالب بعد التسليم</label></div>
-      </div>
-      <div class="totalrow">
-        <div><label class="lbl" for="edTotal">الدرجة الكلية للامتحان</label><input type="number" id="edTotal" min="1" max="1000" value="10"></div>
-        <button class="btn" id="distBtn" type="button">⚖️ وزّع الدرجات على الأسئلة بالتساوي</button>
-      </div>
-      <div class="hintline" style="margin-top:6px;">اكتب الدرجة الكلية، وبعدها تقدر تغيّر درجة كل سؤال لوحده. لما تزوّد درجة سؤال، الأسئلة التانية بتتعدّل لوحدها عشان المجموع يفضل زي الدرجة الكلية.</div>
-      <div class="card" style="margin-top:14px; background:#f7fbff; border-color:#c9ddf5;">
-        <h3 style="margin:0 0 6px;">📝 منشئ الأسئلة</h3>
-        <p class="hintline" style="margin:0 0 10px;">اكتب المطلوب أو ارفع ملف نصي/صورة. راجع الأسئلة والإجابات قبل الحفظ؛ الأسئلة المُنشأة مقترحة وليست نهائية.</p>
-        <textarea id="aiInstruction" rows="3" placeholder="مثال: اعمل 10 أسئلة عن درس الجهاز الهضمي، 8 اختيار من متعدد وسؤالين مقاليين، مستوى متوسط"></textarea>
-        <div class="acts" style="margin-top:8px; align-items:center;">
-          <input id="aiSourceFile" type="file" accept=".txt,.md,.csv,image/png,image/jpeg,image/webp" style="max-width:260px;">
-          <button class="btn" id="aiGenerateBtn" type="button">📝 إنشاء أسئلة</button>
-          <span class="hintline" id="aiStatus" style="margin:0;"></span>
+          <div class="grid3">
+            <div><label class="lbl" for="edTitle">اسم الامتحان</label><input type="text" id="edTitle" placeholder="مثال: اختبار الوحدة الأولى"></div>
+            <div><label class="lbl" for="edGrade">السنة الدراسية</label><select id="edGrade"></select></div>
+            <div><label class="lbl" for="edDur">المدة (بالدقايق)</label><input type="number" id="edDur" min="1" max="600" value="30"></div>
+          </div>
+        </div>
+
+        <div class="card ed-step">
+          <div class="ed-step-head"><span class="ed-n">2</span><div><h2>التوقيت والعرض</h2><p>إمتى يقفل الامتحان وإيه اللي يظهر للطالب بعد التسليم</p></div></div>
+          <div class="grid2">
+            <div><label class="lbl" for="edCloses">آخر وقت لانتهاء الامتحان (اختياري)</label><input type="datetime-local" id="edCloses">
+              <div class="hintline">لو حددته، أي طالب هيتسلّم امتحانه تلقائي عند الوقت ده حتى لو لسه مخلّصش مدته.</div></div>
+            <div style="display:flex; align-items:center;"><label class="chk"><input type="checkbox" id="edShow" checked> اعرض الإجابات الصح للطالب بعد التسليم</label></div>
+          </div>
+        </div>
+
+        <div class="card ed-step">
+          <div class="ed-step-head"><span class="ed-n">3</span><div><h2>الدرجات</h2><p>الدرجة الكلية وتوزيعها على الأسئلة</p></div></div>
+          <div class="totalrow">
+            <div><label class="lbl" for="edTotal">الدرجة الكلية للامتحان</label><input type="number" id="edTotal" min="1" max="1000" value="10"></div>
+            <button class="btn" id="distBtn" type="button">⚖️ وزّع الدرجات على الأسئلة بالتساوي</button>
+          </div>
+          <div class="hintline" style="margin-top:6px;">اكتب الدرجة الكلية، وبعدها تقدر تغيّر درجة كل سؤال لوحده. لما تزوّد درجة سؤال، الأسئلة التانية بتتعدّل لوحدها عشان المجموع يفضل زي الدرجة الكلية.</div>
+        </div>
+
+        <div class="card ed-step ed-gen">
+          <div class="ed-step-head"><span class="ed-n">4</span><div><h2>منشئ الأسئلة</h2><p>اختياري: اكتب المطلوب أو ارفع ملف نصي/صورة</p></div></div>
+          <p class="hintline" style="margin:0 0 10px;">راجع الأسئلة والإجابات قبل الحفظ؛ الأسئلة المُنشأة مقترحة وليست نهائية.</p>
+          <textarea id="aiInstruction" rows="3" placeholder="مثال: اعمل 10 أسئلة عن درس الجهاز الهضمي، 8 اختيار من متعدد وسؤالين مقاليين، مستوى متوسط"></textarea>
+          <div class="acts" style="margin-top:8px; align-items:center;">
+            <input id="aiSourceFile" type="file" accept=".txt,.md,.csv,image/png,image/jpeg,image/webp" style="max-width:260px;">
+            <button class="btn" id="aiGenerateBtn" type="button">📝 إنشاء أسئلة</button>
+            <span class="hintline" id="aiStatus" style="margin:0;"></span>
+          </div>
+        </div>
+
+        <div class="ed-step-head ed-qhead"><span class="ed-n">5</span><div><h2>الأسئلة</h2><p>اكتب الأسئلة وحدد الإجابات الصح</p></div></div>
+        <div id="qBox"></div>
+        <div class="acts" style="margin:4px 0 14px;">
+          <button class="btn" id="addQ" type="button">➕ سؤال اختيار من متعدد</button>
+          <button class="btn" id="addEssay" type="button">✍️ سؤال مقالي</button>
+        </div>
+
+        <div class="sticky-actions">
+          <span id="edSummary" class="hintline" style="margin:0; align-self:center; margin-inline-end:auto; font-weight:600;"></span>
+          <button class="btn" id="cancelEd" type="button">إلغاء</button>
+          <button class="btn" id="saveDraft" type="button">💾 حفظ كمسودة</button>
+          <button class="btn primary" id="savePub" type="button">🚀 حفظ ونشر</button>
         </div>
       </div>
-    </div>
 
-    <div id="qBox"></div>
-    <div class="acts" style="margin:4px 0 14px;">
-      <button class="btn" id="addQ" type="button">➕ سؤال اختيار من متعدد</button>
-      <button class="btn" id="addEssay" type="button">✍️ سؤال مقالي</button>
-    </div>
-
-    <div class="sticky-actions">
-      <span id="edSummary" class="hintline" style="margin:0; align-self:center; margin-inline-end:auto; font-weight:600;"></span>
-      <button class="btn" id="cancelEd" type="button">إلغاء</button>
-      <button class="btn" id="saveDraft" type="button">💾 حفظ كمسودة</button>
-      <button class="btn primary" id="savePub" type="button">🚀 حفظ ونشر</button>
+      <aside class="ed-preview" aria-label="معاينة الامتحان">
+        <div class="pv-bar">
+          <b>شكل الامتحان عند الطالب</b>
+          <label class="chk pv-toggle"><input type="checkbox" id="pvAnswers"> إظهار الإجابات الصح</label>
+        </div>
+        <div class="pv-paper" id="pvPaper"></div>
+      </aside>
     </div>
   </div>
 
-  
   <div class="view" id="viewRes">
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
@@ -285,7 +342,7 @@ $('aiGenerateBtn').addEventListener('click', async () => {
   }catch(e){ console.error(e); status.textContent=''; showMsg('تعذر توليد الأسئلة: '+(e.message||e), 'err'); }
   finally{ btn.disabled=false; }
 });
-function view(id){ document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === id)); window.scrollTo(0,0); }
+function view(id){ document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === id)); document.querySelector('.wrap').classList.toggle('wide', id === 'viewEdit'); window.scrollTo(0,0); }
 async function rpc(fn, args){
   const { data, error } = await supa.rpc(fn, args || {});
   if(error){
@@ -536,11 +593,40 @@ function renderQuestions(){
   });
   summary();
 }
+
+function renderPreview(){
+  const paper = $('pvPaper'); if(!paper || !ed) return;
+  const showAns = $('pvAnswers').checked;
+  const gradeName = (GRADES.find(g => g[0] === $('edGrade').value) || [,''])[1];
+  const dur = parseInt($('edDur').value) || 0, total = sumPts();
+  const closes = $('edCloses').value;
+  const meta = [gradeName, dur ? `⏱ ${dur} دقيقة` : '', `${ed.questions.length} سؤال`, `${total} درجة`].filter(Boolean).map(x => `<span>${esc(x)}</span>`).join('');
+  const title = $('edTitle').value.trim();
+  let h = `<div class="pv-head"><h3>${title ? esc(title) : '<span style="opacity:.7">اسم الامتحان</span>'}</h3><div class="pv-meta">${meta}</div></div>`;
+  ed.questions.forEach((q, i) => {
+    const essay = q.type === 'essay';
+    h += `<div class="pv-q"><div class="pv-qh"><b>سؤال ${i+1}</b><span class="pv-pts">${q.points || 1} درجة</span></div>`
+      + `<div class="pv-text">${q.text && q.text.trim() ? esc(q.text) : '<span class="pv-empty">اكتب نص السؤال…</span>'}</div>`;
+    if(essay){
+      h += `<div class="pv-essay">مكان إجابة الطالب…</div>` + (showAns && q.model_answer ? `<div class="pv-model"><b>الإجابة النموذجية:</b> ${esc(q.model_answer)}</div>` : '');
+    } else {
+      h += q.options.map((o, oi) => `<div class="pv-opt${showAns && q.correct === oi ? ' ok' : ''}"><i>${LETTERS[oi] || oi+1}</i><span>${o && o.trim() ? esc(o) : '<span class="pv-empty">الاختيار ' + (LETTERS[oi] || oi+1) + '</span>'}</span></div>`).join('');
+    }
+    h += `</div>`;
+  });
+  h += `<div class="pv-foot"><span>${closes ? 'يقفل: ' + esc(closes.replace('T',' ')) : 'من غير ميعاد إغلاق'}</span><span class="pv-submit">تسليم الامتحان</span></div>`;
+  paper.innerHTML = h;
+}
+let pvQueued = false;
+function queuePreview(){ if(pvQueued) return; pvQueued = true; requestAnimationFrame(() => { pvQueued = false; renderPreview(); }); }
+$('viewEdit').addEventListener('input', queuePreview);
+$('viewEdit').addEventListener('change', queuePreview);
 function summary(){
   const tot = sumPts(), target = parseInt($('edTotal').value) || 0, el = $('edSummary');
   const ok = !target || tot === target;
   el.textContent = `${ed.questions.length} سؤال · مجموع الدرجات ${tot}` + (target ? ` من ${target}` : '') + (ok ? '' : ' ⚠️');
   el.style.color = ok ? 'var(--muted)' : 'var(--warn)';
+  renderPreview();
 }
 $('edTotal').addEventListener('input', () => { if(ed) summary(); });
 $('distBtn').addEventListener('click', () => {
@@ -659,6 +745,6 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
 </script>
-<script src="milex-search.js" defer></script>
+<script src="milex-copilot.js" defer></script>
 </body>
 </html>
