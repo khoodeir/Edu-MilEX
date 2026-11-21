@@ -339,6 +339,7 @@
         saveHistory();
       }
       (r.navigate || []).forEach(addNav);
+      if((r.navigate || []).length && !(r.proposals || []).length){ const go = r.navigate[0].page; setTimeout(function(){ location.href = go; }, 900); }
       (r.proposals || []).forEach(addProposal);
     }catch(e){
       typing.remove();
