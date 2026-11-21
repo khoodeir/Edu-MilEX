@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<script>
+/* طالب دخل قبل كده → يروح لصفحته مباشرة. للتجاوز: index.html?stay */
+(function(){
+  try{
+    var staff = Object.keys(localStorage).some(function(k){ return /^sb-.*-auth-token$/.test(k); });
+    if(localStorage.getItem('milexStudentCode') && !staff && !/[?&]stay\b/.test(location.search)) location.replace('student.html');
+  }catch(e){}
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="pageTitle">بوابة الدخول | MilEX </title>
@@ -443,6 +453,17 @@
         </div>
         <h2 data-i18n="teacherTitle">المدرس</h2>
         <p data-i18n="teacherDesc">دخول كامل للوحة التحكم والإدارة</p>
+      </div>
+
+      <div class="role-card" onclick="selectRole('student', this)">
+        <div class="role-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5v-12z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5-.7 1.5-1.5v-12z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 data-i18n="studentTitle">الطالب</h2>
+        <p data-i18n="studentDesc">امتحاناتك وموارد مجموعتك وكل بياناتك بالـ QR</p>
       </div>
 
       <div class="role-card" onclick="selectRole('Parent Portal', this)">
@@ -1085,7 +1106,8 @@
       title:"أهلاً بيك، مين حضرتك؟",
       subtitle:"اختر دورك للمتابعة إلى الصفحة المناسبة لك",
       teacherTitle:"المدرس", teacherDesc:"دخول كامل للوحة التحكم والإدارة",
-      "Parent PortalTitle":"ولي الأمر", "Parent PortalDesc":"تابع تقرير ابنك: الحضور والدرجات والمدفوعات",
+      "studentTitle":"الطالب", "studentDesc":"امتحاناتك وموارد مجموعتك وكل بياناتك بالـ QR",
+"Parent PortalTitle":"ولي الأمر", "Parent PortalDesc":"تابع تقرير ابنك: الحضور والدرجات والمدفوعات",
       assistantTitle:"المساعد", assistantDesc:"الحضور والطلاب والامتحانات والمجاميع",
       footer:"MilEX",
       teacherAuthTitle:"دخول المدرس", teacherAuthHint:"من فضلك أدخل كلمة المرور للمتابعة",
@@ -1124,7 +1146,8 @@
       title:"Welcome — who are you?",
       subtitle:"Choose your role to continue to the right page",
       teacherTitle:"Teacher", teacherDesc:"Full access to the dashboard and management",
-      "Parent PortalTitle":"Parent Portal", "Parent PortalDesc":"Track your child's attendance, grades and payments",
+      "studentTitle":"Student", "studentDesc":"Your exams, group resources and all your details via QR",
+"Parent PortalTitle":"Parent Portal", "Parent PortalDesc":"Track your child's attendance, grades and payments",
       assistantTitle:"Assistant", assistantDesc:"Attendance, students, exams and groups",
       footer:"MilEX",
       teacherAuthTitle:"Teacher sign in", teacherAuthHint:"Enter your password to continue",
@@ -1189,6 +1212,11 @@
   async function selectRole(role, cardEl){
     cardEl.classList.add('stamped');
     setTimeout(()=>cardEl.classList.remove('stamped'), 400);
+
+    if(role === 'student'){
+      setTimeout(()=>{ window.location.href = 'student.html'; }, 180);
+      return;
+    }
 
     if(role === 'Parent Portal'){
       setTimeout(()=>{ window.location.href = 'parent_portal.html'; }, 180);
