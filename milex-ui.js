@@ -23,7 +23,7 @@
     clearTimeout(_toastT); _toastT = setTimeout(() => t.style.display = 'none', isErr ? 4200 : 2600);
   }
 
-  function goBack(){ if(history.length > 1 && document.referrer) history.back(); else location.href = 'index.html'; }
+  function goBack(){ window.milexBack ? window.milexBack() : (history.length > 1 && document.referrer ? history.back() : (location.href = 'index.html')); }
 
   // ---- أرقام وتواريخ ----
   const pad2 = n => String(n).padStart(2,'0');

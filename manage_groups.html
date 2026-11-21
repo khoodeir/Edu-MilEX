@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<script src="milex-session.js"></script>
 <script src="milex-theme-sync.js"></script>
 <meta name="milex-perm" content="groups">
 
@@ -367,7 +368,7 @@ $('backBtn').addEventListener('click', e => {
   e.preventDefault();
   if(dirty && !confirm('فيه تعديلات ماتحفظتش. تخرج برضو؟')) return;
   dirty = false;
-  if(document.referrer && document.referrer !== location.href) history.back(); else location.href = 'index.html';
+  milexBack();
 });
 $('themeBtn').addEventListener('click', () => {
   document.body.classList.toggle('dark');

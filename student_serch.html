@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<script src="milex-session.js"></script>
 <script src="milex-theme-sync.js"></script>
 <meta name="milex-perm" content="search">
 <script src="milex-common.js"></script>
@@ -720,13 +721,7 @@
     const updatedEl = document.getElementById("updatedNote");
     if(updatedEl.dataset.time) updatedEl.textContent = tr.updatedPrefix + updatedEl.dataset.time;
   }
- function goBack(){
-  if(document.referrer && document.referrer !== location.href){
-    history.back();
-  } else {
-    window.location.href = "index.html";
-  }
-}
+ function goBack(){ milexBack(); }
   function onGradeChange(){
     currentGrade = document.getElementById("gradeSelect").value;
     loadData();

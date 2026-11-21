@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<script src="milex-session.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="pageTitle">بوابة الدخول | MilEX </title>
@@ -1211,15 +1212,17 @@
       sec.hidden = !any;
     });
   }
-  function showHub(){
+  function showHub(silent){
     milexSetActiveRole('teacher');
     document.getElementById('roleScreen').style.display = 'none';
+    document.getElementById('roleScreen').style.visibility = '';
     document.getElementById('assistantHubScreen').style.display = 'none';
     document.getElementById('hubScreen').style.display = 'block';
-    if(window.MILEX_COPILOT) MILEX_COPILOT.refresh();
+    if(window.MILEX_COPILOT) MILEX_COPILOT.refresh({ quiet: silent === true });
   }
-  function showAssistantHub(){
+  function showAssistantHub(silent){
     milexSetActiveRole('assistant');
+    document.getElementById('roleScreen').style.visibility = '';
     milexClearSession();
     document.getElementById('roleScreen').style.display = 'none';
     document.getElementById('hubScreen').style.display = 'none';
@@ -1364,6 +1367,34 @@
   if(document.documentElement.getAttribute('data-theme') === 'dark'){
     document.getElementById('themeBtn').textContent = '☀️';
   }
+
+  // لو الجهاز ده مسجّل دخول قبل كده: افتح صفحة المدرس/المساعد على طول (ومتطلبش الإيميل والباسورد تاني)
+  // ولو رجعت من صفحة تانية بزرار الرجوع: يرجّعك لنفس الصفحة الرئيسية بدل شاشة الاختيار الأولى
+  (async function milexRestoreLogin(){
+    try{
+      let role = null;
+      try{ role = sessionStorage.getItem('milexActiveRole'); }catch(e){}
+      const tOk = milexIsSessionValid(), aOk = milexIsAssistantSessionValid();
+      if(role !== 'teacher' && role !== 'assistant') role = tOk ? 'teacher' : (aOk ? 'assistant' : null);
+      if(role === 'teacher' && !tOk) role = aOk ? 'assistant' : null;
+      if(role === 'assistant' && !aOk) role = tOk ? 'teacher' : null;
+      if(!role) return;
+
+      const rs = document.getElementById('roleScreen');
+      rs.style.visibility = 'hidden';                       // من غير وميض لشاشة الاختيار
+      const { data } = await supa.auth.getSession();
+      if(!(data && data.session)){                          // الجلسة خلصت على السيرفر → دخول من جديد
+        milexClearSession(); milexClearAssistantSession(); MILEX.setStaff(null);
+        rs.style.visibility = '';
+        return;
+      }
+      const nav = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || null;
+      const quiet = !!(nav && nav.type === 'back_forward'); // رجوع من صفحة تانية: من غير أنيميشن الدخول
+      if(role === 'teacher') showHub(quiet); else showAssistantHub(quiet);
+    }catch(e){
+      const rs = document.getElementById('roleScreen'); if(rs) rs.style.visibility = '';
+    }
+  })();
 </script>
 
 
