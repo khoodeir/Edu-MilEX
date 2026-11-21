@@ -91,11 +91,32 @@
     return /^\d+$/.test(id) ? 'R-' + id.padStart(6, '0') : 'R-' + id.replace(/-/g,'').slice(0,8).toUpperCase();
   }
 
+  // سبب مفهوم للخطأ بدل رسالة Supabase الخام
+  function explain(err){
+    const m = String((err && (err.message || err.details)) || err || '');
+    if(/permission|row-level|rls|not authorized|jwt/i.test(m)) return 'مفيش صلاحية قراءة سجل الدفعات (payment_history). لازم تشغّل ملف الصلاحيات في Supabase أو تسجّل دخول المدرس تاني. (' + m + ')';
+    if(/does not exist|schema cache|relation|PGRST205|42P01/i.test(m)) return 'جدول سجل الدفعات (payment_history) مش موجود في Supabase. شغّل ملف supabase_milex_upgrade.sql الأول. (' + m + ')';
+    return m || 'خطأ غير معروف';
+  }
+  const isToday = v => { const d = new Date(v); if(isNaN(d)) return false; const n = new Date(); return d.toDateString() === n.toDateString(); };
+  // لو سجل الدفعات فاضي: نبني الإيصال من بيانات الدفع الموجودة في جدول الدفع بتاع الصف
+  function fallbackRow(s){
+    if(!s || !(s.amount > 0)) return null;
+    const when = s.lastPay || s.created || new Date().toISOString();
+    const d = new Date(when);
+    return { id:'F' + String(s.qr), qr_code:s.qr, month:isNaN(d) ? '' : d.getMonth() + 1, year:isNaN(d) ? '' : d.getFullYear(), amount_paid:s.amount, created_at:when, _fallback:true };
+  }
+  async function fetchPayments(qr){
+    let r = await supa.from('payment_history').select('*').eq('qr_code', qr).order('created_at', { ascending:false });
+    if(r.error && /created_at/i.test(r.error.message || '')) r = await supa.from('payment_history').select('*').eq('qr_code', qr);
+    return r;
+  }
+
   async function loadStudents(){
     $('stList').innerHTML = '<div class="state">جاري التحميل…</div>';
     try{
       const k = $('gradeSel').value;
-      students = await MX.loadStudents([k], false);
+      students = await MX.loadStudents([k], true);
       renderStudents();
     }catch(e){ $('stList').innerHTML = `<div class="state err">تعذر التحميل: ${esc(e.message)}</div>`; }
   }
@@ -116,11 +137,15 @@
     $('payCard').style.display = 'block';
     $('payTitle').textContent = 'دفعات: ' + current.name;
     $('payList').innerHTML = '<div class="state">جاري التحميل…</div>';
-    const { data, error } = await supa.from('payment_history').select('*').eq('qr_code', qr).order('created_at', { ascending:false });
-    if(error){ $('payList').innerHTML = `<div class="state err">${esc(error.message)}</div>`; return; }
-    const rows = data || [];
+    const { data, error } = await fetchPayments(qr);
+    let rows = data || [], note = '';
+    if(error){ note = `<div class="state err" style="padding:10px">${esc(explain(error))}</div>`; rows = []; }
+    if(!rows.length){
+      const fb = fallbackRow(current);
+      if(fb){ rows = [fb]; note += '<div class="muted small" style="padding:6px 0">مفيش سجل دفعات تفصيلي، فالإيصال متبني من آخر دفعة مسجلة للطالب.</div>'; }
+    }
     window._rows = rows;
-    $('payList').innerHTML = rows.map((r,i) => `
+    $('payList').innerHTML = note + rows.map((r,i) => `
       <div class="prow"><div class="grow"><b>${esc(monthLabel(r.month))} ${esc(r.year || '')}</b>
         <div class="muted small">${MX.fmtDateTime(r.created_at)} · ${esc(receiptNo(r))}</div></div>
         <b>${MX.fmtMoney(r.amount_paid)}</b>
@@ -158,19 +183,24 @@
     const el = $('today');
     try{
       const start = new Date(); start.setHours(0,0,0,0);
-      const { data, error } = await supa.from('payment_history').select('*').gte('created_at', start.toISOString()).order('created_at', { ascending:false });
-      if(error) throw error;
-      const all = await MX.loadStudents(null, false);
+      const all = await MX.loadStudents(null, true);
       const by = {}; all.forEach(s => by[s.qr] = s);
-      window._today = (data || []).map(r => ({ r, s: by[String(r.qr_code)] }));
+      let rows = [], note = '';
+      let { data, error } = await supa.from('payment_history').select('*').gte('created_at', start.toISOString()).order('created_at', { ascending:false });
+      if(error){ note = `<div class="state err" style="padding:10px">${esc(explain(error))}</div>`; data = []; }
+      rows = data || [];
+      if(!rows.length){
+        rows = all.filter(s => s.amount > 0 && s.lastPay && isToday(s.lastPay)).map(fallbackRow).filter(Boolean);
+      }
+      window._today = rows.map(r => ({ r, s: by[String(r.qr_code)] }));
       const total = window._today.reduce((a,x) => a + (Number(x.r.amount_paid) || 0), 0);
-      el.innerHTML = window._today.length
+      el.innerHTML = note + (window._today.length
         ? `<div class="kpis" style="margin-bottom:10px"><div class="kpi"><b>${window._today.length}</b><span>دفعة</span></div><div class="kpi"><b>${MX.fmtMoney(total)}</b><span>إجمالي اليوم</span></div></div>`
           + window._today.map((x,i) => `<div class="prow"><div class="grow"><b>${esc(x.s ? x.s.name : x.r.qr_code)}</b>
             <div class="muted small">${MX.fmtDateTime(x.r.created_at)} · ${esc(receiptNo(x.r))}</div></div>
             <b>${MX.fmtMoney(x.r.amount_paid)}</b>${x.s ? `<button class="btn sm" onclick="showToday(${i})">🧾</button>` : ''}</div>`).join('')
-        : '<div class="state">مفيش دفعات النهارده لحد دلوقتي</div>';
-    }catch(e){ el.innerHTML = `<div class="state err">تعذر التحميل: ${esc(e.message || e)}</div>`; }
+        : '<div class="state">مفيش دفعات النهارده لحد دلوقتي</div>');
+    }catch(e){ el.innerHTML = `<div class="state err">تعذر التحميل: ${esc(explain(e))}</div>`; }
   }
   function showToday(i){ const x = window._today[i]; showRc(0, x.r, x.s); }
 

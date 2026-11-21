@@ -32,7 +32,7 @@
     { ic:"🧾", t:"إجمالي المدفوعات",   q:"إجمالي المدفوعات الشهر ده كام؟" }
   ];
 
-  let root, dock, fab, bubble, panel, list, input, sendBtn, chipsBox, statusEl, micBtn;
+  let root, dock, fab, bubble, panel, list, input, sendBtn, chipsBox, statusEl;
   let busy = false, built = false, history = [], introRunning = false, introTimers = [], lastText = "";
 
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -125,7 +125,6 @@
   const ICON_SEND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 16-3-7-7-1z"/></svg>';
   const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const ICON_TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13"/></svg>';
-  const ICON_MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>';
   const ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>';
 
   /* ===================== الستايل ===================== */
@@ -146,17 +145,17 @@
   @keyframes nrTalk{from{transform:scaleY(.35)}to{transform:scaleY(1.15)}}
 
   /* ----- الدوك (الأفاتار العايم) ----- */
-  .nr-dock{position:fixed;left:18px;bottom:18px;pointer-events:none;display:flex;align-items:flex-end;gap:12px;direction:ltr}
+  .nr-dock{position:fixed;right:18px;bottom:18px;pointer-events:none;display:flex;align-items:flex-end;gap:12px;direction:rtl}
   .nr-fab{pointer-events:auto;position:relative;width:66px;height:66px;border:0;padding:0;background:none;cursor:pointer;border-radius:50%;
-    transform-origin:left bottom;filter:drop-shadow(0 10px 22px rgba(6,31,85,.38));animation:nrIn .7s cubic-bezier(.2,1.3,.4,1) both}
+    transform-origin:right bottom;filter:drop-shadow(0 10px 22px rgba(6,31,85,.38));animation:nrIn .7s cubic-bezier(.2,1.3,.4,1) both}
   .nr-fab .nr-face{width:100%;height:100%;border:3px solid #fff;animation:nrFloat 3.8s ease-in-out infinite}
   .nr-fab::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--c-lime);opacity:0;animation:nrRing 2.8s infinite}
   .nr-fab:hover .nr-face{animation-play-state:paused;transform:scale(1.07)}
   .nr-dot{position:absolute;right:2px;bottom:3px;width:15px;height:15px;border-radius:50%;background:var(--c-lime);border:3px solid #fff;z-index:2}
-  .nr-wave{position:absolute;top:-22px;right:-14px;font-size:30px;transform-origin:70% 80%;opacity:0;pointer-events:none}
+  .nr-wave{position:absolute;top:-22px;left:-14px;font-size:30px;transform-origin:70% 80%;opacity:0;pointer-events:none}
   .nr-spark{position:absolute;left:50%;top:50%;width:9px;height:9px;margin:-4.5px;border-radius:50%;background:var(--c-lime);pointer-events:none;opacity:0;animation:nrSpark .95s ease-out forwards}
   .nr-spark:nth-child(3n){background:#5B93E6}.nr-spark:nth-child(4n){background:#fff;width:6px;height:6px}
-  @keyframes nrIn{from{opacity:0;transform:translateX(-140px) rotate(-24deg) scale(.4)}to{opacity:1;transform:none}}
+  @keyframes nrIn{from{opacity:0;transform:translateX(140px) rotate(24deg) scale(.4)}to{opacity:1;transform:none}}
   @keyframes nrFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
   @keyframes nrRing{0%{transform:scale(.92);opacity:.7}80%,100%{transform:scale(1.4);opacity:0}}
   @keyframes nrSpark{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}}
@@ -167,12 +166,12 @@
   #mxc.intro .nr-fab{animation:nrIntro 1.1s cubic-bezier(.2,1.25,.4,1) both;width:96px;height:96px}
   #mxc.intro .nr-wave{opacity:1;animation:nrWave 1.6s .9s 2}
   #mxc.intro .nr-dock{bottom:26px}
-  @keyframes nrIntro{0%{opacity:0;transform:translateX(-220px) rotate(-30deg) scale(.3)}55%{opacity:1;transform:translateX(14px) rotate(6deg) scale(1.08)}78%{transform:translateX(-4px) rotate(-3deg) scale(.98)}100%{transform:none}}
+  @keyframes nrIntro{0%{opacity:0;transform:translateX(220px) rotate(30deg) scale(.3)}55%{opacity:1;transform:translateX(-14px) rotate(-6deg) scale(1.08)}78%{transform:translateX(4px) rotate(3deg) scale(.98)}100%{transform:none}}
   .nr-fab,.nr-bubble{transition:width .5s cubic-bezier(.3,1.2,.4,1),height .5s cubic-bezier(.3,1.2,.4,1)}
 
   /* ----- فقاعة الكلام ----- */
   .nr-bubble{pointer-events:auto;position:relative;max-width:310px;margin-bottom:10px;background:var(--c-bg);color:var(--c-ink);border:1px solid var(--c-line);
-    direction:rtl;text-align:right;border-left:4px solid var(--c-lime);border-radius:18px 18px 18px 6px;padding:12px 16px 12px 34px;font-size:14px;line-height:1.85;
+    direction:rtl;text-align:right;border-right:4px solid var(--c-lime);border-radius:18px 18px 6px 18px;padding:12px 16px 12px 34px;font-size:14px;line-height:1.85;
     box-shadow:0 18px 44px rgba(16,27,51,.22);animation:nrPop .4s cubic-bezier(.22,.9,.3,1) both}
   .nr-bubble b.nm{color:var(--c-acc)}
   .nr-bubble .x{position:absolute;left:8px;top:6px;border:0;background:none;color:var(--c-mut);font-size:19px;line-height:1;cursor:pointer}
@@ -181,8 +180,8 @@
   @keyframes nrCur{50%{opacity:0}}
 
   /* ----- اللوحة ----- */
-  .mxc-panel,.nr-panel{pointer-events:auto;position:fixed;top:0;bottom:0;left:0;width:min(440px,100vw);display:flex;flex-direction:column;background:var(--c-bg);color:var(--c-ink);
-    border-inline-end:1px solid var(--c-line);box-shadow:24px 0 60px rgba(6,31,85,.22);transform:translateX(-104%);visibility:hidden;transition:transform .38s cubic-bezier(.22,.8,.3,1),visibility .38s}
+  .mxc-panel,.nr-panel{pointer-events:auto;position:fixed;top:0;bottom:0;right:0;width:min(440px,100vw);display:flex;flex-direction:column;background:var(--c-bg);color:var(--c-ink);
+    border-left:1px solid var(--c-line);box-shadow:-24px 0 60px rgba(6,31,85,.22);transform:translateX(104%);visibility:hidden;transition:transform .38s cubic-bezier(.22,.8,.3,1),visibility .38s}
   #mxc.open .nr-panel{transform:translateX(0);visibility:visible}
   #mxc.open .nr-dock{display:none}
   .nr-head{display:flex;align-items:center;gap:12px;padding:13px 16px;color:#fff;background:linear-gradient(135deg,#0B3A87 0%,#061F55 100%);position:relative}
@@ -241,16 +240,14 @@
   .nr-box:focus-within{border-color:var(--c-acc);box-shadow:0 0 0 3px rgba(11,58,135,.12)}
   #mxc .nr-box textarea,#mxc .nr-box textarea:focus,#mxc .nr-box textarea:focus-visible{outline:0!important;box-shadow:none!important;border:0!important;background:transparent!important;border-radius:0!important}
   .nr-box textarea{flex:1;resize:none;color:var(--c-ink);font:500 14px/1.7 Cairo,system-ui,sans-serif;max-height:120px;padding:6px 8px}
-  .nr-send,.nr-mic{flex:0 0 auto;width:38px;height:38px;border:0;border-radius:11px;cursor:pointer;display:grid;place-items:center;transition:filter .2s,transform .15s}
-  .nr-send{background:var(--c-acc);color:#fff}.nr-mic{background:var(--c-soft);color:var(--c-acc);border:1px solid var(--c-line)}
-  .nr-send:hover{filter:brightness(1.12)}.nr-send:active,.nr-mic:active{transform:scale(.94)}.nr-send[disabled]{opacity:.5;cursor:default}
-  .nr-send svg{width:18px;height:18px;transform:scaleX(-1)}.nr-mic svg{width:18px;height:18px}
-  .nr-mic.on{background:var(--c-err);color:#fff;border-color:var(--c-err);animation:nrRec 1s infinite}
-  @keyframes nrRec{50%{box-shadow:0 0 0 6px rgba(179,38,30,.18)}}
+  .nr-send{flex:0 0 auto;width:38px;height:38px;border:0;border-radius:11px;cursor:pointer;display:grid;place-items:center;transition:filter .2s,transform .15s}
+  .nr-send{background:var(--c-acc);color:#fff}
+  .nr-send:hover{filter:brightness(1.12)}.nr-send:active{transform:scale(.94)}.nr-send[disabled]{opacity:.5;cursor:default}
+  .nr-send svg{width:18px;height:18px;transform:scaleX(-1)}
   .nr-note{margin:7px 4px 0;font-size:11px;color:var(--c-mut);text-align:center}
 
   @media (max-width:560px){
-    .nr-dock{left:12px;bottom:14px}.nr-bubble{max-width:calc(100vw - 150px);font-size:13px}
+    .nr-dock{right:12px;bottom:14px}.nr-bubble{max-width:calc(100vw - 150px);font-size:13px}
     #mxc.intro .nr-fab{width:80px;height:80px}.nr-panel{width:100vw}.nr-quick{grid-template-columns:1fr 1fr}
   }
   @media print{#mxc{display:none!important}}
@@ -287,8 +284,7 @@
           '<button type="button" class="nr-ibtn" id="nrClose" title="إغلاق">' + ICON_X + '</button></div>' +
         '<div class="nr-list" id="nrList"></div>' +
         '<div class="nr-chips" id="nrChips"></div>' +
-        '<div class="nr-foot"><div class="nr-box"><textarea id="nrInput" rows="1" placeholder="اكتب لـ' + BOT.name + ' أو اضغط على المايك…"></textarea>' +
-        '<button type="button" class="nr-mic" id="nrMic" title="اتكلم" aria-label="إدخال صوتي">' + ICON_MIC + '</button>' +
+        '<div class="nr-foot"><div class="nr-box"><textarea id="nrInput" rows="1" placeholder="اكتب لـ' + BOT.name + '…"></textarea>' +
         '<button type="button" class="nr-send" id="nrSend" aria-label="إرسال">' + ICON_SEND + '</button></div>' +
         '<div class="nr-note">أي تعديل بيتنفذ بعد ما تأكده بنفسك · اختصار: Ctrl + K</div></div>' +
       '</aside>';
@@ -296,17 +292,22 @@
 
     dock = root.querySelector("#nrDock"); fab = root.querySelector("#nrFab"); bubble = root.querySelector("#nrBubble");
     panel = root.querySelector("#nrPanel"); list = root.querySelector("#nrList"); input = root.querySelector("#nrInput");
-    sendBtn = root.querySelector("#nrSend"); chipsBox = root.querySelector("#nrChips"); statusEl = root.querySelector("#nrStatus"); micBtn = root.querySelector("#nrMic");
+    sendBtn = root.querySelector("#nrSend"); chipsBox = root.querySelector("#nrChips"); statusEl = root.querySelector("#nrStatus");
 
     fab.addEventListener("click", function(){ endIntro(); open(); });
     root.querySelector("#nrClose").addEventListener("click", close);
     root.querySelector("#nrClear").addEventListener("click", reset);
     sendBtn.addEventListener("click", function(){ send(input.value); });
-    micBtn.addEventListener("click", toggleMic);
     input.addEventListener("keydown", function(e){
       if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); send(input.value); }
     });
     input.addEventListener("input", function(){ input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 120) + "px"; });
+    // دوس في أي مكان بره إطار الشات يقفله تلقائي
+    document.addEventListener("pointerdown", function(e){
+      if(!root || !root.classList.contains("open")) return;
+      if(panel.contains(e.target)) return;
+      close();
+    }, true);
     document.addEventListener("keydown", function(e){
       if(!root || root.hidden) return;
       if(e.key === "Escape" && root.classList.contains("open")) close();
@@ -613,34 +614,6 @@
     }finally{
       busy = false; sendBtn.disabled = false; input.focus();
     }
-  }
-
-  /* ===================== الصوت ===================== */
-  let rec = null;
-  function toggleMic(){
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR){ addBubble("bot", "المتصفح ده مش بيدعم الإدخال الصوتي. جرّب Chrome أو Edge.", "err"); return; }
-    if(rec){ try{ rec.stop(); }catch(e){} return; }
-    rec = new SR();
-    rec.lang = "ar-EG"; rec.interimResults = true; rec.maxAlternatives = 1;
-    let finalTxt = "";
-    micBtn.classList.add("on"); setStatus("بسمعك…", true);
-    rec.onresult = function(ev){
-      let interim = "";
-      for(let i = ev.resultIndex; i < ev.results.length; i++){
-        const t = ev.results[i][0].transcript;
-        if(ev.results[i].isFinal) finalTxt += t; else interim += t;
-      }
-      input.value = (finalTxt + interim).trim();
-    };
-    rec.onerror = function(){ };
-    rec.onend = function(){
-      micBtn.classList.remove("on"); setStatus(BOT.role, false);
-      const t = (finalTxt || input.value).trim();
-      rec = null;
-      if(t) send(t);
-    };
-    try{ rec.start(); }catch(e){ rec = null; micBtn.classList.remove("on"); }
   }
 
   /* ===================== فتح / قفل ===================== */

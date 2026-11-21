@@ -1,5 +1,5 @@
 
-const CACHE = "milex-edu-shell-v7";
+const CACHE = "milex-edu-shell-v9";
 const SHELL = ["./", "./manifest.json", "./manus-routes.json", "./logo.png", "./logo-dark.png", "./favicon.png", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png", "./audit_log.html", "./dashboard.html", "./exam.html", "./exam_builder.html", "./index.html", "./manage_exams.html", "./manage_groups.html", "./parent_portal.html", "./scanner.html", "./student_delete.html", "./student_edit.html", "./student_registration.html", "./student_serch.html", "./milex.html", "./test.html", "./milex-common.js", "./milex-theme.css", "./milex-motion.js", "./milex-install.js", "./milex-download.js", "./milex-ai.js", "./logo-mark.png", "./offline.html", "./staff.html", "./receipts.html", "./backup.html", "./student_report.html", "./schedule.html", "./student_notes.html", "./honor.html", "./milex-ui.js", "./milex-copilot.js", "./milex-schedule.js", "./milex-theme-sync.js", "./milex-dark.css", "./milex-pages.css"];
 
 const CDN_HOSTS = ["cdn.jsdelivr.net", "unpkg.com", "cdnjs.cloudflare.com"];
