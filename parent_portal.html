@@ -779,35 +779,8 @@
     renderAttChart(attRate);
     renderExamTrendChart();
     renderPaymentHistory();
-    renderMaterials();
   }
 
-  // الواجبات والمواد اللي المدرس رفعها لصف/مجموعة الطالب
-  async function renderMaterials(){
-    let box = document.getElementById('matSection');
-    if(!box){
-      box = document.createElement('div'); box.id = 'matSection';
-      box.style.cssText = 'margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px';
-      document.getElementById('reportView').appendChild(box);
-    }
-    box.innerHTML = ''; box.style.display = 'none';
-    try{
-      const s = currentStudent;
-      const { data, error } = await supa.from('materials').select('*').eq('grade', s.grade).order('created_at', { ascending:false }).limit(30);
-      if(error || !data) return;
-      const mine = data.filter(m => !m.group_name || m.group_name === s.groupName);
-      if(!mine.length) return;
-      const ic = { homework:'📝', pdf:'📄', video:'🎬', link:'🔗', file:'📎' };
-      const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-      box.innerHTML = '<div style="font-weight:700;font-size:16px;margin-bottom:10px">📁 الواجبات والمواد</div>' + mine.map(m => {
-        const href = m.url || (m.file_path ? supa.storage.from('materials').getPublicUrl(m.file_path).data.publicUrl : '#');
-        return `<a href="${esc(href)}" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none">
-          <span style="font-size:22px">${ic[m.kind] || '📎'}</span>
-          <span style="flex:1"><b>${esc(m.title)}</b><br><small style="color:var(--muted)">${esc(String(m.created_at).slice(0,10))}${m.description ? ' · ' + esc(m.description) : ''}</small></span><span>⬇</span></a>`;
-      }).join('');
-      box.style.display = 'block';
-    }catch(e){}
-  }
 
   function renderPaymentHistory(){
     const listEl = document.getElementById("monthChipList");

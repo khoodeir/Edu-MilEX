@@ -140,7 +140,6 @@
     { key:'online_exams', ar:'الامتحانات الأونلاين',      hint:'إنشاء وإدارة الامتحانات الأونلاين' },
     { key:'groups',       ar:'المجاميع والمواعيد',        hint:'تعديل أيام وأوقات المجاميع' },
     { key:'reports',      ar:'التقارير ولوحة الشرف',      hint:'التقرير الشهري + لوحة الشرف' },
-    { key:'materials',    ar:'الواجبات والمواد',          hint:'رفع ملفات وفيديوهات للمجموعات' },
     { key:'dashboard',    ar:'لوحة المتابعة',             hint:'الإحصائيات والتحليلات' }
   ];
   M.DEFAULT_ASSISTANT_PERMS = ['attendance','payments','register','search'];
