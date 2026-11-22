@@ -266,6 +266,67 @@
   .nr-bubble .acts .nr-btn.sm{padding:6px 12px;font-size:12px}
   .nr-bubble .acts .sep{flex-basis:100%;height:0}
 
+
+  /* ===== شاشة الترحيب بملء الصفحة ===== */
+  #mxc.splash .nr-dock{visibility:hidden}
+  .nr-splash{position:absolute;inset:0;pointer-events:auto;display:grid;place-items:center;overflow:hidden;color:#fff;direction:rtl;font-family:Cairo,system-ui,sans-serif;
+    background:radial-gradient(1100px 760px at 85% 115%,rgba(45,95,184,.75),transparent 60%),radial-gradient(900px 640px at 8% -12%,rgba(168,212,0,.16),transparent 55%),linear-gradient(160deg,#04163F 0%,#0A2A6B 52%,#061F55 100%);
+    animation:spFade .55s ease both}
+  .nr-splash::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:56px 56px;
+    -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0,transparent 72%);mask-image:radial-gradient(circle at 50% 50%,#000 0,transparent 72%);animation:spGrid 14s linear infinite}
+  .nr-splash *{box-sizing:border-box}
+  .sp-orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none}
+  .sp-orb.a{width:420px;height:420px;background:#2D5FB8;left:-120px;top:-100px;animation:spDrift 9s ease-in-out infinite alternate}
+  .sp-orb.b{width:360px;height:360px;background:rgba(168,212,0,.5);right:-100px;bottom:-120px;animation:spDrift 11s ease-in-out infinite alternate-reverse}
+  .sp-dots{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .sp-dot{position:absolute;bottom:-12px;border-radius:50%;background:rgba(255,255,255,.75);opacity:0;animation:spRise linear infinite}
+  .sp-core{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:28px 22px;max-width:640px;width:100%}
+  .nr-splash.out .sp-core{opacity:0;transform:scale(.93);transition:opacity .35s ease,transform .5s ease}
+  .sp-brand{display:flex;align-items:center;gap:12px;font:800 12px Cairo,system-ui,sans-serif;letter-spacing:.42em;color:#A8D400;opacity:0;animation:spUp .6s .15s both}
+  .sp-brand::before,.sp-brand::after{content:"";width:30px;height:1px;background:linear-gradient(90deg,transparent,#A8D400)}
+  .sp-brand::after{transform:scaleX(-1)}
+  .sp-av{position:relative;width:148px;height:148px;margin:6px 0 4px;opacity:0;animation:spPop .9s .25s cubic-bezier(.2,1.3,.4,1) both}
+  .sp-av .nr-face{width:100%;height:100%;background:radial-gradient(circle at 32% 20%,#5C94EA 0%,#2563C4 34%,#0B3A87 66%,#061F55 100%);
+    box-shadow:0 0 0 4px rgba(255,255,255,.95),0 0 0 8px #A8D400,0 26px 60px rgba(0,0,0,.5),0 0 60px rgba(168,212,0,.25),inset 0 -14px 22px rgba(6,31,85,.5),inset 0 8px 14px rgba(255,255,255,.3)}
+  .sp-av .nr-av{transform:translateY(6px) scale(1.1)}
+  .sp-av::before,.sp-av::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid #A8D400;opacity:0;animation:nrRing 2.8s 1.1s infinite}
+  .sp-av::after{border-color:#5B93E6;animation-delay:2.5s}
+  .sp-wave{position:absolute;top:-16px;left:-20px;font-size:38px;line-height:1;transform-origin:70% 80%;opacity:0;animation:spWaveIn .4s 1s both,nrWave 1.6s 1.1s 2}
+  .sp-hi{margin:4px 0 0;font:800 clamp(26px,5.2vw,46px)/1.4 Cairo,system-ui,sans-serif}
+  .sp-hi .w{display:inline-block;opacity:0;transform:translateY(18px);filter:blur(6px);animation:spWord .7s cubic-bezier(.2,.8,.2,1) both}
+  .sp-hi .nm{background:linear-gradient(90deg,#A8D400,#E3F77A);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sp-sub{margin:0;font:600 clamp(15px,2.2vw,19px)/1.8 Cairo,system-ui,sans-serif;color:rgba(255,255,255,.88);opacity:0;animation:spUp .7s 1.35s both}
+  .sp-role{margin:0;font:500 14px/1.7 Cairo,system-ui,sans-serif;color:rgba(255,255,255,.62);opacity:0;animation:spUp .7s 1.55s both}
+  .sp-role b{color:#fff}
+  .sp-date{display:inline-flex;align-items:center;gap:8px;padding:6px 15px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font:700 12.5px Cairo,system-ui,sans-serif;opacity:0;animation:spUp .6s 1.7s both}
+  .sp-prog{width:min(300px,78vw);margin-top:8px;opacity:0;animation:spUp .6s 1.75s both}
+  .sp-bar{height:4px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden}
+  .sp-bar i{display:block;height:100%;width:100%;transform-origin:right center;transform:scaleX(0);background:linear-gradient(90deg,#A8D400,#E3F77A);animation:spFill 1.7s 1.8s cubic-bezier(.4,0,.2,1) forwards}
+  .sp-lbl{margin-top:9px;font:600 12px Cairo,system-ui,sans-serif;color:rgba(255,255,255,.7);min-height:18px;transition:color .3s}
+  .sp-lbl.ok{color:#A8D400}
+  .sp-acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .5s ease,transform .5s ease}
+  .sp-acts.on{opacity:1;transform:none;pointer-events:auto}
+  .sp-btn{border:0;border-radius:13px;padding:12px 24px;font:800 14px Cairo,system-ui,sans-serif;cursor:pointer;transition:transform .15s,filter .2s,background .2s}
+  .sp-btn:active{transform:scale(.96)}
+  .sp-btn.pri{background:#A8D400;color:#061F55;box-shadow:0 10px 30px rgba(168,212,0,.35)}
+  .sp-btn.pri:hover{filter:brightness(1.08)}
+  .sp-btn.gho{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.28)}
+  .sp-btn.gho:hover{background:rgba(255,255,255,.18)}
+  .sp-skip{position:absolute;top:18px;left:18px;z-index:3;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:6px 15px;font:700 12px Cairo,system-ui,sans-serif;cursor:pointer;opacity:0;animation:spUp .5s .9s both}
+  .sp-skip:hover{background:rgba(255,255,255,.18)}
+  @keyframes spFade{from{opacity:0}to{opacity:1}}
+  @keyframes spGrid{to{background-position:56px 56px,56px 56px}}
+  @keyframes spDrift{to{transform:translate(60px,40px) scale(1.15)}}
+  @keyframes spRise{0%{opacity:0;transform:translateY(0)}15%{opacity:.8}100%{opacity:0;transform:translateY(-110vh)}}
+  @keyframes spUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes spPop{0%{opacity:0;transform:scale(.4) translateY(30px)}100%{opacity:1;transform:none}}
+  @keyframes spWord{to{opacity:1;transform:none;filter:none}}
+  @keyframes spFill{to{transform:scaleX(1)}}
+  @keyframes spWaveIn{to{opacity:1}}
+  @media (max-width:560px){.sp-av{width:120px;height:120px}.sp-wave{font-size:32px;left:-14px}.sp-skip{top:12px;left:12px}.sp-btn{padding:11px 20px}}
+  @media (prefers-reduced-motion:reduce){.nr-splash *,.nr-splash::before{animation-duration:.01s!important;animation-delay:0s!important}}
+
   @media (max-width:560px){
     .nr-dock{right:12px;bottom:14px}.nr-bubble{max-width:calc(100vw - 150px);font-size:13px}
     #mxc.intro .nr-fab{width:84px;height:84px}.nr-panel{width:100vw}.nr-quick{grid-template-columns:1fr 1fr}
@@ -353,84 +414,10 @@
   }
 
   /* ===================== الدخول المميز ===================== */
-  function sparks(){
-    if(reduceMotion()) return;
-    for(let n = 0; n < 26; n++){
-      const s = document.createElement("i");
-      s.className = "nr-spark" + (n % 5 === 0 ? " sq" : "");
-      const a = (Math.PI * 2 * n) / 26 + Math.random() * .4, d = 60 + Math.random() * 70;
-      s.style.setProperty("--dx", Math.cos(a) * d + "px");
-      s.style.setProperty("--dy", Math.sin(a) * d + "px");
-      s.style.animationDelay = (0.55 + Math.random() * .25) + "s";
-      fab.appendChild(s);
-      setTimeout(function(){ s.remove(); }, 2200);
-    }
-    // أيقونات تعليمية بتطلع وتطير من فوق نور
-    ["🎓","📚","✨","📝","⭐"].forEach(function(e, i){
-      const f = document.createElement("span");
-      f.className = "nr-float"; f.textContent = e;
-      f.style.setProperty("--fx", (-44 + i * 22) + "px");
-      f.style.animationDelay = (0.75 + i * 0.14) + "s";
-      fab.appendChild(f);
-      setTimeout(function(){ f.remove(); }, 3400);
-    });
-  }
+  /* ===================== الدخول الاحترافي: شاشة ترحيب بملء الصفحة ===================== */
   function later(fn, ms){ const t = setTimeout(fn, ms); introTimers.push(t); return t; }
 
-  function typeInto(el, html, speed, done){
-    // بيكتب نص عادي حرف حرف، والـ HTML الجاهز (بين <>) بيتحط مرة واحدة
-    const parts = html.split(/(<[^>]+>)/).filter(Boolean);
-    let pi = 0, ci = 0, out = "";
-    setTalking(true);
-    (function step(){
-      if(!introRunning){ el.innerHTML = html; setTalking(false); return done && done(); }
-      if(pi >= parts.length){ el.innerHTML = out; setTalking(false); return done && done(); }
-      const p = parts[pi];
-      if(p.charAt(0) === "<"){ out += p; pi++; return step(); }
-      out += p.charAt(ci++);
-      if(ci >= p.length){ pi++; ci = 0; }
-      el.innerHTML = out + '<span class="cur"></span>';
-      later(step, speed);
-    })();
-  }
-
-  // الصفحة كلها بتتفتح كأنها طالعة من البوت (دايرة بتكبر من مكان نور لحد ما تغطي الشاشة)
-  function revealPage(){
-    const hub = document.getElementById("hubScreen");
-    if(!hub || hub.style.display !== "block" || !hub.animate) return;
-    const narrow = window.innerWidth <= 560;
-    const sz = narrow ? 84 : 100, right = narrow ? 12 : 18;
-    const x = window.innerWidth - right - sz / 2, y = window.innerHeight - 26 - sz / 2;
-    const r = hub.getBoundingClientRect();
-    const cx = Math.round(x - r.left), cy = Math.round(y - r.top);
-    const R = Math.ceil(Math.hypot(Math.max(cx, r.width - cx), Math.max(cy, r.height - cy))) + 60;
-    const from = "circle(0px at " + cx + "px " + cy + "px)";
-    const to = "circle(" + R + "px at " + cx + "px " + cy + "px)";
-    hub.style.clipPath = from;
-    let done = false;
-    const finish = function(){ if(done) return; done = true; hub.style.clipPath = ""; };
-    try{
-      const a = hub.animate([{ clipPath: from }, { clipPath: to }], { duration: 1050, delay: 380, easing: "cubic-bezier(.22,.8,.25,1)", fill: "both" });
-      a.onfinish = function(){ finish(); try{ a.cancel(); }catch(e){} };
-      a.oncancel = finish;
-    }catch(e){ finish(); }
-    // وهج لوني بيطلع من البوت مع فتحة الصفحة
-    const g = document.createElement("div");
-    g.className = "nr-bloom";
-    g.style.background = "radial-gradient(circle at " + x + "px " + y + "px,rgba(168,212,0,.45),rgba(45,95,184,.26) 28%,transparent 58%)";
-    root.appendChild(g);
-    try{
-      const ga = g.animate([{ opacity: 0 }, { opacity: 1, offset: .3 }, { opacity: 0 }], { duration: 1500, delay: 300, fill: "both" });
-      ga.onfinish = function(){ g.remove(); };
-    }catch(e){ g.remove(); }
-    setTimeout(function(){ g.remove(); finish(); }, 2600);
-  }
-
-  /* ----- مود نور: تحية وجمل بتتغير حسب الوقت واليوم (والجمل بتتبدّل كل مرة) ----- */
-  // الدخول بيظهر مرة واحدة بس لكل تسجيل دخول (المفتاح بيتمسح لما المدرس يطلع: شوف refresh)
   function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
-  function introSeen(){ try{ return sessionStorage.getItem(INTRO_KEY) === "1"; }catch(e){ return false; } }
-  function markIntroSeen(){ try{ sessionStorage.setItem(INTRO_KEY, "1"); }catch(e){} }
   function dateLabel(){
     try{ return new Date().toLocaleDateString("ar-EG", { weekday:"long", day:"numeric", month:"long" }); }catch(e){ return ""; }
   }
@@ -458,72 +445,153 @@
       short:["سهران معاك، محتاج حاجة؟","أنا هنا لو احتجتني"] };
   }
 
+
+  // الدخول بيظهر مرة واحدة بس لكل تسجيل دخول: البصمة = رقم المستخدم + وقت آخر تسجيل دخول (بتتغير بس لما يدخل من جديد)
+  function loginStamp(){
+    try{
+      const u = session().user || {};
+      return u.id && u.last_sign_in_at ? u.id + "|" + u.last_sign_in_at : "";
+    }catch(e){ return ""; }
+  }
+  function introSeen(){
+    try{
+      const st = loginStamp();
+      return st ? localStorage.getItem(INTRO_KEY) === st : sessionStorage.getItem(INTRO_KEY) === "1";
+    }catch(e){ return false; }
+  }
+  function markIntroSeen(){
+    try{
+      const st = loginStamp();
+      if(st) localStorage.setItem(INTRO_KEY, st); else sessionStorage.setItem(INTRO_KEY, "1");
+    }catch(e){}
+  }
+
+  let splashEl = null, splashTimers = [], splashAuto = 0, splashPrevOv = "";
+  function sT(fn, ms){ const t = setTimeout(fn, ms); splashTimers.push(t); return t; }
+
+  function popFab(){
+    if(!root || !root.classList.contains("splash")) return;
+    root.classList.remove("splash");
+    if(fab){ fab.style.animation = "none"; void fab.offsetWidth; fab.style.animation = ""; }   // نور بتوصل مكانها بحركة الدخول
+  }
+
+  function splashKey(e){
+    const onBtn = e.target && e.target.closest && e.target.closest("button");
+    if(e.key === "Escape" || ((e.key === "Enter" || e.key === " ") && !onBtn)){
+      e.preventDefault(); e.stopPropagation();
+      finishSplash("enter", true);
+    }
+  }
+
+  // الشاشة بتقفل كأنها دايرة بتصغر لحد مكان نور، والصفحة اللي تحتها بتظهر
+  function finishSplash(action, fast){
+    const el = splashEl;
+    if(!el || el._closing) return;
+    el._closing = true;
+    splashTimers.forEach(clearTimeout); splashTimers = [];
+    clearTimeout(splashAuto);
+    document.removeEventListener("keydown", splashKey, true);
+    el.classList.add("out");
+    let ended = false;
+    const done = function(){
+      if(ended) return; ended = true;
+      el.remove(); if(splashEl === el) splashEl = null;
+      document.documentElement.style.overflow = splashPrevOv;
+      popFab();
+      if(action === "brief" && root && !root.hidden){ open(); send(BRIEF_PROMPT); }
+    };
+    if(!reduceMotion() && el.animate && fab){
+      try{
+        const r = fab.getBoundingClientRect();
+        const cx = Math.round(r.left + r.width / 2), cy = Math.round(r.top + r.height / 2);
+        const R = Math.ceil(Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy))) + 40;
+        const dur = fast ? 420 : 950;
+        const a = el.animate(
+          [{ clipPath: "circle(" + R + "px at " + cx + "px " + cy + "px)" }, { clipPath: "circle(0px at " + cx + "px " + cy + "px)" }],
+          { duration: dur, easing: "cubic-bezier(.7,0,.25,1)", fill: "forwards" });
+        a.onfinish = done; a.oncancel = done;
+        setTimeout(popFab, Math.round(dur * .62));
+        setTimeout(done, dur + 400);
+        return;
+      }catch(e){}
+    }
+    el.style.transition = "opacity .4s ease"; el.style.opacity = "0";
+    setTimeout(done, 420);
+  }
+
   function playIntro(){
-    if(introRunning || !root || root.classList.contains("open") || introSeen()) return;
+    if(splashEl || !root || root.classList.contains("open") || introSeen()) return;
     markIntroSeen();
-    introRunning = true;
-    root.classList.add("intro");
-    // إعادة تشغيل أنيميشن الدخول
-    fab.style.animation = "none"; void fab.offsetWidth; fab.style.animation = "";
-    revealPage();
-    later(sparks, 0);
+    const reduced = reduceMotion();
+    const m = mood(), n = teacherName(), dl = dateLabel();
 
-    const m = mood(), n = teacherName();
-    const hello = m.hi + (n ? " يا أستاذ <b class=\"nm\">" + esc(n) + "</b>" : " يا أستاذ") + " " + m.em;
-    // تعريف + جملة على المزاج + عرض الملخص
-    const lines = [hello + "<br>أنا <b class=\"nm\">" + BOT.name + "</b>، " + BOT.role + ".", pick(m.pool), "أقدر أجهّزلك ملخص يومك في ثواني — أبدأ بيه؟"];
+    let wi = 0;
+    const wd = function(){ return ' style="animation-delay:' + (0.7 + (wi++) * 0.12).toFixed(2) + 's"'; };
+    const hiHtml = (m.hi + " يا أستاذ").split(" ").map(function(w){ return '<span class="w"' + wd() + '>' + esc(w) + '</span>'; }).join(" ") +
+      (n ? ' <span class="w nm"' + wd() + '>' + esc(n) + '</span>' : "") + ' <span class="w"' + wd() + '>' + m.em + '</span>';
 
-    later(function(){
-      const dl = dateLabel();
-      bubble.hidden = false;
-      bubble.innerHTML = '<button class="x" aria-label="إغلاق">×</button>' + (dl ? '<div class="dt">📅 ' + esc(dl) + '</div>' : "") +
-        '<div id="nrSay"></div><div class="acts" id="nrActs" hidden></div>';
-      bubble.querySelector(".x").addEventListener("click", function(){ endIntro(); });
-      const say = bubble.querySelector("#nrSay"), acts = bubble.querySelector("#nrActs");
+    const el = document.createElement("div");
+    el.className = "nr-splash";
+    el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "أهلاً بيك في MilEX");
+    el.innerHTML =
+      '<div class="sp-orb a"></div><div class="sp-orb b"></div><div class="sp-dots"></div>' +
+      '<button type="button" class="sp-skip" id="spSkip">تخطي</button>' +
+      '<div class="sp-core">' +
+        '<div class="sp-brand" dir="ltr">MILEX EDU</div>' +
+        '<div class="sp-av">' + faceHTML() + '<span class="sp-wave">👋</span></div>' +
+        '<h1 class="sp-hi">' + hiHtml + '</h1>' +
+        '<p class="sp-sub">' + esc(pick(m.pool)) + '</p>' +
+        '<p class="sp-role">أنا <b>' + esc(BOT.name) + '</b>، ' + esc(BOT.role) + '</p>' +
+        (dl ? '<div class="sp-date">📅 ' + esc(dl) + '</div>' : "") +
+        '<div class="sp-prog"><div class="sp-bar"><i></i></div><div class="sp-lbl" id="spLbl">جاري تجهيز مساحة عملك…</div></div>' +
+        '<div class="sp-acts" id="spActs">' +
+          '<button type="button" class="sp-btn pri" id="spGo">ابدأ ملخص اليوم ✨</button>' +
+          '<button type="button" class="sp-btn gho" id="spEnter">ادخل لوحة التحكم</button>' +
+        '</div>' +
+      '</div>';
 
-      function showActs(){
-        if(!introRunning) return;
-        acts.hidden = false;
-        acts.innerHTML = '<button type="button" class="nr-btn pri" id="nrGo">ابدأ الملخص ✨</button><button type="button" class="nr-btn gho" id="nrLater">بعدين</button>' +
-          '<span class="sep"></span>' +
-          '<button type="button" class="nr-btn gho sm" id="nrQ1">' + QUICK[1].ic + " " + QUICK[1].t + '</button>' +
-          '<button type="button" class="nr-btn gho sm" id="nrQ2">' + QUICK[2].ic + " " + QUICK[2].t + '</button>';
-        acts.querySelector("#nrGo").addEventListener("click", function(){ endIntro(); open(); send(BRIEF_PROMPT); });
-        acts.querySelector("#nrLater").addEventListener("click", function(){ endIntro(); });
-        acts.querySelector("#nrQ1").addEventListener("click", function(){ endIntro(); open(); send(QUICK[1].q); });
-        acts.querySelector("#nrQ2").addEventListener("click", function(){ endIntro(); open(); send(QUICK[2].q); });
-        later(function(){ endIntro(); }, 18000);
+    // نقط صغيرة بتطلع ببطء في الخلفية
+    const dots = el.querySelector(".sp-dots");
+    if(!reduced){
+      for(let i = 0; i < 16; i++){
+        const d = document.createElement("i");
+        d.className = "sp-dot";
+        const sz = 2 + Math.random() * 4;
+        d.style.cssText = "left:" + (Math.random() * 100).toFixed(1) + "%;width:" + sz.toFixed(1) + "px;height:" + sz.toFixed(1) + "px;animation-duration:" + (6 + Math.random() * 6).toFixed(1) + "s;animation-delay:" + (Math.random() * 5).toFixed(1) + "s";
+        dots.appendChild(d);
       }
+    }
 
-      function runLines(i){
-        if(!introRunning) return;
-        if(i >= lines.length) return showActs();
-        const row = document.createElement("div");
-        row.className = "ln";
-        say.appendChild(row);
-        typeInto(row, lines[i], 24, function(){
-          if(!introRunning) return;
-          if(i + 1 >= lines.length) return showActs();
-          // نقطتين "بتفكر" بين كل سطر والتاني
-          const dots = document.createElement("div");
-          dots.className = "nr-typing"; dots.innerHTML = "<i></i><i></i><i></i>";
-          say.appendChild(dots);
-          later(function(){ dots.remove(); runLines(i + 1); }, 650);
-        });
-      }
-      runLines(0);
-    }, 1150);
+    splashEl = el;
+    splashPrevOv = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    root.classList.add("splash");
+    root.insertBefore(el, root.firstChild);    // تحت الدوك: نور بتظهر فوقها وقت القفل
+
+    const face = el.querySelector(".nr-face"), acts = el.querySelector("#spActs"), lbl = el.querySelector("#spLbl");
+    sT(function(){ if(face) face.classList.add("talking"); }, reduced ? 0 : 800);
+    sT(function(){ if(face) face.classList.remove("talking"); }, reduced ? 300 : 2600);
+
+    const showActs = function(){
+      lbl.textContent = "جاهز ✓"; lbl.classList.add("ok");
+      acts.classList.add("on");
+    };
+    sT(showActs, reduced ? 400 : 3500);
+
+    // بيقفل لوحده، ويستنى لو المدرس واقف على الأزرار
+    const arm = function(ms){ clearTimeout(splashAuto); splashAuto = setTimeout(function(){ finishSplash("enter"); }, ms); };
+    arm(reduced ? 2200 : 6000);
+    acts.addEventListener("pointerenter", function(){ clearTimeout(splashAuto); });
+    acts.addEventListener("pointerleave", function(){ arm(2500); });
+    acts.addEventListener("focusin", function(){ clearTimeout(splashAuto); });
+
+    el.querySelector("#spSkip").addEventListener("click", function(){ finishSplash("enter", true); });
+    el.querySelector("#spEnter").addEventListener("click", function(){ finishSplash("enter"); });
+    el.querySelector("#spGo").addEventListener("click", function(){ finishSplash("brief"); });
+    document.addEventListener("keydown", splashKey, true);
   }
 
-  function endIntro(){
-    if(!introRunning && !root.classList.contains("intro")) return;
-    introRunning = false;
-    introTimers.forEach(clearTimeout); introTimers = [];
-    setTalking(false);
-    root.classList.remove("intro");
-    if(fab) fab.style.animation = "nrNudge 9s 5s ease-in-out infinite";   // من غير ما نعيد حركة الدخول بعد ما تخلص
-    if(bubble){ bubble.hidden = true; bubble.innerHTML = ""; }
-  }
+  function endIntro(){ if(splashEl) finishSplash("enter", true); }
 
   /* ===================== المحادثة ===================== */
   function scrollDown(){ list.scrollTop = list.scrollHeight; }
@@ -755,7 +823,7 @@
       if(entering && !(opts && opts.quiet) && !root.classList.contains("open")) playIntro();
     }else{
       if(root){ root.hidden = true; root.classList.remove("open"); endIntro(); }
-      try{ sessionStorage.removeItem(HIST_KEY); sessionStorage.removeItem(INTRO_KEY); }catch(e){}
+      try{ sessionStorage.removeItem(HIST_KEY); sessionStorage.removeItem(INTRO_KEY); localStorage.removeItem(INTRO_KEY); }catch(e){}
       history = [];
     }
   }
