@@ -270,62 +270,68 @@
   /* ===== شاشة الترحيب بملء الصفحة ===== */
   #mxc.splash .nr-dock{visibility:hidden}
   .nr-splash{position:absolute;inset:0;pointer-events:auto;display:grid;place-items:center;overflow:hidden;color:#fff;direction:rtl;font-family:Cairo,system-ui,sans-serif;
-    background:radial-gradient(1100px 760px at 85% 115%,rgba(45,95,184,.75),transparent 60%),radial-gradient(900px 640px at 8% -12%,rgba(168,212,0,.16),transparent 55%),linear-gradient(160deg,#04163F 0%,#0A2A6B 52%,#061F55 100%);
-    animation:spFade .55s ease both}
-  .nr-splash::before{content:"";position:absolute;inset:0;pointer-events:none;
-    background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:56px 56px;
-    -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0,transparent 72%);mask-image:radial-gradient(circle at 50% 50%,#000 0,transparent 72%);animation:spGrid 14s linear infinite}
+    background:radial-gradient(1000px 700px at 78% 108%,rgba(45,95,184,.8),transparent 62%),radial-gradient(800px 560px at 12% -10%,rgba(168,212,0,.14),transparent 58%),linear-gradient(165deg,#031232 0%,#08246A 55%,#051B4C 100%);
+    animation:spFade .6s ease both}
   .nr-splash *{box-sizing:border-box}
+  .nr-splash::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:56px 56px;
+    -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0,transparent 72%);mask-image:radial-gradient(circle at 50% 50%,#000 0,transparent 72%);animation:spGrid 14s linear infinite}
+  .nr-splash::after{content:"";position:absolute;top:-20%;bottom:-20%;width:36%;left:-45%;pointer-events:none;background:linear-gradient(100deg,transparent,rgba(255,255,255,.10),transparent);transform:skewX(-18deg);animation:spSweep 1.7s .45s cubic-bezier(.4,0,.2,1) both}
   .sp-orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none}
   .sp-orb.a{width:420px;height:420px;background:#2D5FB8;left:-120px;top:-100px;animation:spDrift 9s ease-in-out infinite alternate}
-  .sp-orb.b{width:360px;height:360px;background:rgba(168,212,0,.5);right:-100px;bottom:-120px;animation:spDrift 11s ease-in-out infinite alternate-reverse}
+  .sp-orb.b{width:360px;height:360px;background:rgba(168,212,0,.45);right:-100px;bottom:-120px;animation:spDrift 11s ease-in-out infinite alternate-reverse}
   .sp-dots{position:absolute;inset:0;pointer-events:none;overflow:hidden}
   .sp-dot{position:absolute;bottom:-12px;border-radius:50%;background:rgba(255,255,255,.75);opacity:0;animation:spRise linear infinite}
-  .sp-core{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:28px 22px;max-width:640px;width:100%}
-  .nr-splash.out .sp-core{opacity:0;transform:scale(.93);transition:opacity .35s ease,transform .5s ease}
-  .sp-brand{display:flex;align-items:center;gap:12px;font:800 12px Cairo,system-ui,sans-serif;letter-spacing:.42em;color:#A8D400;opacity:0;animation:spUp .6s .15s both}
+  .sp-core{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:28px 22px;max-width:660px;width:100%}
+  .nr-splash.out .sp-core{opacity:0;transform:scale(.94);transition:opacity .35s ease,transform .5s ease}
+
+  .sp-brand{display:flex;align-items:center;gap:12px;font:800 12px Cairo,system-ui,sans-serif;letter-spacing:.42em;color:#A8D400;opacity:0;animation:spUp .7s .2s cubic-bezier(.16,1,.3,1) both}
   .sp-brand::before,.sp-brand::after{content:"";width:30px;height:1px;background:linear-gradient(90deg,transparent,#A8D400)}
   .sp-brand::after{transform:scaleX(-1)}
-  .sp-av{position:relative;width:148px;height:148px;margin:6px 0 4px;opacity:0;animation:spPop .9s .25s cubic-bezier(.2,1.3,.4,1) both}
+
+  .sp-av{position:relative;width:132px;height:132px;margin:14px 0 22px;animation:spAv 1s .25s cubic-bezier(.16,1,.3,1) both}
   .sp-av .nr-face{width:100%;height:100%;background:radial-gradient(circle at 32% 20%,#5C94EA 0%,#2563C4 34%,#0B3A87 66%,#061F55 100%);
-    box-shadow:0 0 0 4px rgba(255,255,255,.95),0 0 0 8px #A8D400,0 26px 60px rgba(0,0,0,.5),0 0 60px rgba(168,212,0,.25),inset 0 -14px 22px rgba(6,31,85,.5),inset 0 8px 14px rgba(255,255,255,.3)}
+    box-shadow:0 0 0 3px rgba(255,255,255,.92),0 26px 60px rgba(0,0,0,.5),0 0 70px rgba(45,95,184,.5),inset 0 -14px 22px rgba(6,31,85,.5),inset 0 8px 14px rgba(255,255,255,.3)}
   .sp-av .nr-av{transform:translateY(6px) scale(1.1)}
-  .sp-av::before,.sp-av::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid #A8D400;opacity:0;animation:nrRing 2.8s 1.1s infinite}
-  .sp-av::after{border-color:#5B93E6;animation-delay:2.5s}
-  .sp-wave{position:absolute;top:-16px;left:-20px;font-size:38px;line-height:1;transform-origin:70% 80%;opacity:0;animation:spWaveIn .4s 1s both,nrWave 1.6s 1.1s 2}
-  .sp-hi{margin:4px 0 0;font:800 clamp(26px,5.2vw,46px)/1.4 Cairo,system-ui,sans-serif}
-  .sp-hi .w{display:inline-block;opacity:0;transform:translateY(18px);filter:blur(6px);animation:spWord .7s cubic-bezier(.2,.8,.2,1) both}
-  .sp-hi .nm{background:linear-gradient(90deg,#A8D400,#E3F77A);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .sp-sub{margin:0;font:600 clamp(15px,2.2vw,19px)/1.8 Cairo,system-ui,sans-serif;color:rgba(255,255,255,.88);opacity:0;animation:spUp .7s 1.35s both}
-  .sp-role{margin:0;font:500 14px/1.7 Cairo,system-ui,sans-serif;color:rgba(255,255,255,.62);opacity:0;animation:spUp .7s 1.55s both}
-  .sp-role b{color:#fff}
-  .sp-date{display:inline-flex;align-items:center;gap:8px;padding:6px 15px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font:700 12.5px Cairo,system-ui,sans-serif;opacity:0;animation:spUp .6s 1.7s both}
-  .sp-prog{width:min(300px,78vw);margin-top:8px;opacity:0;animation:spUp .6s 1.75s both}
-  .sp-bar{height:4px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden}
-  .sp-bar i{display:block;height:100%;width:100%;transform-origin:right center;transform:scaleX(0);background:linear-gradient(90deg,#A8D400,#E3F77A);animation:spFill 1.7s 1.8s cubic-bezier(.4,0,.2,1) forwards}
-  .sp-lbl{margin-top:9px;font:600 12px Cairo,system-ui,sans-serif;color:rgba(255,255,255,.7);min-height:18px;transition:color .3s}
-  .sp-lbl.ok{color:#A8D400}
-  .sp-acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .5s ease,transform .5s ease}
-  .sp-acts.on{opacity:1;transform:none;pointer-events:auto}
-  .sp-btn{border:0;border-radius:13px;padding:12px 24px;font:800 14px Cairo,system-ui,sans-serif;cursor:pointer;transition:transform .15s,filter .2s,background .2s}
-  .sp-btn:active{transform:scale(.96)}
-  .sp-btn.pri{background:#A8D400;color:#061F55;box-shadow:0 10px 30px rgba(168,212,0,.35)}
-  .sp-btn.pri:hover{filter:brightness(1.08)}
-  .sp-btn.gho{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.28)}
-  .sp-btn.gho:hover{background:rgba(255,255,255,.18)}
-  .sp-skip{position:absolute;top:18px;left:18px;z-index:3;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:6px 15px;font:700 12px Cairo,system-ui,sans-serif;cursor:pointer;opacity:0;animation:spUp .5s .9s both}
-  .sp-skip:hover{background:rgba(255,255,255,.18)}
+  .sp-ring{position:absolute;left:-24px;top:-24px;width:calc(100% + 48px);height:calc(100% + 48px);transform:rotate(-90deg);overflow:visible;pointer-events:none}
+  .sp-ring .pr{animation:spRing 1.9s 1s cubic-bezier(.45,0,.2,1) forwards}
+  .sp-av.ready .sp-ring .pr{filter:drop-shadow(0 0 7px rgba(168,212,0,.95))}
+  .sp-av.ready .nr-face{animation:spReady .7s ease}
+  .sp-av.ready::after{content:"";position:absolute;left:-24px;top:-24px;right:-24px;bottom:-24px;border-radius:50%;border:2px solid #A8D400;animation:spRipple .9s ease-out forwards;pointer-events:none}
+
+  .sp-hi{margin:0;font:800 clamp(28px,5.6vw,50px)/1.35 Cairo,system-ui,sans-serif;letter-spacing:0}
+  .sp-hi .wm{display:inline-block;overflow:hidden;vertical-align:bottom;padding:.1em .05em .24em;margin:-.1em 0 -.24em}
+  .sp-hi .w{display:inline-block;transform:translateY(118%);animation:spMask .85s cubic-bezier(.16,1,.3,1) both}
+  .sp-hi .nm{background:linear-gradient(90deg,#B6E000,#E8F98A);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sp-line{width:64px;height:3px;border-radius:3px;background:linear-gradient(90deg,#A8D400,#E3F77A);transform:scaleX(0);animation:spLine .8s 1.35s cubic-bezier(.16,1,.3,1) forwards}
+  .sp-sub{margin:2px 0 0;font:700 clamp(17px,2.5vw,22px)/1.6 Cairo,system-ui,sans-serif;color:#fff;opacity:0;animation:spUp .8s 1.5s cubic-bezier(.16,1,.3,1) both}
+  .sp-desc{margin:0;max-width:500px;font:500 clamp(13.5px,1.9vw,15.5px)/1.95 Cairo,system-ui,sans-serif;color:rgba(255,255,255,.8);opacity:0;animation:spUp .8s 1.7s cubic-bezier(.16,1,.3,1) both}
+  .sp-date{display:inline-flex;align-items:center;gap:8px;margin-top:2px;padding:7px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.09);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font:700 12.5px Cairo,system-ui,sans-serif;color:rgba(255,255,255,.92);opacity:0;animation:spUp .7s 1.85s cubic-bezier(.16,1,.3,1) both}
+  .sp-status{display:flex;align-items:center;gap:9px;margin-top:6px;min-height:22px;font:600 13px Cairo,system-ui,sans-serif;color:rgba(255,255,255,.82);opacity:0;animation:spUp .6s 1.95s both;transition:color .3s}
+  .sp-st{width:8px;height:8px;border-radius:50%;background:#A8D400;animation:nrBlinkDot .9s infinite}
+  .sp-status.ok{color:#CDEB5A}
+  .sp-status.ok .sp-st{animation:none;box-shadow:0 0 0 4px rgba(168,212,0,.28)}
+
+  .sp-skip{position:absolute;top:18px;left:18px;z-index:3;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;border-radius:999px;padding:7px 18px;font:700 13px Cairo,system-ui,sans-serif;cursor:pointer;
+    opacity:0;animation:spUp .6s .9s both;transition:background .2s,transform .15s}
+  .sp-skip:hover{background:rgba(255,255,255,.2)}
+  .sp-skip:active{transform:scale(.96)}
+  .sp-skip:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
   @keyframes spFade{from{opacity:0}to{opacity:1}}
   @keyframes spGrid{to{background-position:56px 56px,56px 56px}}
+  @keyframes spSweep{to{left:120%}}
   @keyframes spDrift{to{transform:translate(60px,40px) scale(1.15)}}
   @keyframes spRise{0%{opacity:0;transform:translateY(0)}15%{opacity:.8}100%{opacity:0;transform:translateY(-110vh)}}
-  @keyframes spUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-  @keyframes spPop{0%{opacity:0;transform:scale(.4) translateY(30px)}100%{opacity:1;transform:none}}
-  @keyframes spWord{to{opacity:1;transform:none;filter:none}}
-  @keyframes spFill{to{transform:scaleX(1)}}
-  @keyframes spWaveIn{to{opacity:1}}
-  @media (max-width:560px){.sp-av{width:120px;height:120px}.sp-wave{font-size:32px;left:-14px}.sp-skip{top:12px;left:12px}.sp-btn{padding:11px 20px}}
-  @media (prefers-reduced-motion:reduce){.nr-splash *,.nr-splash::before{animation-duration:.01s!important;animation-delay:0s!important}}
+  @keyframes spUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @keyframes spAv{0%{opacity:0;transform:scale(.6) translateY(26px);filter:blur(10px)}100%{opacity:1;transform:none;filter:blur(0)}}
+  @keyframes spMask{to{transform:none}}
+  @keyframes spLine{to{transform:scaleX(1)}}
+  @keyframes spRing{to{stroke-dashoffset:0}}
+  @keyframes spReady{0%{transform:scale(1)}40%{transform:scale(1.07)}100%{transform:scale(1)}}
+  @keyframes spRipple{from{opacity:.85;transform:scale(1)}to{opacity:0;transform:scale(1.45)}}
+  @media (max-width:560px){.sp-skip{top:12px;left:12px}.sp-av{width:112px;height:112px;margin:10px 0 20px}}
+  @media (prefers-reduced-motion:reduce){.nr-splash *,.nr-splash::before,.nr-splash::after{animation-duration:.01s!important;animation-delay:0s!important}}
 
   @media (max-width:560px){
     .nr-dock{right:12px;bottom:14px}.nr-bubble{max-width:calc(100vw - 150px);font-size:13px}
@@ -417,34 +423,16 @@
   /* ===================== الدخول الاحترافي: شاشة ترحيب بملء الصفحة ===================== */
   function later(fn, ms){ const t = setTimeout(fn, ms); introTimers.push(t); return t; }
 
-  function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
   function dateLabel(){
     try{ return new Date().toLocaleDateString("ar-EG", { weekday:"long", day:"numeric", month:"long" }); }catch(e){ return ""; }
   }
   function mood(){
-    const d = new Date(), h = d.getHours(), day = d.getDay();
-    if(day === 5 && h >= 5 && h < 18) return {
-      hi:"جمعة مباركة", em:"🌿",
-      pool:["النهارده إجازة.. بس أنا شغالة لو احتجتني 😉","يوم هادي، مناسب نراجع الأرقام من غير زحمة","خد نفسك النهارده، وأي حاجة تحتاجها أنا موجودة"],
-      short:["الجمعة مبروكة، محتاج حاجة؟","أنا هنا لو احتجتني حتى في الإجازة"] };
-    if(h >= 5 && h < 12) return {
-      hi:"صباح الفل", em:"☀️",
-      pool:["القهوة عليك والأرقام عليّا ☕","يوم جديد وطلاب جداد.. وأنا جاهزة أسبقك بخطوة","إنت ابدأ يومك وسيب المتابعة عليّا"],
-      short:["نورتنا تاني، محتاج حاجة؟","أنا هنا لو احتجتني"] };
-    if(h >= 12 && h < 17) return {
-      hi:"نهارك سعيد", em:"🌤️",
-      pool:["نص اليوم عدّى؟ تعالى نشوف الدنيا ماشية إزاي","وقت حلو نراجع الحضور والمدفوعات","لو الحصص خلصت أو لسه، أنا معاك في الحالتين"],
-      short:["نورتنا تاني، محتاج حاجة؟","اسألني في أي حاجة"] };
-    if(h >= 17 && h < 21) return {
-      hi:"مساء النور", em:"🌙",
-      pool:["يوم طويل.. خلّينا نقفله بشكل مرتب","قبل ما تقفل يومك، نطمّن على الغياب والمدفوعات","الحصص خلصت؟ نلمّ الأرقام في دقيقة"],
-      short:["نورتنا تاني، محتاج حاجة؟","أنا هنا لو احتجتني"] };
-    return {
-      hi:"مساء الخير", em:"🦉",
-      pool:["لسه صاحي يا أستاذ؟ الشغل مبيخلصش 😄","سهرانين؟ أنا مبنامش أصلًا 🤖","الدنيا هادية دلوقتي، وقت كويس للمراجعة"],
-      short:["سهران معاك، محتاج حاجة؟","أنا هنا لو احتجتني"] };
+    const d = new Date(), h = d.getHours();
+    if(d.getDay() === 5 && h >= 5 && h < 18) return { hi:"جمعة مباركة" };
+    if(h >= 5 && h < 12) return { hi:"صباح الخير" };
+    if(h >= 12 && h < 17) return { hi:"نهارك سعيد" };
+    return { hi:"مساء الخير" };
   }
-
 
   // الدخول بيظهر مرة واحدة بس لكل تسجيل دخول: البصمة = رقم المستخدم + وقت آخر تسجيل دخول (بتتغير بس لما يدخل من جديد)
   function loginStamp(){
@@ -525,29 +513,32 @@
     const reduced = reduceMotion();
     const m = mood(), n = teacherName(), dl = dateLabel();
 
+    // العنوان: كل كلمة بتطلع من تحت قناع
     let wi = 0;
-    const wd = function(){ return ' style="animation-delay:' + (0.7 + (wi++) * 0.12).toFixed(2) + 's"'; };
-    const hiHtml = (m.hi + " يا أستاذ").split(" ").map(function(w){ return '<span class="w"' + wd() + '>' + esc(w) + '</span>'; }).join(" ") +
-      (n ? ' <span class="w nm"' + wd() + '>' + esc(n) + '</span>' : "") + ' <span class="w"' + wd() + '>' + m.em + '</span>';
+    const word = function(w, cls){
+      return '<span class="wm"><span class="w' + (cls ? " " + cls : "") + '" style="animation-delay:' + (0.75 + (wi++) * 0.11).toFixed(2) + 's">' + esc(w) + '</span></span>';
+    };
+    const hiHtml = (m.hi + " يا أستاذ").split(" ").map(function(w){ return word(w); }).join(" ") + (n ? " " + word(n, "nm") : "");
+
+    const RING = '<svg class="sp-ring" viewBox="0 0 200 200" aria-hidden="true">' +
+      '<circle cx="100" cy="100" r="92" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="3"/>' +
+      '<circle class="pr" cx="100" cy="100" r="92" fill="none" stroke="#A8D400" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="578" stroke-dashoffset="578"/></svg>';
 
     const el = document.createElement("div");
     el.className = "nr-splash";
-    el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "أهلاً بيك في MilEX");
+    el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "أهلاً بك في MilEX EDU");
     el.innerHTML =
       '<div class="sp-orb a"></div><div class="sp-orb b"></div><div class="sp-dots"></div>' +
       '<button type="button" class="sp-skip" id="spSkip">تخطي</button>' +
       '<div class="sp-core">' +
         '<div class="sp-brand" dir="ltr">MILEX EDU</div>' +
-        '<div class="sp-av">' + faceHTML() + '<span class="sp-wave">👋</span></div>' +
+        '<div class="sp-av">' + RING + faceHTML() + '</div>' +
         '<h1 class="sp-hi">' + hiHtml + '</h1>' +
-        '<p class="sp-sub">' + esc(pick(m.pool)) + '</p>' +
-        '<p class="sp-role">أنا <b>' + esc(BOT.name) + '</b>، ' + esc(BOT.role) + '</p>' +
-        (dl ? '<div class="sp-date">📅 ' + esc(dl) + '</div>' : "") +
-        '<div class="sp-prog"><div class="sp-bar"><i></i></div><div class="sp-lbl" id="spLbl">جاري تجهيز مساحة عملك…</div></div>' +
-        '<div class="sp-acts" id="spActs">' +
-          '<button type="button" class="sp-btn pri" id="spGo">ابدأ ملخص اليوم ✨</button>' +
-          '<button type="button" class="sp-btn gho" id="spEnter">ادخل لوحة التحكم</button>' +
-        '</div>' +
+        '<div class="sp-line"></div>' +
+        '<p class="sp-sub">أهلاً بك في مساحة عملك</p>' +
+        '<p class="sp-desc">الطلاب والحضور والمدفوعات والامتحانات في مكان واحد، ونور معاك لو احتجت أي مساعدة.</p>' +
+        (dl ? '<div class="sp-date">' + esc(dl) + '</div>' : "") +
+        '<div class="sp-status" id="spStatus"><i class="sp-st"></i><span id="spLbl">جاري تجهيز مساحة عملك…</span></div>' +
       '</div>';
 
     // نقط صغيرة بتطلع ببطء في الخلفية
@@ -568,26 +559,22 @@
     root.classList.add("splash");
     root.insertBefore(el, root.firstChild);    // تحت الدوك: نور بتظهر فوقها وقت القفل
 
-    const face = el.querySelector(".nr-face"), acts = el.querySelector("#spActs"), lbl = el.querySelector("#spLbl");
-    sT(function(){ if(face) face.classList.add("talking"); }, reduced ? 0 : 800);
-    sT(function(){ if(face) face.classList.remove("talking"); }, reduced ? 300 : 2600);
+    const av = el.querySelector(".sp-av"), face = el.querySelector(".nr-face");
+    const status = el.querySelector("#spStatus"), lbl = el.querySelector("#spLbl");
 
-    const showActs = function(){
-      lbl.textContent = "جاهز ✓"; lbl.classList.add("ok");
-      acts.classList.add("on");
-    };
-    sT(showActs, reduced ? 400 : 3500);
+    // نور بتتحرك بوقها وقت ظهور العنوان
+    sT(function(){ if(face) face.classList.add("talking"); }, reduced ? 0 : 900);
+    sT(function(){ if(face) face.classList.remove("talking"); }, reduced ? 300 : 2400);
+    // لما الحلقة تكتمل: الحالة بتتغير ونبضة خفيفة
+    sT(function(){
+      if(av) av.classList.add("ready");
+      status.classList.add("ok"); lbl.textContent = "مساحة العمل جاهزة";
+    }, reduced ? 300 : 2950);
 
-    // بيقفل لوحده، ويستنى لو المدرس واقف على الأزرار
-    const arm = function(ms){ clearTimeout(splashAuto); splashAuto = setTimeout(function(){ finishSplash("enter"); }, ms); };
-    arm(reduced ? 2200 : 6000);
-    acts.addEventListener("pointerenter", function(){ clearTimeout(splashAuto); });
-    acts.addEventListener("pointerleave", function(){ arm(2500); });
-    acts.addEventListener("focusin", function(){ clearTimeout(splashAuto); });
-
+    // بيقفل لوحده بعد ثواني، أو فورًا بزرار "تخطي"
+    clearTimeout(splashAuto);
+    splashAuto = setTimeout(function(){ finishSplash("enter"); }, reduced ? 2200 : 5200);
     el.querySelector("#spSkip").addEventListener("click", function(){ finishSplash("enter", true); });
-    el.querySelector("#spEnter").addEventListener("click", function(){ finishSplash("enter"); });
-    el.querySelector("#spGo").addEventListener("click", function(){ finishSplash("brief"); });
     document.addEventListener("keydown", splashKey, true);
   }
 
@@ -834,8 +821,8 @@
     if(!isTeacher()) return;
     build(); root.hidden = false; endIntro(); playIntro();
   }
-  window.MILEX_COPILOT = { refresh:refresh, open:open, close:close, replay:replay, name:BOT.name, version:"splash-v3" };
-  try{ console.info("[milex-copilot] splash-v3 loaded"); }catch(e){}
+  window.MILEX_COPILOT = { refresh:refresh, open:open, close:close, replay:replay, name:BOT.name, version:"splash-v5" };
+  try{ console.info("[milex-copilot] splash-v5 loaded"); }catch(e){}
 
   function init(){
     const hubOnly = /(^|\/)(index\.html)?$/.test(location.pathname);
