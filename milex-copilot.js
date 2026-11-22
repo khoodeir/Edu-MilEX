@@ -255,6 +255,17 @@
   .nr-send svg{width:18px;height:18px;transform:scaleX(-1)}
   .nr-note{margin:7px 4px 0;font-size:11px;color:var(--c-mut);text-align:center}
 
+
+  /* ----- لمسات الدخول الإبداعي ----- */
+  .nr-spark.sq{border-radius:2px}
+  .nr-float{position:absolute;left:50%;top:0;font-size:22px;line-height:1;opacity:0;pointer-events:none;animation:nrFloatUp 2.2s ease-out forwards}
+  @keyframes nrFloatUp{0%{opacity:0;transform:translate(-50%,0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--fx,0px)),-120px) scale(1.15) rotate(14deg)}}
+  .nr-bubble .dt{font-size:11px;font-weight:700;color:var(--c-mut);margin-bottom:5px;letter-spacing:.2px}
+  .nr-bubble .ln{margin-bottom:4px}
+  .nr-bubble .nr-typing{padding:2px 2px 8px}
+  .nr-bubble .acts .nr-btn.sm{padding:6px 12px;font-size:12px}
+  .nr-bubble .acts .sep{flex-basis:100%;height:0}
+
   @media (max-width:560px){
     .nr-dock{right:12px;bottom:14px}.nr-bubble{max-width:calc(100vw - 150px);font-size:13px}
     #mxc.intro .nr-fab{width:84px;height:84px}.nr-panel{width:100vw}.nr-quick{grid-template-columns:1fr 1fr}
@@ -344,16 +355,25 @@
   /* ===================== الدخول المميز ===================== */
   function sparks(){
     if(reduceMotion()) return;
-    for(let n = 0; n < 18; n++){
+    for(let n = 0; n < 26; n++){
       const s = document.createElement("i");
-      s.className = "nr-spark";
-      const a = (Math.PI * 2 * n) / 18 + Math.random() * .4, d = 60 + Math.random() * 60;
+      s.className = "nr-spark" + (n % 5 === 0 ? " sq" : "");
+      const a = (Math.PI * 2 * n) / 26 + Math.random() * .4, d = 60 + Math.random() * 70;
       s.style.setProperty("--dx", Math.cos(a) * d + "px");
       s.style.setProperty("--dy", Math.sin(a) * d + "px");
       s.style.animationDelay = (0.55 + Math.random() * .25) + "s";
       fab.appendChild(s);
-      setTimeout(function(){ s.remove(); }, 2000);
+      setTimeout(function(){ s.remove(); }, 2200);
     }
+    // أيقونات تعليمية بتطلع وتطير من فوق نور
+    ["🎓","📚","✨","📝","⭐"].forEach(function(e, i){
+      const f = document.createElement("span");
+      f.className = "nr-float"; f.textContent = e;
+      f.style.setProperty("--fx", (-44 + i * 22) + "px");
+      f.style.animationDelay = (0.75 + i * 0.14) + "s";
+      fab.appendChild(f);
+      setTimeout(function(){ f.remove(); }, 3400);
+    });
   }
   function later(fn, ms){ const t = setTimeout(fn, ms); introTimers.push(t); return t; }
 
@@ -406,6 +426,39 @@
     setTimeout(function(){ g.remove(); finish(); }, 2600);
   }
 
+  /* ----- مود نور: تحية وجمل بتتغير حسب الوقت واليوم (والجمل بتتبدّل كل مرة) ----- */
+  const SEEN_KEY = "milexNourSeen";
+  function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+  function todayKey(){ const d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+  function seenToday(){ try{ return localStorage.getItem(SEEN_KEY) === todayKey(); }catch(e){ return false; } }
+  function markSeen(){ try{ localStorage.setItem(SEEN_KEY, todayKey()); }catch(e){} }
+  function dateLabel(){
+    try{ return new Date().toLocaleDateString("ar-EG", { weekday:"long", day:"numeric", month:"long" }); }catch(e){ return ""; }
+  }
+  function mood(){
+    const d = new Date(), h = d.getHours(), day = d.getDay();
+    if(day === 5 && h >= 5 && h < 18) return {
+      hi:"جمعة مباركة", em:"🌿",
+      pool:["النهارده إجازة.. بس أنا شغالة لو احتجتني 😉","يوم هادي، مناسب نراجع الأرقام من غير زحمة","خد نفسك النهارده، وأي حاجة تحتاجها أنا موجودة"],
+      short:["الجمعة مبروكة، محتاج حاجة؟","أنا هنا لو احتجتني حتى في الإجازة"] };
+    if(h >= 5 && h < 12) return {
+      hi:"صباح الفل", em:"☀️",
+      pool:["القهوة عليك والأرقام عليّا ☕","يوم جديد وطلاب جداد.. وأنا جاهزة أسبقك بخطوة","إنت ابدأ يومك وسيب المتابعة عليّا"],
+      short:["نورتنا تاني، محتاج حاجة؟","أنا هنا لو احتجتني"] };
+    if(h >= 12 && h < 17) return {
+      hi:"نهارك سعيد", em:"🌤️",
+      pool:["نص اليوم عدّى؟ تعالى نشوف الدنيا ماشية إزاي","وقت حلو نراجع الحضور والمدفوعات","لو الحصص خلصت أو لسه، أنا معاك في الحالتين"],
+      short:["نورتنا تاني، محتاج حاجة؟","اسألني في أي حاجة"] };
+    if(h >= 17 && h < 21) return {
+      hi:"مساء النور", em:"🌙",
+      pool:["يوم طويل.. خلّينا نقفله بشكل مرتب","قبل ما تقفل يومك، نطمّن على الغياب والمدفوعات","الحصص خلصت؟ نلمّ الأرقام في دقيقة"],
+      short:["نورتنا تاني، محتاج حاجة؟","أنا هنا لو احتجتني"] };
+    return {
+      hi:"مساء الخير", em:"🦉",
+      pool:["لسه صاحي يا أستاذ؟ الشغل مبيخلصش 😄","سهرانين؟ أنا مبنامش أصلًا 🤖","الدنيا هادية دلوقتي، وقت كويس للمراجعة"],
+      short:["سهران معاك، محتاج حاجة؟","أنا هنا لو احتجتني"] };
+  }
+
   function playIntro(){
     if(introRunning || !root || root.classList.contains("open")) return;
     introRunning = true;
@@ -415,21 +468,53 @@
     revealPage();
     later(sparks, 0);
 
-    const n = teacherName();
-    const hello = greeting() + (n ? " يا أستاذ <b class=\"nm\">" + esc(n) + "</b>" : " يا أستاذ") + " 👋";
+    const m = mood(), n = teacherName(), full = !seenToday();
+    markSeen();
+    const hello = m.hi + (n ? " يا أستاذ <b class=\"nm\">" + esc(n) + "</b>" : " يا أستاذ") + " " + m.em;
+    // أول دخول في اليوم: تعريف + جملة على المزاج + عرض الملخص. الدخول التاني: سطرين بس.
+    const lines = full
+      ? [hello + "<br>أنا <b class=\"nm\">" + BOT.name + "</b>، " + BOT.role + ".", pick(m.pool), "أقدر أجهّزلك ملخص يومك في ثواني — أبدأ بيه؟"]
+      : [hello, pick(m.short)];
+
     later(function(){
+      const dl = dateLabel();
       bubble.hidden = false;
-      bubble.innerHTML = '<button class="x" aria-label="إغلاق">×</button><div id="nrSay"></div><div class="acts" id="nrActs" hidden></div>';
+      bubble.innerHTML = '<button class="x" aria-label="إغلاق">×</button>' + (dl ? '<div class="dt">📅 ' + esc(dl) + '</div>' : "") +
+        '<div id="nrSay"></div><div class="acts" id="nrActs" hidden></div>';
       bubble.querySelector(".x").addEventListener("click", function(){ endIntro(); });
       const say = bubble.querySelector("#nrSay"), acts = bubble.querySelector("#nrActs");
-      typeInto(say, hello + "<br>أنا <b class=\"nm\">" + BOT.name + "</b>، " + BOT.role + ".<br>جهّزتلك ملخص يومك — أبدأ بيه؟", 26, function(){
+
+      function showActs(){
         if(!introRunning) return;
         acts.hidden = false;
-        acts.innerHTML = '<button type="button" class="nr-btn pri" id="nrGo">ابدأ الملخص ✨</button><button type="button" class="nr-btn gho" id="nrLater">بعدين</button>';
+        acts.innerHTML = '<button type="button" class="nr-btn pri" id="nrGo">ابدأ الملخص ✨</button><button type="button" class="nr-btn gho" id="nrLater">بعدين</button>' +
+          '<span class="sep"></span>' +
+          '<button type="button" class="nr-btn gho sm" id="nrQ1">' + QUICK[1].ic + " " + QUICK[1].t + '</button>' +
+          '<button type="button" class="nr-btn gho sm" id="nrQ2">' + QUICK[2].ic + " " + QUICK[2].t + '</button>';
         acts.querySelector("#nrGo").addEventListener("click", function(){ endIntro(); open(); send(BRIEF_PROMPT); });
         acts.querySelector("#nrLater").addEventListener("click", function(){ endIntro(); });
-        later(function(){ endIntro(); }, 14000);
-      });
+        acts.querySelector("#nrQ1").addEventListener("click", function(){ endIntro(); open(); send(QUICK[1].q); });
+        acts.querySelector("#nrQ2").addEventListener("click", function(){ endIntro(); open(); send(QUICK[2].q); });
+        later(function(){ endIntro(); }, 18000);
+      }
+
+      function runLines(i){
+        if(!introRunning) return;
+        if(i >= lines.length) return showActs();
+        const row = document.createElement("div");
+        row.className = "ln";
+        say.appendChild(row);
+        typeInto(row, lines[i], 24, function(){
+          if(!introRunning) return;
+          if(i + 1 >= lines.length) return showActs();
+          // نقطتين "بتفكر" بين كل سطر والتاني
+          const dots = document.createElement("div");
+          dots.className = "nr-typing"; dots.innerHTML = "<i></i><i></i><i></i>";
+          say.appendChild(dots);
+          later(function(){ dots.remove(); runLines(i + 1); }, 650);
+        });
+      }
+      runLines(0);
     }, 1150);
   }
 
