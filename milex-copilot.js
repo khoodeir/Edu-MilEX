@@ -828,7 +828,14 @@
     }
   }
 
-  window.MILEX_COPILOT = { refresh:refresh, open:open, close:close, name:BOT.name };
+  // replay: لتجربة شاشة الترحيب من غير ما تسجّل خروج (بتمسح علامة "اتعرضت" وتشغّلها)
+  function replay(){
+    try{ localStorage.removeItem(INTRO_KEY); sessionStorage.removeItem(INTRO_KEY); }catch(e){}
+    if(!isTeacher()) return;
+    build(); root.hidden = false; endIntro(); playIntro();
+  }
+  window.MILEX_COPILOT = { refresh:refresh, open:open, close:close, replay:replay, name:BOT.name, version:"splash-v3" };
+  try{ console.info("[milex-copilot] splash-v3 loaded"); }catch(e){}
 
   function init(){
     const hubOnly = /(^|\/)(index\.html)?$/.test(location.pathname);
