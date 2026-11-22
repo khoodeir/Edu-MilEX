@@ -427,11 +427,10 @@
   }
 
   /* ----- مود نور: تحية وجمل بتتغير حسب الوقت واليوم (والجمل بتتبدّل كل مرة) ----- */
-  const SEEN_KEY = "milexNourSeen";
+  // الدخول بيظهر مرة واحدة بس لكل تسجيل دخول (المفتاح بيتمسح لما المدرس يطلع: شوف refresh)
   function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
-  function todayKey(){ const d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
-  function seenToday(){ try{ return localStorage.getItem(SEEN_KEY) === todayKey(); }catch(e){ return false; } }
-  function markSeen(){ try{ localStorage.setItem(SEEN_KEY, todayKey()); }catch(e){} }
+  function introSeen(){ try{ return sessionStorage.getItem(INTRO_KEY) === "1"; }catch(e){ return false; } }
+  function markIntroSeen(){ try{ sessionStorage.setItem(INTRO_KEY, "1"); }catch(e){} }
   function dateLabel(){
     try{ return new Date().toLocaleDateString("ar-EG", { weekday:"long", day:"numeric", month:"long" }); }catch(e){ return ""; }
   }
@@ -460,7 +459,8 @@
   }
 
   function playIntro(){
-    if(introRunning || !root || root.classList.contains("open")) return;
+    if(introRunning || !root || root.classList.contains("open") || introSeen()) return;
+    markIntroSeen();
     introRunning = true;
     root.classList.add("intro");
     // إعادة تشغيل أنيميشن الدخول
@@ -468,13 +468,10 @@
     revealPage();
     later(sparks, 0);
 
-    const m = mood(), n = teacherName(), full = !seenToday();
-    markSeen();
+    const m = mood(), n = teacherName();
     const hello = m.hi + (n ? " يا أستاذ <b class=\"nm\">" + esc(n) + "</b>" : " يا أستاذ") + " " + m.em;
-    // أول دخول في اليوم: تعريف + جملة على المزاج + عرض الملخص. الدخول التاني: سطرين بس.
-    const lines = full
-      ? [hello + "<br>أنا <b class=\"nm\">" + BOT.name + "</b>، " + BOT.role + ".", pick(m.pool), "أقدر أجهّزلك ملخص يومك في ثواني — أبدأ بيه؟"]
-      : [hello, pick(m.short)];
+    // تعريف + جملة على المزاج + عرض الملخص
+    const lines = [hello + "<br>أنا <b class=\"nm\">" + BOT.name + "</b>، " + BOT.role + ".", pick(m.pool), "أقدر أجهّزلك ملخص يومك في ثواني — أبدأ بيه؟"];
 
     later(function(){
       const dl = dateLabel();
