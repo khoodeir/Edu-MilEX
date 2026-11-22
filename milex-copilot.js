@@ -299,10 +299,10 @@
   .sp-av.ready .nr-face{animation:spReady .7s ease}
   .sp-av.ready::after{content:"";position:absolute;left:-24px;top:-24px;right:-24px;bottom:-24px;border-radius:50%;border:2px solid #A8D400;animation:spRipple .9s ease-out forwards;pointer-events:none}
 
-  .sp-hi{margin:0;font:800 clamp(28px,5.6vw,50px)/1.35 Cairo,system-ui,sans-serif;letter-spacing:0}
+  .sp-hi{margin:0;color:#fff;font:800 clamp(28px,5.6vw,50px)/1.35 Cairo,system-ui,sans-serif;letter-spacing:0}
+  .sp-hi .w{color:#fff}
   .sp-hi .wm{display:inline-block;overflow:hidden;vertical-align:bottom;padding:.1em .05em .24em;margin:-.1em 0 -.24em}
   .sp-hi .w{display:inline-block;transform:translateY(118%);animation:spMask .85s cubic-bezier(.16,1,.3,1) both}
-  .sp-hi .nm{background:linear-gradient(90deg,#B6E000,#E8F98A);-webkit-background-clip:text;background-clip:text;color:transparent}
   .sp-line{width:64px;height:3px;border-radius:3px;background:linear-gradient(90deg,#A8D400,#E3F77A);transform:scaleX(0);animation:spLine .8s 1.35s cubic-bezier(.16,1,.3,1) forwards}
   .sp-sub{margin:2px 0 0;font:700 clamp(17px,2.5vw,22px)/1.6 Cairo,system-ui,sans-serif;color:#fff;opacity:0;animation:spUp .8s 1.5s cubic-bezier(.16,1,.3,1) both}
   .sp-desc{margin:0;max-width:500px;font:500 clamp(13.5px,1.9vw,15.5px)/1.95 Cairo,system-ui,sans-serif;color:rgba(255,255,255,.8);opacity:0;animation:spUp .8s 1.7s cubic-bezier(.16,1,.3,1) both}
@@ -511,14 +511,14 @@
     if(splashEl || !root || root.classList.contains("open") || introSeen()) return;
     markIntroSeen();
     const reduced = reduceMotion();
-    const m = mood(), n = teacherName(), dl = dateLabel();
+    const m = mood(), dl = dateLabel();
 
     // العنوان: كل كلمة بتطلع من تحت قناع
     let wi = 0;
     const word = function(w, cls){
       return '<span class="wm"><span class="w' + (cls ? " " + cls : "") + '" style="animation-delay:' + (0.75 + (wi++) * 0.11).toFixed(2) + 's">' + esc(w) + '</span></span>';
     };
-    const hiHtml = (m.hi + " يا أستاذ").split(" ").map(function(w){ return word(w); }).join(" ") + (n ? " " + word(n, "nm") : "");
+    const hiHtml = (m.hi + " يا أستاذ").split(" ").map(function(w){ return word(w); }).join(" ");
 
     const RING = '<svg class="sp-ring" viewBox="0 0 200 200" aria-hidden="true">' +
       '<circle cx="100" cy="100" r="92" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="3"/>' +
@@ -533,7 +533,7 @@
       '<div class="sp-core">' +
         '<div class="sp-brand" dir="ltr">MILEX EDU</div>' +
         '<div class="sp-av">' + RING + faceHTML() + '</div>' +
-        '<h1 class="sp-hi">' + hiHtml + '</h1>' +
+        '<div class="sp-hi" role="heading" aria-level="1">' + hiHtml + '</div>' +
         '<div class="sp-line"></div>' +
         '<p class="sp-sub">أهلاً بك في مساحة عملك</p>' +
         '<p class="sp-desc">الطلاب والحضور والمدفوعات والامتحانات في مكان واحد، ونور معاك لو احتجت أي مساعدة.</p>' +
@@ -821,8 +821,8 @@
     if(!isTeacher()) return;
     build(); root.hidden = false; endIntro(); playIntro();
   }
-  window.MILEX_COPILOT = { refresh:refresh, open:open, close:close, replay:replay, name:BOT.name, version:"splash-v5" };
-  try{ console.info("[milex-copilot] splash-v5 loaded"); }catch(e){}
+  window.MILEX_COPILOT = { refresh:refresh, open:open, close:close, replay:replay, name:BOT.name, version:"splash-v6" };
+  try{ console.info("[milex-copilot] splash-v6 loaded"); }catch(e){}
 
   function init(){
     const hubOnly = /(^|\/)(index\.html)?$/.test(location.pathname);
