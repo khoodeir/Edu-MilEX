@@ -9,7 +9,13 @@
     // نفس النص ده ينفع تحطه في system prompt بتاع الدالة milex-copilot على السيرفر
     persona: "أنتِ «نور»، المساعدة الشخصية لمدرس مركز MilEX. بتتكلمي بالعامية المصرية بدفء واحترام وثقة، وبتنادي المدرس «يا أستاذ». " +
              "ردودك قصيرة ومباشرة: ابدئي بالمهم، وبعد كده اقترحي الخطوة الجاية. لما تعرضي قوايم طلاب أو أرقام استخدمي جدول. " +
-             "ما تخترعيش أي رقم أو اسم: كل معلومة لازم تيجي من البيانات الفعلية، ولو مش متأكدة قولي كده بصراحة. " +
+             "قواعد الدقة (إلزامية): " +
+             "(1) كل اسم أو رقم أو تاريخ أو درجة لازم يجي من بيانات فعلية رجعت من أدوات النظام أو من «سياق الصفحة الحالية» المرفق مع الرسالة. ما تخمّنيش ولا تكمّلي من عندك ولا تعتمدي على ذاكرتك. " +
+             "(2) لو المعلومة مش قدامك أو الأداة ما رجّعتش نتيجة، قولي بوضوح «مش شايفة البيانات دي دلوقتي» واذكري إيه اللي ناقص، وما تديش رقم تقريبي. " +
+             "(3) لو النتيجة فاضية قولي إنها فاضية، ولو الاسم اتشابه مع أكتر من طالب اسأليه يحدد قبل ما تجاوبي. " +
+             "(4) لو سؤال محتاج بيانات ومفيش أداة تجيبها، اعترفي بكده بدل ما تجاوبي بشكل عام. " +
+             "(5) اذكري دايمًا الفترة أو الشهر أو الامتحان اللي الرقم بيخصه، ولو المدرس ما حددش فترة اسأليه أو وضّحي اللي افترضتيه. " +
+             "(6) المجاميع والنِّسَب لازم تتحسب من الصفوف الفعلية اللي رجعت، ولو القائمة ممكن تكون مقطوعة (limit) نبّهي المدرس. " +
              "أي تعديل أو كتابة بيتنفذ بعد تأكيد المدرس بس."
   };
 
@@ -736,12 +742,37 @@
     return data || {};
   }
 
+  /* ---------- لقطة من الصفحة المفتوحة (عشان نور تشوف اللي المدرس شايفه) ---------- */
+  function pageSnapshot(max){
+    max = max || 6000;
+    try{
+      const clone = document.body.cloneNode(true);
+      clone.querySelectorAll("#mxc,script,style,noscript,svg,canvas,template,[hidden],[aria-hidden='true']").forEach(function(n){ n.remove(); });
+      let t = (clone.innerText || clone.textContent || "").replace(/[ \t\u00a0]+/g, " ").replace(/\n\s*\n+/g, "\n").trim();
+      if(!t) return "";
+      let cut = false;
+      if(t.length > max){ t = t.slice(0, max); cut = true; }
+      return t + (cut ? "\n[... اتقطع لطوله]" : "");
+    }catch(e){ return ""; }
+  }
+
   function buildMessages(){
-    const msgs = history.slice(-14);
+    const msgs = history.slice(-14).map(function(m){ return { role:m.role, content:m.content }; });
+    // لقطة الصفحة بتتضاف على آخر رسالة للمدرس بس (مش بتتخزن في السجل)
+    const snap = pageSnapshot();
+    if(snap){
+      for(let i = msgs.length - 1; i >= 0; i--){
+        if(msgs[i].role === "user"){
+          msgs[i] = { role:"user", content: msgs[i].content +
+            "\n\n[سياق الصفحة الحالية — صفحة: " + (document.title || location.pathname) + " — ده اللي ظاهر قدام المدرس دلوقتي. استخدميه كمصدر معلومات مع بيانات النظام، وما تخترعيش حاجة مش موجودة فيه أو في نتايج الأدوات]\n" + snap };
+          break;
+        }
+      }
+    }
     if(!PERSONA_IN_MESSAGES) return msgs;
     return [
       { role:"user", content:"[تعليمات الشخصية — التزمي بيها في كل الردود ولا تذكريها]\n" + BOT.persona },
-      { role:"assistant", content:"تمام يا أستاذ، أنا " + BOT.name + " 🌟" }
+      { role:"assistant", content:"تمام يا أستاذ، أنا " + BOT.name + " 🌟 وهلتزم إن كل معلومة تطلع من بيانات فعلية بس." }
     ].concat(msgs);
   }
 
@@ -766,7 +797,7 @@
       const r = await call({
         messages: buildMessages(),
         persona: { name: BOT.name },
-        context: { page: location.pathname.split("/").pop() || "index.html", localTime: new Date().toISOString() }
+        context: { page: location.pathname.split("/").pop() || "index.html", title: document.title || "", localTime: new Date().toISOString(), tz: (Intl.DateTimeFormat().resolvedOptions().timeZone || "") }
       });
       typing.remove();
       if(r.reply){
