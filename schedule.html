@@ -30,7 +30,6 @@
 <div class="topbar">
   <button class="icon-btn" onclick="MX.goBack()" title="رجوع">↩️</button>
   <h1>🗓 جدول الحصص</h1>
-  <button class="icon-btn" id="themeBtn" onclick="MX.toggleTheme(); this.textContent=MX.themeIcon()">🌙</button>
 </div>
 <div class="wrap">
   <div class="card no-print">
@@ -57,7 +56,7 @@
   const dayAr = n => MX_SCHED.DAYS.find(d => d.n === n).ar;
 
   async function load(){
-    $('themeBtn').textContent = MX.themeIcon();
+    
     MX.GRADE_KEYS.forEach(k => $('gradeF').add(new Option(MX.GRADES[k].ar, k)));
     try{ $('dur').value = localStorage.getItem('milexSessDur') || '120'; }catch(e){}
     const { data, error } = await supa.from('app_config').select('value').eq('key','reg_form_data').maybeSingle();

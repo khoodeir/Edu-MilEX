@@ -2,7 +2,7 @@
 <html lang="en" style="visibility:hidden">
 <head>
 <script src="milex-session.js"></script>
-<script src="milex-theme-sync.js" data-apply="1" data-float="1"></script>
+<script src="milex-theme-sync.js" data-apply="1"></script>
 <meta name="milex-perm" content="register">
 <link rel="stylesheet" href="milex-dark.css">
 
@@ -370,11 +370,6 @@ button.submit:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
 </head>
 <body>
 <div class="card">
-  <div class="lang-toggle" id="langToggle">
-    <button type="button" data-lang="en" class="active">EN</button>
-    <button type="button" data-lang="ar">AR</button>
-  </div>
-
   <div class="title-wrap">
     <div class="crest">
 <img src="logo.png" alt="MilEX">    </div>
@@ -984,15 +979,8 @@ function setLanguage(lang){
   localStorage.setItem("regLang", currentLang);
   document.documentElement.lang = currentLang;
   document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
-  document.querySelectorAll("#langToggle button").forEach(b => {
-    b.classList.toggle("active", b.dataset.lang === currentLang);
-  });
   applyTranslations();
 }
-
-document.querySelectorAll("#langToggle button").forEach(btn => {
-  btn.addEventListener("click", () => setLanguage(btn.dataset.lang));
-});
 
 setLanguage(currentLang);
 populateStageOptions(false);

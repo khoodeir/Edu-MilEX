@@ -31,7 +31,6 @@
 <div class="topbar">
   <button class="icon-btn" onclick="MX.goBack()" title="رجوع">↩️</button>
   <h1>👥 إدارة المساعدين</h1>
-  <button class="icon-btn" id="themeBtn" onclick="MX.toggleTheme(); this.textContent=MX.themeIcon()">🌙</button>
 </div>
 
 <div class="wrap">
@@ -150,7 +149,7 @@
   }
 
   async function load(){
-    $('themeBtn').textContent = MX.themeIcon();
+    
     renderPermGrid($('nPerms'), MILEX.DEFAULT_ASSISTANT_PERMS);
     if(!(await ensureSession())){ $('list').innerHTML = ''; return; }
     const [l, u] = await Promise.all([ supa.rpc('staff_list'), supa.rpc('staff_unlinked') ]);

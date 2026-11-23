@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <script src="milex-session.js"></script>
+<script src="milex-theme-sync.js" data-apply="1"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="pageTitle">بوابة الدخول | MilEX </title>
@@ -419,10 +420,6 @@
 
   <div class="topbar">
     <div class="topbar-left"></div>
-    <div style="display:flex; gap:10px;">
-      <button class="icon-toggle-btn" id="langBtn" onclick="toggleLanguage()">EN</button>
-      <button class="icon-toggle-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
-    </div>
   </div>
 
   
@@ -530,6 +527,13 @@
         </div>
         <h2 data-i18n="hubStaff">المساعدين</h2>
         <p data-i18n="hubStaffDesc">أنشئ حسابات وحدد صلاحيات كل مساعد</p>
+      </a>
+<a class="role-card" href="settings.html">
+        <div class="role-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        </div>
+        <h2 data-i18n="hubSettings">الإعدادات</h2>
+        <p data-i18n="hubSettingsDesc">اللغة والدارك مود ورسائل الواتساب</p>
       </a>
       </div>
     </section>
@@ -1072,6 +1076,7 @@
       title:"أهلاً بيك، مين حضرتك؟",
       subtitle:"اختر دورك للمتابعة إلى الصفحة المناسبة لك",
       teacherTitle:"المدرس", teacherDesc:"دخول كامل للوحة التحكم والإدارة",
+      hubSettings:"الإعدادات", hubSettingsDesc:"اللغة والدارك مود ورسائل الواتساب",
 "Parent PortalTitle":"ولي الأمر", "Parent PortalDesc":"تابع تقرير ابنك: الحضور والدرجات والمدفوعات",
       assistantTitle:"المساعد", assistantDesc:"الحضور والطلاب والامتحانات والمجاميع",
       footer:"MilEX",
@@ -1111,6 +1116,7 @@
       title:"Welcome — who are you?",
       subtitle:"Choose your role to continue to the right page",
       teacherTitle:"Teacher", teacherDesc:"Full access to the dashboard and management",
+      hubSettings:"Settings", hubSettingsDesc:"Language, dark mode & WhatsApp messages",
 "Parent PortalTitle":"Parent Portal", "Parent PortalDesc":"Track your child's attendance, grades and payments",
       assistantTitle:"Assistant", assistantDesc:"Attendance, students, exams and groups",
       footer:"MilEX",
@@ -1154,23 +1160,10 @@
     const dict = translations[lang];
     document.documentElement.setAttribute('lang', lang);
     document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-    document.getElementById('langBtn').textContent = lang === 'ar' ? 'EN' : 'عربي';
     document.querySelectorAll('[data-i18n]').forEach(el=>{
       const key = el.getAttribute('data-i18n');
       if(dict[key]) el.textContent = dict[key];
     });
-  }
-
-  function toggleLanguage(){
-    applyLanguage(currentLang === 'ar' ? 'en' : 'ar');
-  }
-
-  function toggleTheme(){
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const next = isDark ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
-    try{ localStorage.setItem('mgTheme', next); }catch(e){}
   }
 
   async function selectRole(role, cardEl){
@@ -1363,10 +1356,8 @@
     setTimeout(closeChangePasswordOverlay, 1200);
   }
 
-  applyLanguage('ar');
-  if(document.documentElement.getAttribute('data-theme') === 'dark'){
-    document.getElementById('themeBtn').textContent = '☀️';
-  }
+  // اللغة والثيم بييجوا من صفحة الإعدادات (milex-theme-sync.js)
+  applyLanguage((window.MX_LANG && MX_LANG.get()) || 'ar');
 
   // لو الجهاز ده مسجّل دخول قبل كده: افتح صفحة المدرس/المساعد على طول (ومتطلبش الإيميل والباسورد تاني)
   // ولو رجعت من صفحة تانية بزرار الرجوع: يرجّعك لنفس الصفحة الرئيسية بدل شاشة الاختيار الأولى

@@ -26,7 +26,6 @@
 <div class="topbar">
   <button class="icon-btn" onclick="MX.goBack()" title="رجوع">↩️</button>
   <h1>💾 نسخة احتياطية</h1>
-  <button class="icon-btn" id="themeBtn" onclick="MX.toggleTheme(); this.textContent=MX.themeIcon()">🌙</button>
 </div>
 <div class="wrap" style="max-width:640px">
   <div class="card">
@@ -117,7 +116,7 @@
       $('lastBox').classList.toggle('warn', days > 7);
     }
   }
-  $('themeBtn').textContent = MX.themeIcon(); showLast();
+  showLast();
 </script>
 <script>
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {

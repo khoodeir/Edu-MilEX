@@ -317,8 +317,6 @@
     </div>
   </div>
   <div class="topbar-actions">
-    <button class="icon-toggle-btn" id="langToggleBtn" onclick="toggleLanguage()">EN</button>
-    <button class="icon-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
     <a class="back-btn" href="javascript:void(0)" id="t_back" onclick="goBack()">
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -533,7 +531,6 @@
     document.getElementById("t_title").textContent = s.title;
     document.getElementById("t_subtitle").textContent = s.subtitle;
     document.getElementById("backBtnText").textContent = currentLang === "ar" ? "رجوع" : "Back";
-    document.getElementById("langToggleBtn").textContent = s.langToggle;
     document.getElementById("examManageSearch").placeholder = s.searchPlaceholder;
     document.getElementById("t_addExamBtn").textContent = s.addExamBtn;
     document.getElementById("t_manageGradesTitle").textContent = s.manageGradesTitle;
@@ -559,25 +556,12 @@
     }
   }
 
-  function toggleLanguage(){
-    currentLang = currentLang === "ar" ? "en" : "ar";
-    localStorage.setItem("eduTrackLang", currentLang);
-    applyLanguage();
-  }
-
   function applyTheme(){
     if(currentTheme === "dark"){
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
     }
-    document.getElementById("themeToggleBtn").textContent = currentTheme === "dark" ? "☀️" : "🌙";
-  }
-
-  function toggleTheme(){
-    currentTheme = currentTheme === "dark" ? "light" : "dark";
-    localStorage.setItem("eduTrackTheme", currentTheme);
-    applyTheme();
   }
 
   async function fetchGrade(grade){

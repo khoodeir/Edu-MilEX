@@ -1251,10 +1251,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       <div class="tab" id="absTab"><span id="absTabLbl">📉 غياب متتالي</span></div>
       <div class="tab" id="auditTab"><span id="auditTabLbl">🧾 سجل العمليات</span></div>
     </div>
-    <div class="tab-group-label" data-group="settings" onclick="toggleGroup(this)">▼ Settings</div>
-    <div class="tab-group" data-group="settings">
-      <div class="tab settings-tab" id="settingsTab" data-i18n="tabSettings">⚙️ Settings</div>
-    </div>
   </div>
 
   <div class="tab-panel">
@@ -1707,78 +1703,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       </div>
     </div>
 
-    <div id="settingsView" style="display:none;">
-
-      <div class="sv-hero">
-        <div class="sv-hero-left">
-          <div class="sv-hero-avatar">⚙️</div>
-          <div>
-            <div class="sv-hero-title" data-i18n="settingsHeroTitle">Dashboard Settings</div>
-            <div class="sv-hero-sub" data-i18n="settingsHeroSub">Customize how your dashboard looks and speaks</div>
-          </div>
-        </div>
-        <div class="sv-hero-pill" data-i18n="settingsHeroPill">Changes save instantly</div>
-      </div>
-
-      <div class="settings-grid">
-
-        <div class="settings-card">
-          <div class="settings-card-head">
-            <div class="settings-card-icon">🌓</div>
-            <div>
-              <div class="settings-card-title" data-i18n="settingsAppearance">Appearance</div>
-              <div class="settings-card-sub" data-i18n="settingsAppearanceSub">Choose how the dashboard looks</div>
-            </div>
-          </div>
-          <div class="theme-preview" id="themePreview">
-            <button type="button" data-theme-choice="light" onclick="setTheme('light')">
-              <span class="swatch light"></span>
-              <span data-i18n="settingsLight">Light</span>
-            </button>
-            <button type="button" data-theme-choice="dark" onclick="setTheme('dark')">
-              <span class="swatch dark"></span>
-              <span data-i18n="settingsDark">Dark</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="settings-card">
-          <div class="settings-card-head">
-            <div class="settings-card-icon">🌐</div>
-            <div>
-              <div class="settings-card-title" data-i18n="settingsLanguage">Language</div>
-              <div class="settings-card-sub" data-i18n="settingsLanguageSub">Switch the interface language</div>
-            </div>
-          </div>
-          <div class="lang-switch" id="langSwitch">
-            <button type="button" data-lang-choice="en" onclick="setLanguage('en')">English</button>
-            <button type="button" data-lang-choice="ar" onclick="setLanguage('ar')">العربية</button>
-          </div>
-          <div class="settings-note" data-i18n="settingsLangNote">
-            Labels, buttons, and headers switch language instantly. Names and phone numbers stay exactly as stored in the system.
-          </div>
-        </div>
-
-        <div class="settings-card" style="grid-column:1 / -1;">
-          <div class="settings-card-head">
-            <div class="settings-card-icon">💬</div>
-            <div>
-              <div class="settings-card-title" data-i18n="settingsWA">WhatsApp Reminders</div>
-              <div class="settings-card-sub" data-i18n="settingsWASub">Customize the one-click reminder messages</div>
-            </div>
-          </div>
-          <div class="wa-field-label" data-i18n="waUnpaidLabel">Unpaid fee reminder</div>
-          <textarea class="wa-template" id="waUnpaidTemplateInput" oninput="saveWaTemplate('waUnpaidTemplate', this.value)"></textarea>
-          <div class="wa-field-label" data-i18n="waAbsenceLabel">Attendance follow-up message</div>
-          <textarea class="wa-template" id="waAbsenceTemplateInput" oninput="saveWaTemplate('waAbsenceTemplate', this.value)"></textarea>
-          <div class="settings-note" data-i18n="waTemplateNote">
-            Use {name}, {grade}, {group}, {city} as placeholders — they're filled in automatically per student.
-          </div>
-        </div>
-
-      </div>
-    </div>
-
   </div>
 
   <div class="footer-note" data-i18n="footerNote">Data is read live in read-only mode</div>
@@ -2117,17 +2041,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     return localStorage.getItem(key) || WA_TEMPLATE_DEFAULTS[key];
   }
 
-  function saveWaTemplate(key, value){
-    localStorage.setItem(key, value && value.trim() ? value : WA_TEMPLATE_DEFAULTS[key]);
-  }
-
-  function loadWaTemplatesIntoSettings(){
-    const uEl = document.getElementById("waUnpaidTemplateInput");
-    const aEl = document.getElementById("waAbsenceTemplateInput");
-    if(uEl) uEl.value = getWaTemplate("waUnpaidTemplate");
-    if(aEl) aEl.value = getWaTemplate("waAbsenceTemplate");
-  }
-
   function fillWaTemplate(tpl, s){
     return String(tpl)
       .replace(/\{name\}/g, s.name || "")
@@ -2338,9 +2251,7 @@ function goBack(){ milexBack(); }
       b.classList.toggle("active", b.dataset.langChoice === currentLang);
     });
     applyTranslations();
-    if(document.getElementById("settingsView").style.display !== "none"){
-
-    } else if(document.getElementById("historyView").style.display !== "none"){
+    if(document.getElementById("historyView").style.display !== "none"){
       renderHistory();
     } else if(document.getElementById("examsView").style.display !== "none"){
       renderExamTable();
@@ -2348,17 +2259,6 @@ function goBack(){ milexBack(); }
       renderAll();
     }
   }
-
-  document.getElementById("settingsTab").addEventListener("click", () => {
-    document.querySelectorAll("#gradeTabs .tab").forEach(t => t.classList.remove("active"));
-    document.getElementById("settingsTab").classList.add("active");
-    document.getElementById("dashboardView").style.display = "none";
-    document.getElementById("historyView").style.display = "none";
-    document.getElementById("examsView").style.display = "none";
-    document.getElementById("settingsView").style.display = "";
-    loadWaTemplatesIntoSettings();
-    closeSidebarOnMobileNav();
-  });
 
   document.querySelectorAll("#gradeTabs .tab[data-grade]").forEach(tab => {
     tab.addEventListener("click", () => {
@@ -2370,7 +2270,6 @@ function goBack(){ milexBack(); }
       document.getElementById("dashboardView").style.display = "";
       document.getElementById("historyView").style.display = "none";
       document.getElementById("examsView").style.display = "none";
-      document.getElementById("settingsView").style.display = "none";
       loadDashboard();
       closeSidebarOnMobileNav();
     });
@@ -2382,7 +2281,6 @@ function goBack(){ milexBack(); }
     document.getElementById("dashboardView").style.display = "none";
     document.getElementById("historyView").style.display = "";
     document.getElementById("examsView").style.display = "none";
-    document.getElementById("settingsView").style.display = "none";
     document.getElementById("histGradeSelect").value = historyGradeFilter;
     loadHistory();
     closeSidebarOnMobileNav();
@@ -2394,7 +2292,6 @@ function goBack(){ milexBack(); }
     document.getElementById("dashboardView").style.display = "none";
     document.getElementById("historyView").style.display = "none";
     document.getElementById("examsView").style.display = "";
-    document.getElementById("settingsView").style.display = "none";
     document.getElementById("examGradeSelect").value = examGrade;
     loadExamGrades();
     closeSidebarOnMobileNav();
@@ -2405,8 +2302,6 @@ function goBack(){ milexBack(); }
       loadHistory();
     } else if(document.getElementById("examsView").style.display !== "none"){
       loadExamGrades();
-    } else if(document.getElementById("settingsView").style.display !== "none"){
-
     } else {
       loadDashboard();
       loadSidebarCounts();
@@ -4266,7 +4161,7 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
   const L = (ar, en) => (typeof currentLang !== 'undefined' && currentLang === 'ar') ? ar : en;
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const MY_VIEWS = ['absView','auditView'];
-  const ALL_VIEWS = ['dashboardView','historyView','examsView','settingsView','absView','auditView'];
+  const ALL_VIEWS = ['dashboardView','historyView','examsView','absView','auditView'];
 
   function labels(){
     $('absTabLbl').textContent = '📉 ' + L('غياب متتالي','Consecutive Absences');

@@ -115,7 +115,6 @@
       <p>التعديل هنا بيظهر تلقائيًا في صفحة التسجيل وفي الاسكانر (مصدر واحد للمجاميع)</p>
     </div>
     <div style="display:flex; gap:8px;">
-      <button class="btn" id="themeBtn" type="button">🌓</button>
       <a class="btn primary" href="index.html" id="backBtn">رجوع ←</a>
     </div>
   </div>
@@ -369,10 +368,6 @@ $('backBtn').addEventListener('click', e => {
   if(dirty && !confirm('فيه تعديلات ماتحفظتش. تخرج برضو؟')) return;
   dirty = false;
   milexBack();
-});
-$('themeBtn').addEventListener('click', () => {
-  document.body.classList.toggle('dark');
-  try{ localStorage.setItem('eduTrackTheme', document.body.classList.contains('dark') ? 'dark' : 'light'); }catch(_){}
 });
 try{ if(localStorage.getItem('eduTrackTheme') === 'dark') document.body.classList.add('dark'); }catch(_){}
 

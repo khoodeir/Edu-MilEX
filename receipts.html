@@ -39,7 +39,6 @@
 <div class="topbar">
   <button class="icon-btn" onclick="MX.goBack()" title="رجوع">↩️</button>
   <h1>🧾 الإيصالات</h1>
-  <button class="icon-btn" id="themeBtn" onclick="MX.toggleTheme(); this.textContent=MX.themeIcon()">🌙</button>
 </div>
 <div class="wrap">
   <div class="card">
@@ -206,7 +205,7 @@
   function showToday(i){ const x = window._today[i]; showRc(0, x.r, x.s); }
 
   async function init(){
-    $('themeBtn').textContent = MX.themeIcon();
+    
     MX.GRADE_KEYS.forEach(k => $('gradeSel').add(new Option(MX.GRADES[k].ar, k)));
     const p = new URLSearchParams(location.search);
     const gk = gradeKey(p.get('grade')), qr = p.get('qr');

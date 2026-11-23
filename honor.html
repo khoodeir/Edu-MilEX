@@ -39,7 +39,6 @@
 <div class="topbar">
   <button class="icon-btn" onclick="MX.goBack()" title="رجوع">↩️</button>
   <h1>🏆 لوحة الشرف</h1>
-  <button class="icon-btn" id="themeBtn" onclick="MX.toggleTheme(); this.textContent=MX.themeIcon()">🌙</button>
 </div>
 <div class="wrap" style="max-width:760px">
   <div class="card no-print">
@@ -116,7 +115,7 @@
   }
 
   async function init(){
-    $('themeBtn').textContent = MX.themeIcon();
+    
     MX.GRADE_KEYS.forEach(k => $('gradeSel').add(new Option(MX.GRADES[k].ar, k)));
     $('monthIn').value = MX.ymNow();
     await onGrade();

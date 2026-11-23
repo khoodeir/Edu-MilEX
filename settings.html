@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<script src="milex-session.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="milex-perm" content="teacher">
+<meta name="theme-color" content="#0B3A87">
+<title>الإعدادات | MilEX</title>
+<script src="milex-theme-sync.js" data-apply="1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="milex-common.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="milex-pages.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  [dir="ltr"] body{font-family:'Inter','Cairo','Segoe UI',sans-serif}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .opt{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:12px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:700;font-size:14px;transition:border-color .15s, box-shadow .15s}
+  .opt:hover{border-color:var(--accent)}
+  .opt.active{border-color:var(--accent);box-shadow:0 0 0 3px rgba(106,160,234,.28)}
+  .swatch{width:100%;height:42px;border-radius:8px}
+  .swatch.light{background:linear-gradient(160deg,#F2F6FB,#FFFFFF);border:1px solid #DCE3ED}
+  .swatch.dark{background:linear-gradient(160deg,#151515,#2A2A2A);border:1px solid #3A3A3A}
+  .langbox{height:42px;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .sec-ico{font-size:22px;width:40px;height:40px;border-radius:12px;background:var(--soft);display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+  .sec-head h2{margin:0;font-size:16px}
+  .sec-head p{margin:0;font-size:12.5px;color:var(--muted)}
+  .wa-label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:14px 0 6px;font-weight:700;font-size:13.5px}
+  textarea.wa{min-height:110px;line-height:1.7}
+  .ph{display:inline-block;direction:ltr;unicode-bidi:isolate;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:0 6px;font-family:monospace;font-size:12px}
+  .saved{font-size:12px;color:var(--ok);opacity:0;transition:opacity .2s;font-weight:600}
+  .saved.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="icon-btn" onclick="MX.goBack()" id="backBtn" title="رجوع">↩️</button>
+  <h1 id="pageTitle">⚙️ الإعدادات</h1>
+</div>
+
+<div class="wrap" style="max-width:720px">
+
+  <div class="banner" id="note">التغييرات بتتحفظ فورًا وبتتطبّق على كل صفحات النظام.</div>
+
+  <div class="card">
+    <div class="sec-head">
+      <div class="sec-ico">🌓</div>
+      <div><h2 id="tAppearance">المظهر</h2><p id="tAppearanceSub">اختار شكل النظام في كل الصفحات</p></div>
+    </div>
+    <div class="opts" id="themeOpts">
+      <button type="button" class="opt" data-theme-choice="light"><span class="swatch light"></span><span id="tLight">فاتح</span></button>
+      <button type="button" class="opt" data-theme-choice="dark"><span class="swatch dark"></span><span id="tDark">داكن</span></button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec-head">
+      <div class="sec-ico">🌐</div>
+      <div><h2 id="tLanguage">اللغة</h2><p id="tLanguageSub">لغة واجهة كل الصفحات</p></div>
+    </div>
+    <div class="opts" id="langOpts">
+      <button type="button" class="opt" data-lang-choice="ar"><span class="langbox">🇪🇬</span><span>العربية</span></button>
+      <button type="button" class="opt" data-lang-choice="en"><span class="langbox">🇬🇧</span><span>English</span></button>
+    </div>
+    <p class="muted small" id="tLangNote" style="margin:12px 0 0">العناوين والأزرار بتتغيّر. الأسماء وأرقام التليفونات بتفضل زي ما هي متسجلة في النظام.</p>
+  </div>
+
+  <div class="card">
+    <div class="sec-head">
+      <div class="sec-ico">💬</div>
+      <div><h2 id="tWA">رسائل الواتساب</h2><p id="tWASub">خصّص نص رسائل التذكير اللي بتتبعت بضغطة زر</p></div>
+    </div>
+
+    <div class="wa-label"><span id="tUnpaid">رسالة تذكير بالمصروفات</span><span class="saved" id="savedU">✔</span></div>
+    <textarea class="wa" id="waUnpaid"></textarea>
+    <div class="row" style="margin-top:8px"><button type="button" class="btn ghost sm" id="resetU">استرجاع الرسالة الافتراضية</button></div>
+
+    <div class="wa-label"><span id="tAbsence">رسالة متابعة الحضور</span><span class="saved" id="savedA">✔</span></div>
+    <textarea class="wa" id="waAbsence"></textarea>
+    <div class="row" style="margin-top:8px"><button type="button" class="btn ghost sm" id="resetA">استرجاع الرسالة الافتراضية</button></div>
+
+    <p class="muted small" id="tWANote" style="margin:14px 0 0">
+      استخدم <span class="ph">{name}</span> <span class="ph">{grade}</span> <span class="ph">{group}</span> <span class="ph">{city}</span> — بتتبدّل تلقائي ببيانات كل طالب.
+    </p>
+  </div>
+</div>
+
+<script src="milex-ui.js"></script>
+<script>
+(function(){
+  const $ = MX.$;
+
+  /* نفس مفاتيح التخزين اللي لوحة التحكم بتقرأ منها رسائل الواتساب */
+  const WA_DEFAULTS = {
+    waUnpaidTemplate: "السلام عليكم، نود تذكيركم بأن مصروفات الشهر الحالي لـ {name} ({grade} - {group}) لم تُسجَّل بعد. برجاء التواصل لإتمام الدفع في أقرب وقت. شكرًا لتعاونكم",
+    waAbsenceTemplate: "السلام عليكم، نلاحظ أن نسبة حضور {name} ({grade} - {group}) قلّت مؤخرًا. نتمنى الاطمئنان والتأكد من عدم وجود أي عائق، ونرحب بأي استفسار. شكرًا لمتابعتكم"
+  };
+  const getTpl = k => { try{ return localStorage.getItem(k) || WA_DEFAULTS[k]; }catch(e){ return WA_DEFAULTS[k]; } };
+  const saveTpl = (k, v) => { try{ localStorage.setItem(k, v && v.trim() ? v : WA_DEFAULTS[k]); }catch(e){} };
+
+  const T = {
+    ar: {
+      title:'⚙️ الإعدادات', back:'رجوع', page:'الإعدادات | MilEX',
+      note:'التغييرات بتتحفظ فورًا وبتتطبّق على كل صفحات النظام.',
+      appearance:'المظهر', appearanceSub:'اختار شكل النظام في كل الصفحات', light:'فاتح', dark:'داكن',
+      language:'اللغة', languageSub:'لغة واجهة كل الصفحات',
+      langNote:'العناوين والأزرار بتتغيّر. الأسماء وأرقام التليفونات بتفضل زي ما هي متسجلة في النظام.',
+      wa:'رسائل الواتساب', waSub:'خصّص نص رسائل التذكير اللي بتتبعت بضغطة زر',
+      unpaid:'رسالة تذكير بالمصروفات', absence:'رسالة متابعة الحضور', reset:'استرجاع الرسالة الافتراضية',
+      waNote:'استخدم {name} {grade} {group} {city} — بتتبدّل تلقائي ببيانات كل طالب.',
+      saved:'تم الحفظ ✔', resetDone:'اتسترجعت الرسالة الافتراضية'
+    },
+    en: {
+      title:'⚙️ Settings', back:'Back', page:'Settings | MilEX',
+      note:'Changes save instantly and apply to every page in the system.',
+      appearance:'Appearance', appearanceSub:'Choose how the system looks on every page', light:'Light', dark:'Dark',
+      language:'Language', languageSub:'Interface language for every page',
+      langNote:'Labels, buttons, and headers switch language. Names and phone numbers stay exactly as stored in the system.',
+      wa:'WhatsApp messages', waSub:'Customize the one-click reminder messages',
+      unpaid:'Unpaid fee reminder', absence:'Attendance follow-up message', reset:'Restore default message',
+      waNote:'Use {name} {grade} {group} {city} — they are filled in automatically per student.',
+      saved:'Saved ✔', resetDone:'Default message restored'
+    }
+  };
+
+  let lang = (window.MX_LANG && MX_LANG.get()) || 'ar';
+  const tr = k => (T[lang] && T[lang][k]) || T.ar[k];
+
+  function waNoteHtml(){
+    const s = tr('waNote');
+    return s.replace(/\{(\w+)\}/g, (m) => '<span class="ph">' + m + '</span>');
+  }
+
+  function paint(){
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.title = tr('page');
+    $('pageTitle').textContent = tr('title');
+    $('backBtn').title = tr('back');
+    $('note').textContent = tr('note');
+    $('tAppearance').textContent = tr('appearance');
+    $('tAppearanceSub').textContent = tr('appearanceSub');
+    $('tLight').textContent = tr('light');
+    $('tDark').textContent = tr('dark');
+    $('tLanguage').textContent = tr('language');
+    $('tLanguageSub').textContent = tr('languageSub');
+    $('tLangNote').textContent = tr('langNote');
+    $('tWA').textContent = tr('wa');
+    $('tWASub').textContent = tr('waSub');
+    $('tUnpaid').textContent = tr('unpaid');
+    $('tAbsence').textContent = tr('absence');
+    $('resetU').textContent = tr('reset');
+    $('resetA').textContent = tr('reset');
+    $('tWANote').innerHTML = waNoteHtml();
+    $('savedU').textContent = tr('saved');
+    $('savedA').textContent = tr('saved');
+    document.querySelectorAll('[data-lang-choice]').forEach(b => b.classList.toggle('active', b.dataset.langChoice === lang));
+    const dark = window.MX_THEME ? MX_THEME.isDark() : false;
+    document.querySelectorAll('[data-theme-choice]').forEach(b => b.classList.toggle('active', (b.dataset.themeChoice === 'dark') === dark));
+  }
+
+  document.querySelectorAll('[data-theme-choice]').forEach(b => b.addEventListener('click', () => {
+    MX_THEME.set(b.dataset.themeChoice === 'dark'); paint();
+  }));
+  document.querySelectorAll('[data-lang-choice]').forEach(b => b.addEventListener('click', () => {
+    MX_LANG.set(b.dataset.langChoice); lang = MX_LANG.get(); paint();
+  }));
+
+  const flash = id => { const el = $(id); el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 1400); };
+  function bindTpl(inputId, key, savedId, resetId){
+    const el = $(inputId);
+    el.value = getTpl(key);
+    el.addEventListener('input', () => { saveTpl(key, el.value); flash(savedId); });
+    el.addEventListener('blur', () => { if(!el.value.trim()) el.value = WA_DEFAULTS[key]; });
+    $(resetId).addEventListener('click', () => { el.value = WA_DEFAULTS[key]; saveTpl(key, el.value); flash(savedId); MX.toast(tr('resetDone')); });
+  }
+  bindTpl('waUnpaid', 'waUnpaidTemplate', 'savedU', 'resetU');
+  bindTpl('waAbsence', 'waAbsenceTemplate', 'savedA', 'resetA');
+
+  paint();
+})();
+</script>
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+<script src="milex-copilot.js" defer></script>
+</body>
+</html>

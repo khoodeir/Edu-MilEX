@@ -24,7 +24,6 @@
 <div class="topbar">
   <button class="icon-btn" onclick="MX.goBack()" title="رجوع">↩️</button>
   <h1>📁 الواجبات والمواد</h1>
-  <button class="icon-btn" id="themeBtn" onclick="MX.toggleTheme(); this.textContent=MX.themeIcon()">🌙</button>
 </div>
 <div class="wrap" style="max-width:820px">
   <div class="banner err" id="needSql" style="display:none">لسه ملف <b>supabase_milex_upgrade.sql</b> ما اتشغّلش (جدول materials / bucket مش موجودين).</div>
@@ -126,7 +125,7 @@
   }
 
   async function init(){
-    $('themeBtn').textContent = MX.themeIcon();
+    
     MX.GRADE_KEYS.forEach(k => $('gradeSel').add(new Option(MX.GRADES[k].ar, k)));
     try{ groupsByGrade = await MILEX.loadGroups(supa); }catch(e){}
     fillGroups(); loadList();

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<script src="milex-theme-sync.js" data-apply="1" data-float="1"></script>
+<script src="milex-theme-sync.js" data-apply="1"></script>
 <link rel="stylesheet" href="milex-dark.css">
 
 <meta charset="UTF-8">
@@ -279,11 +279,6 @@
     <span data-i18n="backToHome">رجوع</span>
   </a>
 
-  <div class="lang-switch" id="langSwitch">
-    <button type="button" data-lang="ar" onclick="setLanguage('ar')">العربية</button>
-    <button type="button" data-lang="en" onclick="setLanguage('en')">English</button>
-  </div>
-
   <div class="topbar">
     <div class="brand-mark">
 <img class="logo-light" src="logo.png" alt="MilEX">    </div>
@@ -550,9 +545,6 @@
     document.documentElement.lang = currentLang;
     document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
     document.getElementById("backArrow").textContent = currentLang === "ar" ? "↩" : "↩";
-    document.querySelectorAll("#langSwitch button").forEach(b => {
-      b.classList.toggle("active", b.dataset.lang === currentLang);
-    });
     applyTranslations();
 
     if(currentStudent && document.getElementById("reportView").classList.contains("show")){

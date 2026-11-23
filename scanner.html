@@ -944,40 +944,6 @@
       <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
     </div>
 
-    <div class="modal-section">
-      <div class="modal-section-head">
-        <div class="modal-section-icon">🎨</div>
-        <div>
-          <div class="modal-section-title" data-i18n="settings_appearance">Appearance</div>
-          <div class="modal-section-sub" data-i18n="settings_appearance_sub">Choose how the scanner looks</div>
-        </div>
-      </div>
-      <div class="theme-options">
-        <div class="theme-option" id="themeOptionLight" onclick="setTheme('light')">
-          <div class="theme-swatch light"></div>
-          <div class="theme-option-label" data-i18n="theme_light">Light</div>
-        </div>
-        <div class="theme-option" id="themeOptionDark" onclick="setTheme('dark')">
-          <div class="theme-swatch dark"></div>
-          <div class="theme-option-label" data-i18n="theme_dark">Dark</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-section">
-      <div class="modal-section-head">
-        <div class="modal-section-icon">🌐</div>
-        <div>
-          <div class="modal-section-title" data-i18n="settings_language">Language</div>
-          <div class="modal-section-sub" data-i18n="settings_language_sub">Switch the interface language</div>
-        </div>
-      </div>
-      <div class="lang-toggle">
-        <button type="button" class="lang-btn" id="langBtnEn" data-lang="en" onclick="setLanguage('en')">English</button>
-        <button type="button" class="lang-btn" id="langBtnAr" data-lang="ar" onclick="setLanguage('ar')">العربية</button>
-      </div>
-    </div>
-
     <label for="setDefaultFee" data-i18n="settings_fee">Default Payment Amount (EGP)</label>
     <input type="number" id="setDefaultFee" placeholder="e.g. 300" min="0">
 
@@ -1044,18 +1010,6 @@
 
   const THEME_KEY = "scannerTheme";
   let currentTheme = localStorage.getItem(THEME_KEY) || "light";
-
-  function setTheme(theme){
-    currentTheme = theme;
-    document.documentElement.setAttribute("data-theme", theme);
-    try{ localStorage.setItem(THEME_KEY, theme); }catch(e){}
-    renderThemeOptions();
-  }
-
-  function renderThemeOptions(){
-    document.getElementById("themeOptionLight").classList.toggle("selected", currentTheme === "light");
-    document.getElementById("themeOptionDark").classList.toggle("selected", currentTheme === "dark");
-  }
 
   const LANG_KEY = "scannerLang";
   let currentLang = localStorage.getItem(LANG_KEY) || "en";
@@ -1317,17 +1271,11 @@
       el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph")));
     });
 
-    renderLangButtons();
     renderGradeOptions();
     renderGroupOptions();
     renderQueueBadge();
     renderSessionBar();
     refreshIdleStatus();
-  }
-
-  function renderLangButtons(){
-    document.getElementById("langBtnEn").classList.toggle("active", currentLang === "en");
-    document.getElementById("langBtnAr").classList.toggle("active", currentLang === "ar");
   }
 
   function renderGradeOptions(){
@@ -1636,8 +1584,6 @@
 
   function openModal(id){
     if(id === 'settingsModal'){
-      renderThemeOptions();
-      renderLangButtons();
       renderGroupOptions();
     }
     document.getElementById(id).classList.add('open');
@@ -2315,8 +2261,6 @@
   renderGradeOptions();
   applySettings();
   renderSessionBar();
-  renderThemeOptions();
-  renderLangButtons();
   setLanguage(currentLang);
   loadGroupsFromServer();
   setInterval(loadGroupsFromServer, 60000);
