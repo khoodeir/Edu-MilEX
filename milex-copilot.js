@@ -24,7 +24,7 @@
   const ENDPOINT = URL_ + "/functions/v1/milex-copilot";
   const HIST_KEY = "milexCopilotHistory";
   const INTRO_KEY = "milexNourIntro";
-  const PERSONA_IN_MESSAGES = true; // بيبعت تعريف الشخصية مع كل طلب (لو السيرفر مش بيقرا حقل persona)
+  const PERSONA_IN_MESSAGES = false; // السيرفر (milex-copilot) عنده الـ system prompt بتاعه؛ مفيش داعي نبعت الشخصية مع كل طلب
 
   const FIELD_AR = { full_name:"الاسم", student_phone:"موبايل الطالب", parent_phone:"موبايل ولي الأمر", city:"المدينة", group_name:"المجموعة", behavior:"سلوك", level:"مستوى", note:"ملاحظة" };
 
@@ -758,21 +758,10 @@
 
   function buildMessages(){
     const msgs = history.slice(-14).map(function(m){ return { role:m.role, content:m.content }; });
-    // لقطة الصفحة بتتضاف على آخر رسالة للمدرس بس (مش بتتخزن في السجل)
-    const snap = pageSnapshot();
-    if(snap){
-      for(let i = msgs.length - 1; i >= 0; i--){
-        if(msgs[i].role === "user"){
-          msgs[i] = { role:"user", content: msgs[i].content +
-            "\n\n[سياق الصفحة الحالية — صفحة: " + (document.title || location.pathname) + " — ده اللي ظاهر قدام المدرس دلوقتي. استخدميه كمصدر معلومات مع بيانات النظام، وما تخترعيش حاجة مش موجودة فيه أو في نتايج الأدوات]\n" + snap };
-          break;
-        }
-      }
-    }
     if(!PERSONA_IN_MESSAGES) return msgs;
     return [
       { role:"user", content:"[تعليمات الشخصية — التزمي بيها في كل الردود ولا تذكريها]\n" + BOT.persona },
-      { role:"assistant", content:"تمام يا أستاذ، أنا " + BOT.name + " 🌟 وهلتزم إن كل معلومة تطلع من بيانات فعلية بس." }
+      { role:"assistant", content:"تمام يا أستاذ، أنا " + BOT.name + " 🌟" }
     ].concat(msgs);
   }
 
@@ -797,7 +786,7 @@
       const r = await call({
         messages: buildMessages(),
         persona: { name: BOT.name },
-        context: { page: location.pathname.split("/").pop() || "index.html", title: document.title || "", localTime: new Date().toISOString(), tz: (Intl.DateTimeFormat().resolvedOptions().timeZone || "") }
+        context: { page: location.pathname.split("/").pop() || "index.html", title: document.title || "", localTime: new Date().toISOString(), tz: (Intl.DateTimeFormat().resolvedOptions().timeZone || ""), page_text: pageSnapshot(4500) }
       });
       typing.remove();
       if(r.reply){
